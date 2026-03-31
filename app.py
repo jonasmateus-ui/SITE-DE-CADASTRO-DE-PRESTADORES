@@ -38,8 +38,6 @@ def cadastrar():
                    (nome, servico, local, bio))
     conn.commit()
     conn.close()
-    
-    # Após cadastrar, redireciona de volta para a página inicial
     return redirect(url_for('index'))
 
 # Rota de Busca: Procura profissionais no banco de dados
