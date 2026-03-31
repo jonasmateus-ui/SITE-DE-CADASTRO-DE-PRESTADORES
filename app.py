@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request, redirect, url_for
 import sqlite3
+import os
 
 app = Flask(__name__)
 
@@ -19,12 +20,22 @@ def init_db():
     conn.commit()
     conn.close()
 
-# Rota Principal: Carrega a página inicial
+# CHAMADA CRUCIAL: Inicializa o banco sempre que o app carregar
+init_db()
+
 @app.route('/')
 def index():
-    return render_template('index.html')
+    # Agora a página inicial também precisa buscar os dados para exibir
+    conn = sqlite3.connect('dados.db')
+    cursor = conn.cursor()
+    cursor.execute('SELECT nome, servico, local, bio FROM prestadores')
+    todos = cursor.fetchall()
+    conn.close()
+    
+    # Converte para dicionário para facilitar no HTML
+    lista_profissionais = [{'nome': r[0], 'servico': r[1], 'local': r[2], 'bio': r[3]} for r in todos]
+    return render_template('index.html', resultados=lista_profissionais)
 
-# Rota de Cadastro: Recebe os dados do formulário e salva no banco
 @app.route('/cadastrar', methods=['POST'])
 def cadastrar():
     nome = request.form.get('nome')
@@ -32,39 +43,36 @@ def cadastrar():
     local = request.form.get('local')
     bio = request.form.get('bio')
 
-    conn = sqlite3.connect('dados.db')
-    cursor = conn.cursor()
-    cursor.execute('INSERT INTO prestadores (nome, servico, local, bio) VALUES (?, ?, ?, ?)', 
-                   (nome, servico, local, bio))
-    conn.commit()
-    conn.close()
+    # Validação simples para evitar erro de dados vazios
+    if not nome or not servico:
+        return redirect(url_for('index'))
+
+    try:
+        conn = sqlite3.connect('dados.db')
+        cursor = conn.cursor()
+        cursor.execute('INSERT INTO prestadores (nome, servico, local, bio) VALUES (?, ?, ?, ?)', 
+                       (nome, servico, local, bio))
+        conn.commit()
+        conn.close()
+    except Exception as e:
+        print(f"Erro no Banco: {e}")
+        return "Erro interno ao salvar", 500
+        
     return redirect(url_for('index'))
 
-# Rota de Busca: Procura profissionais no banco de dados
 @app.route('/buscar')
 def buscar():
     profissao = request.args.get('profissao', '')
     
     conn = sqlite3.connect('dados.db')
     cursor = conn.cursor()
-    # Usa o comando SQL LIKE para encontrar serviços semelhantes ao digitado
     cursor.execute("SELECT nome, servico, local, bio FROM prestadores WHERE servico LIKE ?", 
                    ('%' + profissao + '%',))
     resultados = cursor.fetchall()
     conn.close()
 
-    # Organiza os dados para o Flask enviar ao HTML
-    lista_profissionais = []
-    for r in resultados:
-        lista_profissionais.append({
-            'nome': r[0],
-            'servico': r[1],
-            'local': r[2],
-            'bio': r[3]
-        })
-
+    lista_profissionais = [{'nome': r[0], 'servico': r[1], 'local': r[2], 'bio': r[3]} for r in resultados]
     return render_template('index.html', resultados=lista_profissionais)
 
 if __name__ == '__main__':
-    init_db() # Cria o banco de dados assim que o programa inicia
     app.run(debug=True)
