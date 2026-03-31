@@ -16,7 +16,7 @@ def init_db():
             bio TEXT
         )
     ''')
-    conn.commit()
+    conn.commit()git remote remove origin
     conn.close()
 
 # Rota Principal: Carrega a página inicial
