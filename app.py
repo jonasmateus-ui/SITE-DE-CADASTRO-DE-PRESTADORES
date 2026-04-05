@@ -39,7 +39,6 @@ def index():
         conn = sqlite3.connect(DB_PATH)
         conn.row_factory = sqlite3.Row
         cursor = conn.cursor()
-        # Busca por nome ou serviço
         query = "SELECT * FROM prestadores WHERE nome LIKE ? OR servico LIKE ?"
         cursor.execute(query, (f'%{busca}%', f'%{busca}%'))
         prestadores = cursor.fetchall()
@@ -62,7 +61,6 @@ def cadastrar():
                            (nome, servico, local, bio))
             conn.commit()
             conn.close()
-            # Redireciona com o parâmetro de sucesso
             return redirect(url_for('index', sucesso='true'))
         except Exception as e:
             print(f"Erro ao salvar: {e}")

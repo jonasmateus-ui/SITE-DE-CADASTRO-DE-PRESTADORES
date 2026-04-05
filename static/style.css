@@ -54,8 +54,6 @@ header {
     text-align: center;
 }
 
-.card-sucesso h2 { color: var(--success); }
-
 input, textarea {
     width: 100%;
     padding: 12px;
@@ -74,6 +72,7 @@ input, textarea {
     border-radius: 8px;
     font-size: 16px;
     cursor: pointer;
+    font-weight: bold;
 }
 
 .btn-ia {
@@ -84,6 +83,7 @@ input, textarea {
     border-radius: 8px;
     cursor: pointer;
     margin-bottom: 10px;
+    font-weight: 600;
 }
 
 .lista-grids {

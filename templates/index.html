@@ -63,22 +63,33 @@
     <script>
         async function gerarBioComIA() {
             const servico = document.getElementById('servico_input').value;
+            const bioInput = document.getElementById('bio_input');
             const btn = document.querySelector('.btn-ia');
-            if (!servico) { alert("Por favor, digite sua profissão primeiro!"); return; }
+
+            if (!servico) { 
+                alert("Por favor, digite sua profissão primeiro!"); 
+                return; 
+            }
             
-            btn.innerText = "🤖 Pensando...";
+            btn.innerText = "🤖 Criando...";
             try {
                 const response = await fetch('/gerar_bio', {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: {'Content-Type': 'application/json'},
                     body: JSON.stringify({ servico: servico })
                 });
+                
                 const data = await response.json();
-                document.getElementById('bio_input').value = data.bio_sugerida;
+                
+                if (data.bio_sugerida) {
+                    bioInput.value = data.bio_sugerida;
+                } else {
+                    bioInput.value = "Erro ao gerar bio. Tente novamente.";
+                }
             } catch (e) {
-                alert("Erro ao conectar com a IA.");
+                alert("Erro de conexão com o servidor.");
             } finally {
-                btn.innerText = "✨ Sugerir Bio com IA";
+                btn.innerText = "✨ Gerar Bio com IA";
             }
         }
     </script>
