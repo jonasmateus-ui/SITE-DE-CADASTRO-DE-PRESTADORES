@@ -6,7 +6,7 @@ import os
 app = Flask(__name__)
 
 # --- CONFIGURAÇÃO DA IA ---
-# Substitua pela sua chave do Google AI Studio
+# Certifique-se de usar sua chave atualizada do Google AI Studio
 CHAVE_IA = "AIzaSyBQbI2tl15wUq7rEALxGe0RXNGCelUeWF8" 
 genai.configure(api_key=CHAVE_IA)
 
@@ -72,7 +72,8 @@ def gerar_bio():
     try:
         dados = request.get_json()
         servico = dados.get('servico')
-        model = genai.GenerativeModel('gemini-1.5-flash')
+        # Alterado para 'gemini-pro' para maior estabilidade
+        model = genai.GenerativeModel('gemini-pro')
         prompt = f"Escreva uma bio profissional curta e vendedora para um {servico} autônomo."
         response = model.generate_content(prompt)
         return jsonify({"bio_sugerida": response.text})

@@ -17,12 +17,11 @@
     </header>
 
     <main class="container">
-        
         {% if sucesso == 'true' %}
         <section class="card-sucesso">
-            <h2>🎉 Parabéns!</h2>
-            <p>Seu serviço foi cadastrado com sucesso na plataforma.</p>
-            <button onclick="window.location.href='/'" class="btn-ia">Voltar para o Início</button>
+            <h2>🎉 Cadastro Realizado!</h2>
+            <p>Seu serviço agora está visível para a comunidade.</p>
+            <button onclick="window.location.href='/'" class="btn-ia">Voltar</button>
         </section>
         {% endif %}
 
@@ -53,7 +52,7 @@
                     <p class="bio-text">{{ p.bio }}</p>
                 </div>
                 {% else %}
-                <p>Nenhum profissional encontrado para esta busca.</p>
+                <p>Nenhum profissional encontrado.</p>
                 {% endfor %}
             </div>
         </section>
@@ -84,12 +83,12 @@
                 if (data.bio_sugerida) {
                     bioInput.value = data.bio_sugerida;
                 } else {
-                    bioInput.value = "Erro ao gerar bio. Tente novamente.";
+                    bioInput.value = "Erro ao conectar com a IA. Tente novamente.";
                 }
             } catch (e) {
-                alert("Erro de conexão com o servidor.");
+                alert("Erro de conexão com o servidor local.");
             } finally {
-                btn.innerText = "✨ Gerar Bio com IA";
+                btn.innerText = "✨ Sugerir Bio com IA";
             }
         }
     </script>
