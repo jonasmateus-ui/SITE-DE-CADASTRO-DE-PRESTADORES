@@ -6,7 +6,8 @@ import os
 app = Flask(__name__)
 
 # --- CONFIGURAÇÃO DA IA ---
-CHAVE_IA = "SUA_CHAVE_AQUI" 
+# Substitua pela sua chave do Google AI Studio
+CHAVE_IA = "AIzaSyBZ0PV4OYEUdt2p105ebNT6KpUYKzE0eg0" 
 genai.configure(api_key=CHAVE_IA)
 
 DB_PATH = "dados.db"
@@ -38,6 +39,7 @@ def index():
         conn = sqlite3.connect(DB_PATH)
         conn.row_factory = sqlite3.Row
         cursor = conn.cursor()
+        # Busca por nome ou serviço
         query = "SELECT * FROM prestadores WHERE nome LIKE ? OR servico LIKE ?"
         cursor.execute(query, (f'%{busca}%', f'%{busca}%'))
         prestadores = cursor.fetchall()
@@ -60,6 +62,7 @@ def cadastrar():
                            (nome, servico, local, bio))
             conn.commit()
             conn.close()
+            # Redireciona com o parâmetro de sucesso
             return redirect(url_for('index', sucesso='true'))
         except Exception as e:
             print(f"Erro ao salvar: {e}")
@@ -72,7 +75,7 @@ def gerar_bio():
         dados = request.get_json()
         servico = dados.get('servico')
         model = genai.GenerativeModel('gemini-1.5-flash')
-        prompt = f"Escreva uma bio profissional curta para um {servico}."
+        prompt = f"Escreva uma bio profissional curta e vendedora para um {servico} autônomo."
         response = model.generate_content(prompt)
         return jsonify({"bio_sugerida": response.text})
     except Exception as e:
