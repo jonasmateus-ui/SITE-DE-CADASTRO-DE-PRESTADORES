@@ -7,7 +7,7 @@ app = Flask(__name__)
 
 # --- CONFIGURAÇÃO DA IA ---
 # Substitua pela sua chave do Google AI Studio
-CHAVE_IA = "AIzaSyBZ0PV4OYEUdt2p105ebNT6KpUYKzE0eg0" 
+CHAVE_IA = "AIzaSyBQbI2tl15wUq7rEALxGe0RXNGCelUeWF8" 
 genai.configure(api_key=CHAVE_IA)
 
 DB_PATH = "dados.db"
