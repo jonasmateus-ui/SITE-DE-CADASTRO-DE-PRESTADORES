@@ -5,8 +5,7 @@ import os
 
 app = Flask(__name__)
 
-# --- CONFIGURAÇÃO DA IA (GEMINI) ---
-# Coloque sua chave entre as aspas abaixo
+# --- CONFIGURAÇÃO DA IA ---
 CHAVE_IA = "SUA_CHAVE_AQUI" 
 genai.configure(api_key=CHAVE_IA)
 
@@ -73,7 +72,7 @@ def gerar_bio():
         dados = request.get_json()
         servico = dados.get('servico')
         model = genai.GenerativeModel('gemini-1.5-flash')
-        prompt = f"Escreva uma bio profissional curta para um {servico} autônomo."
+        prompt = f"Escreva uma bio profissional curta para um {servico}."
         response = model.generate_content(prompt)
         return jsonify({"bio_sugerida": response.text})
     except Exception as e:

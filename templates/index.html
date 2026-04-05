@@ -3,17 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Conecta Comunidade | ADS</title>
+    <title>Conecta Comunidade</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
 
     <header>
-        <h1>Conecta Comunidade</h1>
-        <p>Encontre o profissional certo para o que você precisa.</p>
+        <h1>Conecta Comunidade 🚀</h1>
         <form action="/" method="GET" class="search-box">
-            <input type="text" name="busca" placeholder="Ex: Eletricista, Limpeza..." value="{{ busca }}">
-            <button type="submit">Pesquisar Profissional</button>
+            <input type="text" name="busca" placeholder="O que você procura? (ex: TI)" value="{{ busca }}">
+            <button type="submit">Pesquisar</button>
         </form>
     </header>
 
@@ -21,27 +20,22 @@
         
         {% if sucesso == 'true' %}
         <section class="card-sucesso">
-            <h2>🎉 Parabéns!</h2>
-            <p>Seu cadastro foi realizado com sucesso. Agora os clientes podem te encontrar!</p>
-            <button onclick="window.location.href='/'" class="btn-ia">Voltar ao Início</button>
+            <h2>🎉 Tudo pronto!</h2>
+            <p>Seu cadastro foi realizado com sucesso.</p>
+            <button onclick="window.location.href='/'" class="btn-ia">Voltar</button>
         </section>
         {% endif %}
 
         {% if sucesso != 'true' %}
         <section class="card">
-            <h2>Sou Prestador</h2>
-            <p>Cadastre seu serviço abaixo:</p>
+            <h2>Cadastre-se</h2>
             <form action="/cadastrar" method="POST">
-                <input type="text" name="nome" required placeholder="Seu Nome Completo">
+                <input type="text" name="nome" required placeholder="Seu Nome">
                 <input type="text" id="servico_input" name="servico" required placeholder="Sua Profissão">
-                <input type="text" name="local" required placeholder="Sua Cidade/Bairro">
+                <input type="text" name="local" required placeholder="Seu Bairro">
+                <textarea id="bio_input" name="bio" rows="4" placeholder="Sua experiência..."></textarea>
                 
-                <textarea id="bio_input" name="bio" rows="4" placeholder="Conte sobre sua experiência..."></textarea>
-                
-                <button type="button" class="btn-ia" onclick="gerarBioComIA()">
-                    ✨ Sugerir Bio com Inteligência Artificial
-                </button>
-
+                <button type="button" class="btn-ia" onclick="gerarBioComIA()">✨ Gerar Bio com IA</button>
                 <button type="submit" class="btn-salvar">Finalizar Cadastro</button>
             </form>
         </section>
@@ -49,17 +43,16 @@
 
         {% if busca %}
         <section>
-            <h2>Resultados da Busca:</h2>
+            <h2>Resultados:</h2>
             <div class="lista-grids">
                 {% for p in prestadores %}
                 <div class="prestador-card">
                     <h3>{{ p.nome }}</h3>
-                    <p><strong>Serviço:</strong> {{ p.servico }}</p>
-                    <p><strong>Local:</strong> {{ p.local }}</p>
+                    <p><strong>{{ p.servico }}</strong> - {{ p.local }}</p>
                     <p class="bio-text">{{ p.bio }}</p>
                 </div>
                 {% else %}
-                <p>Nenhum profissional encontrado para "{{ busca }}".</p>
+                <p>Nenhum resultado para "{{ busca }}".</p>
                 {% endfor %}
             </div>
         </section>
@@ -69,22 +62,17 @@
     <script>
         async function gerarBioComIA() {
             const servico = document.getElementById('servico_input').value;
+            if (!servico) { alert("Digite a profissão primeiro!"); return; }
             const btn = document.querySelector('.btn-ia');
-            if (!servico) { alert("Digite sua profissão primeiro!"); return; }
-            btn.innerText = "🤖 Pensando...";
-            try {
-                const response = await fetch('/gerar_bio', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ servico: servico })
-                });
-                const data = await response.json();
-                document.getElementById('bio_input').value = data.bio_sugerida || "Erro ao gerar bio.";
-            } catch {
-                alert("Erro ao conectar com a IA.");
-            } finally {
-                btn.innerText = "✨ Sugerir Bio com Inteligência Artificial";
-            }
+            btn.innerText = "🤖 Criando...";
+            const response = await fetch('/gerar_bio', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ servico: servico })
+            });
+            const data = await response.json();
+            document.getElementById('bio_input').value = data.bio_sugerida;
+            btn.innerText = "✨ Gerar Bio com IA";
         }
     </script>
 </body>
