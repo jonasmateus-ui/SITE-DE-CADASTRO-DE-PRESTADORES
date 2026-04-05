@@ -1,12 +1,20 @@
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request, redirect, url_for, jsonify
 import sqlite3
+import google.generativeai as genai
 import os
 
 app = Flask(__name__)
 
-# Configuração e Criação do Banco de Dados SQLite
+# --- CONFIGURAÇÃO DA IA (GEMINI) ---
+# Substitua pelo sua chave real entre as aspas
+CHAVE_IA = "SUA_CHAVE_AQUI" 
+genai.configure(api_key=CHAVE_IA)
+
+# Configuração do Banco de Dados
+DB_PATH = "dados.db"
+
 def init_db():
-    conn = sqlite3.connect('dados.db')
+    conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS prestadores (
@@ -20,21 +28,18 @@ def init_db():
     conn.commit()
     conn.close()
 
-# CHAMADA CRUCIAL: Inicializa o banco sempre que o app carregar
+# Inicializa o banco sempre que o app carregar
 init_db()
 
 @app.route('/')
 def index():
-    # Agora a página inicial também precisa buscar os dados para exibir
-    conn = sqlite3.connect('dados.db')
+    conn = sqlite3.connect(DB_PATH)
+    conn.row_factory = sqlite3.Row
     cursor = conn.cursor()
-    cursor.execute('SELECT nome, servico, local, bio FROM prestadores')
-    todos = cursor.fetchall()
+    cursor.execute("SELECT * FROM prestadores ORDER BY id DESC")
+    prestadores = cursor.fetchall()
     conn.close()
-    
-    # Converte para dicionário para facilitar no HTML
-    lista_profissionais = [{'nome': r[0], 'servico': r[1], 'local': r[2], 'bio': r[3]} for r in todos]
-    return render_template('index.html', resultados=lista_profissionais)
+    return render_template("index.html", prestadores=prestadores)
 
 @app.route('/cadastrar', methods=['POST'])
 def cadastrar():
@@ -43,36 +48,36 @@ def cadastrar():
     local = request.form.get('local')
     bio = request.form.get('bio')
 
-    # Validação simples para evitar erro de dados vazios
-    if not nome or not servico:
-        return redirect(url_for('index'))
-
-    try:
-        conn = sqlite3.connect('dados.db')
-        cursor = conn.cursor()
-        cursor.execute('INSERT INTO prestadores (nome, servico, local, bio) VALUES (?, ?, ?, ?)', 
-                       (nome, servico, local, bio))
-        conn.commit()
-        conn.close()
-    except Exception as e:
-        print(f"Erro no Banco: {e}")
-        return "Erro interno ao salvar", 500
-        
+    if nome and servico:
+        try:
+            conn = sqlite3.connect(DB_PATH)
+            cursor = conn.cursor()
+            cursor.execute('INSERT INTO prestadores (nome, servico, local, bio) VALUES (?, ?, ?, ?)', 
+                           (nome, servico, local, bio))
+            conn.commit()
+            conn.close()
+        except Exception as e:
+            print(f"Erro ao salvar: {e}")
+    
     return redirect(url_for('index'))
 
-@app.route('/buscar')
-def buscar():
-    profissao = request.args.get('profissao', '')
-    
-    conn = sqlite3.connect('dados.db')
-    cursor = conn.cursor()
-    cursor.execute("SELECT nome, servico, local, bio FROM prestadores WHERE servico LIKE ?", 
-                   ('%' + profissao + '%',))
-    resultados = cursor.fetchall()
-    conn.close()
+# --- ROTA DA IA PARA GERAR BIO ---
+@app.route('/gerar_bio', methods=['POST'])
+def gerar_bio():
+    try:
+        dados = request.get_json()
+        servico = dados.get('servico')
+        
+        if not servico:
+            return jsonify({"erro": "Serviço não informado"}), 400
 
-    lista_profissionais = [{'nome': r[0], 'servico': r[1], 'local': r[2], 'bio': r[3]} for r in resultados]
-    return render_template('index.html', resultados=lista_profissionais)
+        model = genai.GenerativeModel('gemini-1.5-flash')
+        prompt = f"Escreva uma bio profissional curta e vendedora para um {servico}. Seja direto."
+        
+        response = model.generate_content(prompt)
+        return jsonify({"bio_sugerida": response.text})
+    except Exception as e:
+        return jsonify({"erro": str(e)}), 500
 
 if __name__ == '__main__':
     app.run(debug=True)

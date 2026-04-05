@@ -3,77 +3,63 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DivulgaPrest | Cadastro com IA</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-    <title>Conecta Comunidade - ADS</title>
 </head>
 <body>
 
     <header>
-        <h1>Conecta Comunidade</h1>
-        <p>A plataforma que une quem precisa com quem sabe fazer.</p>
+        <h1>DivulgaPrest 🚀</h1>
+        <p>Conectando profissionais e clientes</p>
     </header>
 
-    <div class="container">
-        <section class="box">
-            <h2>Sou Cliente</h2>
-            <p>Procure por profissionais qualificados na sua região.</p>
-            <form action="/buscar" method="get">
-                <input type="text" name="profissao" placeholder="Ex: Pedreiro, TI, Faxina..." required>
-                <button type="submit" class="btn-cliente">Pesquisar Profissional</button>
+    <main class="container">
+        <section class="card">
+            <h2>Cadastrar Novo Profissional</h2>
+            <form action="/cadastrar" method="POST">
+                <div class="input-group">
+                    <label>Nome Completo:</label>
+                    <input type="text" name="nome" required placeholder="Ex: Jonas Araújo">
+                </div>
+
+                <div class="input-group">
+                    <label>Profissão/Serviço:</label>
+                    <input type="text" id="servico_input" name="servico" required placeholder="Ex: Encanador, Desenvolvedor Python">
+                </div>
+
+                <div class="input-group">
+                    <label>Localização:</label>
+                    <input type="text" name="local" required placeholder="Ex: São Paulo - SP">
+                </div>
+
+                <div class="input-group">
+                    <label>Bio Profissional:</label>
+                    <textarea id="bio_input" name="bio" rows="4" placeholder="Escreva sobre você ou use a IA abaixo..."></textarea>
+                    
+                    <button type="button" class="btn-ia" onclick="gerarBioComIA()">
+                        ✨ Sugerir Bio com Inteligência Artificial
+                    </button>
+                </div>
+
+                <button type="submit" class="btn-salvar">Salvar Cadastro</button>
             </form>
         </section>
 
-        <section class="box">
-            <h2>Sou Prestador</h2>
-            <p>Cadastre seu serviço e aumente sua clientela hoje mesmo.</p>
-            
-            <button id="btnAbrir" class="btn-prestador">Quero me Cadastrar</button>
+        <hr>
 
-            <div id="formCadastro" style="display: none; margin-top: 25px; text-align: left;">
-                <form action="/cadastrar" method="POST">
-                    <input type="text" name="nome" placeholder="Seu Nome Completo" required>
-                    <input type="text" name="servico" placeholder="Sua Profissão" required>
-                    <input type="text" name="local" placeholder="Seu Bairro/Cidade" required>
-                    <textarea name="bio" placeholder="Conte um pouco sobre sua experiência..."></textarea>
-                    <button type="submit" class="btn-prestador">Salvar meu Perfil</button>
-                </form>
+        <section>
+            <h2>Profissionais Cadastrados</h2>
+            <div class="lista-grids">
+                {% for p in prestadores %}
+                <div class="prestador-card">
+                    <h3>{{ p.nome }}</h3>
+                    <p><strong>Serviço:</strong> {{ p.servico }}</p>
+                    <p><strong>Local:</strong> {{ p.local }}</p>
+                    <p class="bio-text">{{ p.bio }}</p>
+                </div>
+                {% else %}
+                <p>Nenhum profissional cadastrado ainda.</p>
+                {% endfor %}
             </div>
         </section>
-    </div>
-
-    {% if resultados %}
-    <div style="width: 80%; max-width: 1000px; margin-bottom: 50px;">
-        <h2 style="text-align: center; margin-bottom: 30px;">Resultados da Busca</h2>
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
-            {% for p in resultados %}
-            <div style="background: white; padding: 25px; border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); border-left: 6px solid #27ae60;">
-                <h3 style="margin: 0; color: #2c3e50;">{{ p.nome }}</h3>
-                <p style="margin: 5px 0; color: #27ae60; font-weight: bold;">{{ p.servico }}</p>
-                <small style="color: #95a5a6;">📍 {{ p.local }}</small>
-                <p style="margin-top: 15px; font-size: 0.9em; color: #34495e;">{{ p.bio }}</p>
-            </div>
-            {% endfor %}
-        </div>
-    </div>
-    {% endif %}
-
-    <script>
-        // Função para mostrar o formulário mantendo a simetria
-        const btn = document.getElementById('btnAbrir');
-        const form = document.getElementById('formCadastro');
-
-        btn.onclick = function() {
-            if (form.style.display === 'none') {
-                form.style.display = 'block';
-                btn.innerText = 'Fechar Cadastro';
-                btn.style.backgroundColor = '#e74c3c'; // Muda para vermelho
-            } else {
-                form.style.display = 'none';
-                btn.innerText = 'Quero me Cadastrar';
-                btn.style.backgroundColor = '#27ae60'; // Volta para verde
-            }
-        };
-    </script>
-
-</body>
-</html>
+    </main>
