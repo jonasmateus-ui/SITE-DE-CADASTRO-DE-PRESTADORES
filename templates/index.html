@@ -3,52 +3,53 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DivulgaPrest | Cadastro com IA</title>
+    <title>Conecta Comunidade | ADS</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
 
     <header>
-        <h1>DivulgaPrest 🚀</h1>
-        <p>Conectando profissionais e clientes</p>
+        <h1>Conecta Comunidade</h1>
+        <p>Encontre o profissional certo para o que você precisa.</p>
+        <form action="/" method="GET" class="search-box">
+            <input type="text" name="busca" placeholder="Ex: Eletricista, Limpeza..." value="{{ busca }}">
+            <button type="submit">Pesquisar Profissional</button>
+        </form>
     </header>
 
     <main class="container">
+        
+        {% if sucesso == 'true' %}
+        <section class="card-sucesso">
+            <h2>🎉 Parabéns!</h2>
+            <p>Seu cadastro foi realizado com sucesso. Agora os clientes podem te encontrar!</p>
+            <button onclick="window.location.href='/'" class="btn-ia">Voltar ao Início</button>
+        </section>
+        {% endif %}
+
+        {% if sucesso != 'true' %}
         <section class="card">
-            <h2>Cadastrar Novo Profissional</h2>
+            <h2>Sou Prestador</h2>
+            <p>Cadastre seu serviço abaixo:</p>
             <form action="/cadastrar" method="POST">
-                <div class="input-group">
-                    <label>Nome Completo:</label>
-                    <input type="text" name="nome" required placeholder="Ex: Jonas Araújo">
-                </div>
+                <input type="text" name="nome" required placeholder="Seu Nome Completo">
+                <input type="text" id="servico_input" name="servico" required placeholder="Sua Profissão">
+                <input type="text" name="local" required placeholder="Sua Cidade/Bairro">
+                
+                <textarea id="bio_input" name="bio" rows="4" placeholder="Conte sobre sua experiência..."></textarea>
+                
+                <button type="button" class="btn-ia" onclick="gerarBioComIA()">
+                    ✨ Sugerir Bio com Inteligência Artificial
+                </button>
 
-                <div class="input-group">
-                    <label>Profissão/Serviço:</label>
-                    <input type="text" id="servico_input" name="servico" required placeholder="Ex: Encanador, Desenvolvedor Python">
-                </div>
-
-                <div class="input-group">
-                    <label>Localização:</label>
-                    <input type="text" name="local" required placeholder="Ex: São Paulo - SP">
-                </div>
-
-                <div class="input-group">
-                    <label>Bio Profissional:</label>
-                    <textarea id="bio_input" name="bio" rows="4" placeholder="Escreva sobre você ou use a IA abaixo..."></textarea>
-                    
-                    <button type="button" class="btn-ia" onclick="gerarBioComIA()">
-                        ✨ Sugerir Bio com Inteligência Artificial
-                    </button>
-                </div>
-
-                <button type="submit" class="btn-salvar">Salvar Cadastro</button>
+                <button type="submit" class="btn-salvar">Finalizar Cadastro</button>
             </form>
         </section>
+        {% endif %}
 
-        <hr>
-
+        {% if busca %}
         <section>
-            <h2>Profissionais Cadastrados</h2>
+            <h2>Resultados da Busca:</h2>
             <div class="lista-grids">
                 {% for p in prestadores %}
                 <div class="prestador-card">
@@ -58,8 +59,33 @@
                     <p class="bio-text">{{ p.bio }}</p>
                 </div>
                 {% else %}
-                <p>Nenhum profissional cadastrado ainda.</p>
+                <p>Nenhum profissional encontrado para "{{ busca }}".</p>
                 {% endfor %}
             </div>
         </section>
+        {% endif %}
     </main>
+
+    <script>
+        async function gerarBioComIA() {
+            const servico = document.getElementById('servico_input').value;
+            const btn = document.querySelector('.btn-ia');
+            if (!servico) { alert("Digite sua profissão primeiro!"); return; }
+            btn.innerText = "🤖 Pensando...";
+            try {
+                const response = await fetch('/gerar_bio', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ servico: servico })
+                });
+                const data = await response.json();
+                document.getElementById('bio_input').value = data.bio_sugerida || "Erro ao gerar bio.";
+            } catch {
+                alert("Erro ao conectar com a IA.");
+            } finally {
+                btn.innerText = "✨ Sugerir Bio com Inteligência Artificial";
+            }
+        }
+    </script>
+</body>
+</html>

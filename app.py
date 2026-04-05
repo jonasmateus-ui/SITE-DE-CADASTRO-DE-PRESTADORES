@@ -6,11 +6,10 @@ import os
 app = Flask(__name__)
 
 # --- CONFIGURAÇÃO DA IA (GEMINI) ---
-# Substitua pelo sua chave real entre as aspas
+# Coloque sua chave entre as aspas abaixo
 CHAVE_IA = "SUA_CHAVE_AQUI" 
 genai.configure(api_key=CHAVE_IA)
 
-# Configuração do Banco de Dados
 DB_PATH = "dados.db"
 
 def init_db():
@@ -28,18 +27,24 @@ def init_db():
     conn.commit()
     conn.close()
 
-# Inicializa o banco sempre que o app carregar
 init_db()
 
 @app.route('/')
 def index():
-    conn = sqlite3.connect(DB_PATH)
-    conn.row_factory = sqlite3.Row
-    cursor = conn.cursor()
-    cursor.execute("SELECT * FROM prestadores ORDER BY id DESC")
-    prestadores = cursor.fetchall()
-    conn.close()
-    return render_template("index.html", prestadores=prestadores)
+    busca = request.args.get('busca', '')
+    sucesso = request.args.get('sucesso', '')
+    
+    prestadores = []
+    if busca:
+        conn = sqlite3.connect(DB_PATH)
+        conn.row_factory = sqlite3.Row
+        cursor = conn.cursor()
+        query = "SELECT * FROM prestadores WHERE nome LIKE ? OR servico LIKE ?"
+        cursor.execute(query, (f'%{busca}%', f'%{busca}%'))
+        prestadores = cursor.fetchall()
+        conn.close()
+
+    return render_template("index.html", prestadores=prestadores, busca=busca, sucesso=sucesso)
 
 @app.route('/cadastrar', methods=['POST'])
 def cadastrar():
@@ -56,24 +61,19 @@ def cadastrar():
                            (nome, servico, local, bio))
             conn.commit()
             conn.close()
+            return redirect(url_for('index', sucesso='true'))
         except Exception as e:
             print(f"Erro ao salvar: {e}")
     
     return redirect(url_for('index'))
 
-# --- ROTA DA IA PARA GERAR BIO ---
 @app.route('/gerar_bio', methods=['POST'])
 def gerar_bio():
     try:
         dados = request.get_json()
         servico = dados.get('servico')
-        
-        if not servico:
-            return jsonify({"erro": "Serviço não informado"}), 400
-
         model = genai.GenerativeModel('gemini-1.5-flash')
-        prompt = f"Escreva uma bio profissional curta e vendedora para um {servico}. Seja direto."
-        
+        prompt = f"Escreva uma bio profissional curta para um {servico} autônomo."
         response = model.generate_content(prompt)
         return jsonify({"bio_sugerida": response.text})
     except Exception as e:
