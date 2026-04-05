@@ -84,9 +84,11 @@
                     bioInput.value = data.bio_sugerida;
                 } else {
                     bioInput.value = "Erro ao conectar com a IA. Tente novamente.";
+                    console.error("Erro da IA:", data.erro);
                 }
             } catch (e) {
                 alert("Erro de conexão com o servidor local.");
+                console.error(e);
             } finally {
                 btn.innerText = "✨ Sugerir Bio com IA";
             }
