@@ -1,43 +1,12 @@
-<!DOCTYPE html>
-<html lang="pt-br">
-<head>
-    <meta charset="UTF-8">
-    <title>Conecta Comunidade</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-</head>
-<body>
-    <div class="hero">
-        <h1>Bem-vindo ao Conecta</h1>
-        <div class="opcoes-acesso">
-            <a href="/login_cliente" class="btn-principal">Sou Cliente</a>
-            <a href="/login_prestador" class="btn-secundario">Sou Prestador</a>
-        </div>
-    </div>
-
-    <div id="chat-tobias" class="chat-container">
-        <div class="chat-header">🤖 Tobias AI</div>
-        <div id="chat-mensagens" class="chat-body"></div>
-        <div class="chat-input">
-            <input type="text" id="msg-input" placeholder="Pergunte ao Tobias...">
-            <button onclick="enviarParaTobias()">enviar</button>
-        </div>
-    </div>
-    
-    <script>
-        async function enviarParaTobias() {
-            const input = document.getElementById('msg-input');
-            const box = document.getElementById('chat-mensagens');
-            box.innerHTML += `<p><b>Você:</b> ${input.value}</p>`;
-            
-            const res = await fetch('/tobias', {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({ mensagem: input.value })
-            });
-            const data = await res.json();
-            box.innerHTML += `<p><b>Tobias:</b> ${data.resposta}</p>`;
-            input.value = '';
-        }
-    </script>
-</body>
-</html>
+<script>
+    async function falarComTobias() {
+        const msg = document.getElementById('campo-tobias').value;
+        const res = await fetch('/tobias', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({ mensagem: msg })
+        });
+        const data = await res.json();
+        alert("Tobias diz: " + data.resposta); // Ou exiba onde você preferir no seu layout
+    }
+</script>
