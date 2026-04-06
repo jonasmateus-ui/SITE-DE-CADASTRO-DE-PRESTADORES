@@ -2,30 +2,23 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Conecta Comunidade</title>
+    <title>Conecta Comunidade - Cadastro</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
-
     <header>
         <h1>Conecta Comunidade</h1>
-        <form action="/" method="GET" class="search-box">
-            <input type="text" name="busca" placeholder="Ex: Eletricista, TI, Pintor..." value="{{ busca }}">
+        <form action="/pesquisar" method="GET" class="search-box" target="_blank">
+            <input type="text" name="busca" placeholder="Ex: Eletricista, Pedreiro...">
             <button type="submit">Pesquisar Profissional</button>
         </form>
     </header>
 
     <main class="container">
         {% if sucesso == 'true' %}
-        <section class="card-sucesso">
-            <h2>🎉 Cadastro Realizado!</h2>
-            <p>Seu serviço agora está visível para a comunidade.</p>
-            <button onclick="window.location.href='/'" class="btn-ia">Voltar</button>
-        </section>
+        <div class="card-sucesso"><h2>✅ Cadastrado com Sucesso!</h2></div>
         {% endif %}
 
-        {% if sucesso != 'true' %}
         <section class="card">
             <h2>Quero me cadastrar</h2>
             <form action="/cadastrar" method="POST">
@@ -33,65 +26,26 @@
                 <input type="text" id="servico_input" name="servico" required placeholder="Sua Profissão">
                 <input type="text" name="local" required placeholder="Sua Cidade/Bairro">
                 <textarea id="bio_input" name="bio" rows="4" placeholder="Conte sobre sua experiência..."></textarea>
-                
                 <button type="button" class="btn-ia" onclick="gerarBioComIA()">✨ Sugerir Bio com IA</button>
                 <button type="submit" class="btn-salvar">Finalizar Cadastro</button>
             </form>
         </section>
-        {% endif %}
-
-        {% if busca %}
-        <section>
-            <h2>Resultados para: "{{ busca }}"</h2>
-            <div class="lista-grids">
-                {% for p in prestadores %}
-                <div class="prestador-card">
-                    <h3>{{ p.nome }}</h3>
-                    <p><strong>Serviço:</strong> {{ p.servico }}</p>
-                    <p><strong>Local:</strong> {{ p.local }}</p>
-                    <p class="bio-text">{{ p.bio }}</p>
-                </div>
-                {% else %}
-                <p>Nenhum profissional encontrado.</p>
-                {% endfor %}
-            </div>
-        </section>
-        {% endif %}
     </main>
 
     <script>
         async function gerarBioComIA() {
             const servico = document.getElementById('servico_input').value;
             const bioInput = document.getElementById('bio_input');
-            const btn = document.querySelector('.btn-ia');
-
-            if (!servico) { 
-                alert("Por favor, digite sua profissão primeiro!"); 
-                return; 
-            }
-            
-            btn.innerText = "🤖 Criando...";
+            if (!servico) { alert("Digite a profissão!"); return; }
             try {
                 const response = await fetch('/gerar_bio', {
                     method: 'POST',
                     headers: {'Content-Type': 'application/json'},
                     body: JSON.stringify({ servico: servico })
                 });
-                
                 const data = await response.json();
-                
-                if (data.bio_sugerida) {
-                    bioInput.value = data.bio_sugerida;
-                } else {
-                    bioInput.value = "Erro ao conectar com a IA. Tente novamente.";
-                    console.error("Erro da IA:", data.erro);
-                }
-            } catch (e) {
-                alert("Erro de conexão com o servidor local.");
-                console.error(e);
-            } finally {
-                btn.innerText = "✨ Sugerir Bio com IA";
-            }
+                bioInput.value = data.bio_sugerida || "Erro na IA";
+            } catch (e) { alert("Erro de conexão"); }
         }
     </script>
 </body>

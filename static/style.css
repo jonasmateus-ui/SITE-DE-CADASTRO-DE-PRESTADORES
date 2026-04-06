@@ -1,105 +1,25 @@
-:root {
-    --primary: #2c3e50;
-    --accent: #e74c3c;
-    --success: #27ae60;
-    --ia-color: #8e44ad;
-    --bg: #f4f7f6;
+:root { --primary: #2c3e50; --ia-color: #8e44ad; --success: #27ae60; }
+body { font-family: sans-serif; margin: 0; padding: 0; }
+.container { max-width: 1000px; margin: 0 auto; padding: 20px; }
+header { background: var(--primary); color: white; padding: 30px; text-align: center; }
+
+.search-box { display: flex; gap: 10px; justify-content: center; margin-top: 15px; }
+.search-box input { padding: 10px; width: 300px; border-radius: 5px; border: none; }
+
+.card { background: white; padding: 20px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+input, textarea { width: 100%; padding: 10px; margin: 8px 0; border: 1px solid #ddd; border-radius: 5px; }
+
+/* EFEITO DE MOVIMENTO NOS CARDS */
+.lista-grids { display: flex; flex-wrap: wrap; gap: 20px; justify-content: center; margin-top: 30px; }
+.prestador-card { 
+    background: white; width: 250px; padding: 20px; border-radius: 12px; 
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1); border-top: 4px solid var(--ia-color);
+    transition: transform 0.3s ease, box-shadow 0.3s ease; cursor: pointer;
+}
+.prestador-card:hover { 
+    transform: translateY(-10px); 
+    box-shadow: 0 12px 20px rgba(0,0,0,0.2); 
 }
 
-body {
-    font-family: 'Segoe UI', sans-serif;
-    background-color: var(--bg);
-    margin: 0;
-    padding: 20px;
-}
-
-.container {
-    max-width: 900px;
-    margin: 0 auto;
-}
-
-header {
-    text-align: center;
-    background-color: var(--primary);
-    color: white;
-    padding: 40px 20px;
-    border-radius: 15px;
-    margin-bottom: 30px;
-}
-
-.search-box {
-    margin-top: 20px;
-    display: flex;
-    gap: 10px;
-    justify-content: center;
-}
-
-.search-box input {
-    padding: 12px;
-    border-radius: 8px;
-    border: none;
-    width: 60%;
-}
-
-.card, .card-sucesso {
-    background-color: white;
-    padding: 30px;
-    border-radius: 15px;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-    margin-bottom: 30px;
-}
-
-.card-sucesso {
-    border: 3px solid var(--success);
-    text-align: center;
-}
-
-input, textarea {
-    width: 100%;
-    padding: 12px;
-    margin: 10px 0;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    box-sizing: border-box;
-}
-
-.btn-salvar {
-    width: 100%;
-    background-color: var(--success);
-    color: white;
-    border: none;
-    padding: 15px;
-    border-radius: 8px;
-    font-size: 16px;
-    cursor: pointer;
-    font-weight: bold;
-}
-
-.btn-ia {
-    background-color: white;
-    color: var(--ia-color);
-    border: 2px solid var(--ia-color);
-    padding: 10px;
-    border-radius: 8px;
-    cursor: pointer;
-    margin-bottom: 10px;
-    font-weight: 600;
-}
-
-.lista-grids {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 20px;
-}
-
-.prestador-card {
-    background-color: white;
-    padding: 20px;
-    border-radius: 12px;
-    border-top: 5px solid var(--accent);
-}
-
-.bio-text {
-    font-style: italic;
-    color: #7f8c8d;
-}
+.btn-salvar { background: var(--success); color: white; border: none; padding: 12px; width: 100%; cursor: pointer; }
+.btn-ia { border: 1px solid var(--ia-color); color: var(--ia-color); background: none; padding: 8px; cursor: pointer; }
