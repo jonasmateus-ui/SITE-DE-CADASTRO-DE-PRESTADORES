@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Cadastro de Prestador</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <div class="card">
+            <h2>Cadastro de Profissional</h2>
+            <form action="/salvar_prestador" method="POST">
+                <input type="text" name="nome" required placeholder="Nome Completo">
+                <input type="text" name="profissao" required placeholder="Sua Profissão (Ex: Pedreiro, TI)">
+                <input type="text" name="bairro" required placeholder="Seu Bairro Principal">
+                <input type="number" name="raio" required placeholder="Raio de Atendimento (km)">
+                <input type="text" name="contato" required placeholder="WhatsApp/Telefone">
+                <input type="email" name="email" required placeholder="E-mail para Login">
+                <input type="password" name="senha" required placeholder="Crie uma Senha">
+                <textarea name="bio" rows="4" placeholder="Fale um pouco sobre seu trabalho..."></textarea>
+                <button type="submit" class="btn-salvar">Cadastrar meu Serviço</button>
+            </form>
+            <a href="/">Voltar ao início</a>
+        </div>
+    </div>
+</body>
+</html>

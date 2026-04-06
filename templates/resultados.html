@@ -2,26 +2,22 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <title>Prestadores Disponíveis</title>
+    <title>Resultados</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
-<body style="background-color: #f0f2f5;">
-    <main class="container">
-        <h2 style="text-align: center; margin-top: 30px;">Profissionais Encontrados</h2>
+<body>
+    <div class="container">
+        <h2>Prestadores em sua região</h2>
         <div class="lista-grids">
             {% for p in prestadores %}
             <div class="prestador-card">
                 <h3>{{ p.nome }}</h3>
-                <p><strong>🛠️ Serviço:</strong> {{ p.servico }}</p>
-                <p><strong>📍 Local:</strong> {{ p.local }}</p>
-                <div style="background: #f9f9f9; padding: 10px; border-radius: 8px; margin-top: 10px;">
-                    <p style="font-size: 0.9em; color: #555;">{{ p.bio }}</p>
-                </div>
+                <p><b>Profissão:</b> {{ p.profissao }}</p>
+                <p><b>Bairro:</b> {{ p.bairro }}</p>
+                <a href="/contratar/{{ p.id }}" class="btn-salvar">Contratar</a>
             </div>
-            {% else %}
-            <p style="text-align: center;">Nenhum profissional cadastrado.</p>
             {% endfor %}
         </div>
-    </main>
+    </div>
 </body>
 </html>

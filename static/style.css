@@ -1,25 +1,22 @@
-:root { --primary: #2c3e50; --ia-color: #8e44ad; --success: #27ae60; }
-body { font-family: sans-serif; margin: 0; padding: 0; }
-.container { max-width: 1000px; margin: 0 auto; padding: 20px; }
-header { background: var(--primary); color: white; padding: 30px; text-align: center; }
-
-.search-box { display: flex; gap: 10px; justify-content: center; margin-top: 15px; }
-.search-box input { padding: 10px; width: 300px; border-radius: 5px; border: none; }
-
-.card { background: white; padding: 20px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
-input, textarea { width: 100%; padding: 10px; margin: 8px 0; border: 1px solid #ddd; border-radius: 5px; }
+:root { --main: #2563eb; --accent: #8b5cf6; }
+body { font-family: 'Inter', sans-serif; margin: 0; background: #f8fafc; }
 
 /* EFEITO DE MOVIMENTO NOS CARDS */
-.lista-grids { display: flex; flex-wrap: wrap; gap: 20px; justify-content: center; margin-top: 30px; }
-.prestador-card { 
-    background: white; width: 250px; padding: 20px; border-radius: 12px; 
-    box-shadow: 0 4px 10px rgba(0,0,0,0.1); border-top: 4px solid var(--ia-color);
-    transition: transform 0.3s ease, box-shadow 0.3s ease; cursor: pointer;
+.lista-grids { display: flex; flex-wrap: wrap; gap: 20px; justify-content: center; }
+.prestador-card {
+    background: white; width: 260px; padding: 20px; border-radius: 12px;
+    box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+    transition: all 0.3s ease; /* Suaviza o movimento */
 }
-.prestador-card:hover { 
-    transform: translateY(-10px); 
-    box-shadow: 0 12px 20px rgba(0,0,0,0.2); 
+.prestador-card:hover {
+    transform: translateY(-10px) scale(1.05); /* Efeito de pulo */
+    box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1);
 }
 
-.btn-salvar { background: var(--success); color: white; border: none; padding: 12px; width: 100%; cursor: pointer; }
-.btn-ia { border: 1px solid var(--ia-color); color: var(--ia-color); background: none; padding: 8px; cursor: pointer; }
+/* CHAT FLUTUANTE ESTILO MODERNO */
+.chat-container {
+    position: fixed; bottom: 20px; right: 20px; width: 300px;
+    background: white; border-radius: 15px; box-shadow: 0 10px 15px rgba(0,0,0,0.2);
+}
+.chat-header { background: var(--main); color: white; padding: 10px; border-radius: 15px 15px 0 0; }
+.chat-body { height: 200px; overflow-y: auto; padding: 10px; font-size: 14px; }

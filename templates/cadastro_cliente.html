@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Cadastro de Cliente</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <div class="card">
+            <h2>Criar Conta de Cliente</h2>
+            <form action="/salvar_cliente" method="POST">
+                <input type="text" name="nome" required placeholder="Nome Completo">
+                <input type="email" name="email" required placeholder="E-mail">
+                <input type="password" name="senha" required placeholder="Crie uma Senha">
+                <button type="submit" class="btn-salvar">Finalizar Cadastro</button>
+            </form>
+            <a href="/">Voltar ao início</a>
+        </div>
+    </div>
+</body>
+</html>

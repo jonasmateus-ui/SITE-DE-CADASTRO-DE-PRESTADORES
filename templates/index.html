@@ -2,50 +2,41 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <title>Conecta Comunidade - Cadastro</title>
+    <title>Conecta Comunidade</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
-    <header>
-        <h1>Conecta Comunidade</h1>
-        <form action="/pesquisar" method="GET" class="search-box" target="_blank">
-            <input type="text" name="busca" placeholder="Ex: Eletricista, Pedreiro...">
-            <button type="submit">Pesquisar Profissional</button>
-        </form>
-    </header>
+    <div class="hero">
+        <h1>Bem-vindo ao Conecta</h1>
+        <div class="opcoes-acesso">
+            <a href="/login_cliente" class="btn-principal">Sou Cliente</a>
+            <a href="/login_prestador" class="btn-secundario">Sou Prestador</a>
+        </div>
+    </div>
 
-    <main class="container">
-        {% if sucesso == 'true' %}
-        <div class="card-sucesso"><h2>✅ Cadastrado com Sucesso!</h2></div>
-        {% endif %}
-
-        <section class="card">
-            <h2>Quero me cadastrar</h2>
-            <form action="/cadastrar" method="POST">
-                <input type="text" name="nome" required placeholder="Seu Nome Completo">
-                <input type="text" id="servico_input" name="servico" required placeholder="Sua Profissão">
-                <input type="text" name="local" required placeholder="Sua Cidade/Bairro">
-                <textarea id="bio_input" name="bio" rows="4" placeholder="Conte sobre sua experiência..."></textarea>
-                <button type="button" class="btn-ia" onclick="gerarBioComIA()">✨ Sugerir Bio com IA</button>
-                <button type="submit" class="btn-salvar">Finalizar Cadastro</button>
-            </form>
-        </section>
-    </main>
-
+    <div id="chat-tobias" class="chat-container">
+        <div class="chat-header">🤖 Tobias AI</div>
+        <div id="chat-mensagens" class="chat-body"></div>
+        <div class="chat-input">
+            <input type="text" id="msg-input" placeholder="Pergunte ao Tobias...">
+            <button onclick="enviarParaTobias()">enviar</button>
+        </div>
+    </div>
+    
     <script>
-        async function gerarBioComIA() {
-            const servico = document.getElementById('servico_input').value;
-            const bioInput = document.getElementById('bio_input');
-            if (!servico) { alert("Digite a profissão!"); return; }
-            try {
-                const response = await fetch('/gerar_bio', {
-                    method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({ servico: servico })
-                });
-                const data = await response.json();
-                bioInput.value = data.bio_sugerida || "Erro na IA";
-            } catch (e) { alert("Erro de conexão"); }
+        async function enviarParaTobias() {
+            const input = document.getElementById('msg-input');
+            const box = document.getElementById('chat-mensagens');
+            box.innerHTML += `<p><b>Você:</b> ${input.value}</p>`;
+            
+            const res = await fetch('/tobias', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ mensagem: input.value })
+            });
+            const data = await res.json();
+            box.innerHTML += `<p><b>Tobias:</b> ${data.resposta}</p>`;
+            input.value = '';
         }
     </script>
 </body>

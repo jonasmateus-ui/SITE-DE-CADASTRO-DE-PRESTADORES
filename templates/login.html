@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Login - Conecta</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body class="bg-acesso">
+    <div class="container-acesso">
+        <div class="card shadow">
+            <h2>Acessar Conta</h2>
+            <form action="/login_validar" method="POST">
+                <input type="email" name="email" required placeholder="Seu E-mail">
+                <input type="password" name="senha" required placeholder="Sua Senha">
+                <button type="submit" class="btn-salvar">Entrar</button>
+            </form>
+            <p>Não tem conta? 
+                <a href="/cadastro_cliente">Cadastrar como Cliente</a> ou 
+                <a href="/cadastro_prestador">Cadastrar como Prestador</a>
+            </p>
+        </div>
+    </div>
+</body>
+</html>
