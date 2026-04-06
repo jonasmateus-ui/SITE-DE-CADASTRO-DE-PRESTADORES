@@ -6,7 +6,7 @@ app = Flask(__name__)
 app.secret_key = 'ads_unicid_projeto'
 
 # CONFIGURAÇÃO DO TOBIAS (IA)
-CHAVE_IA = "AIzaSyBQbi2tl15wUq7rEALxGe0RXNGCelUeWF8" # Sua chave atualizada
+CHAVE_IA = "AIzaSyBQbi2tl15wUq7rEALxGe0RXNGCelUeWF8" 
 genai.configure(api_key=CHAVE_IA)
 
 DB_PATH = "dados.db"
@@ -14,12 +14,10 @@ DB_PATH = "dados.db"
 def init_db():
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
-    # Tabela unificada para manter seu banco organizado
+    # Tabela unificada para prestadores
     cursor.execute('''CREATE TABLE IF NOT EXISTS prestadores (
-        id INTEGER PRIMARY KEY AUTOINCREMENT, nome TEXT, email TEXT, senha TEXT,
-        contato TEXT, profissao TEXT, bairro TEXT, raio INTEGER, bio TEXT)''')
-    cursor.execute('''CREATE TABLE IF NOT EXISTS clientes (
-        id INTEGER PRIMARY KEY AUTOINCREMENT, nome TEXT, email TEXT, senha TEXT)''')
+        id INTEGER PRIMARY KEY AUTOINCREMENT, 
+        nome TEXT, profissao TEXT, bairro TEXT, bio TEXT)''')
     conn.commit()
     conn.close()
 
@@ -39,17 +37,19 @@ def pesquisar():
     cursor.execute(query, (f'%{busca}%', f'%{busca}%', f'%{busca}%'))
     prestadores = cursor.fetchall()
     conn.close()
-    return render_template("resultados.html", prestadores=prestadores)
+    return render_template("resultados.html", prestadores=prestadores, busca=busca)
 
-@app.route('/salvar_prestador', methods=['POST'])
-def salvar_prestador():
-    # Coleta os dados do seu formulário original
-    dados = (request.form.get('nome'), request.form.get('email'), request.form.get('senha'),
-             request.form.get('contato'), request.form.get('profissao'), 
-             request.form.get('bairro'), request.form.get('raio'), request.form.get('bio'))
+@app.route('/cadastrar', methods=['POST'])
+def cadastrar():
+    nome = request.form.get('nome')
+    profissao = request.form.get('profissao')
+    bairro = request.form.get('bairro')
+    bio = request.form.get('bio')
+    
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
-    cursor.execute('INSERT INTO prestadores (nome,email,senha,contato,profissao,bairro,raio,bio) VALUES (?,?,?,?,?,?,?,?)', dados)
+    cursor.execute('INSERT INTO prestadores (nome, profissao, bairro, bio) VALUES (?, ?, ?, ?)', 
+                   (nome, profissao, bairro, bio))
     conn.commit()
     conn.close()
     return redirect(url_for('index'))

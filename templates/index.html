@@ -1,12 +1,57 @@
-<script>
-    async function falarComTobias() {
-        const msg = document.getElementById('campo-tobias').value;
-        const res = await fetch('/tobias', {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({ mensagem: msg })
-        });
-        const data = await res.json();
-        alert("Tobias diz: " + data.resposta); // Ou exiba onde você preferir no seu layout
-    }
-</script>
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Conecta Comunidade</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <header>
+        <h1>Conecta Comunidade</h1>
+        <p>A plataforma que une quem precisa com quem sabe fazer.</p>
+    </header>
+
+    <div class="container">
+        <div class="card">
+            <h2>Sou Cliente</h2>
+            <p>Procure por profissionais qualificados na sua região.</p>
+            <form action="/pesquisar" method="GET" target="_blank">
+                <input type="text" name="busca" placeholder="Ex: Pedreiro, TI, Faxina...">
+                <button type="submit" class="btn-pesquisar">Pesquisar Profissional</button>
+            </form>
+        </div>
+
+        <div class="card">
+            <h2>Sou Prestador</h2>
+            <p>Cadastre seu serviço e aumente sua clientela.</p>
+            <form action="/cadastrar" method="POST">
+                <button type="button" class="btn-salvar">Fechar Cadastro</button>
+                <input type="text" name="nome" placeholder="Seu Nome Completo" required>
+                <input type="text" name="profissao" placeholder="Sua Profissão" required>
+                <input type="text" name="bairro" placeholder="Seu Bairro/Cidade" required>
+                <textarea name="bio" rows="3" placeholder="Conte sobre sua experiência..."></textarea>
+                <button type="submit" class="btn-pesquisar">Finalizar Cadastro</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="tobias-box">
+        <b>Tobias AI:</b>
+        <input type="text" id="msg-tobias" placeholder="Pergunte algo...">
+        <button onclick="enviarTobias()" style="cursor:pointer">Enviar</button>
+    </div>
+
+    <script>
+        async function enviarTobias() {
+            const msg = document.getElementById('msg-tobias').value;
+            const res = await fetch('/tobias', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ mensagem: msg })
+            });
+            const data = await res.json();
+            alert("Tobias: " + data.resposta);
+        }
+    </script>
+</body>
+</html>
