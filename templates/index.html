@@ -1,57 +1,86 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-    <meta charset="UTF-8">
-    <title>Conecta Comunidade</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Conecta Comunidade — Profissionais perto de você</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
-    <header>
-        <h1>Conecta Comunidade</h1>
-        <p>A plataforma que une quem precisa com quem sabe fazer.</p>
-    </header>
 
-    <div class="container">
-        <div class="card">
-            <h2>Sou Cliente</h2>
-            <p>Procure por profissionais qualificados na sua região.</p>
-            <form action="/pesquisar" method="GET" target="_blank">
-                <input type="text" name="busca" placeholder="Ex: Pedreiro, TI, Faxina...">
-                <button type="submit" class="btn-pesquisar">Pesquisar Profissional</button>
-            </form>
-        </div>
+<nav>
+  <a href="/" class="nav-logo">Conecta<span>.</span></a>
+  <div class="nav-links">
+    {% if user %}
+      <span style="color:var(--muted);font-size:.85rem">Olá, {{ session.get('nome', user) }}</span>
+      <a href="/logout" class="btn btn-ghost">Sair</a>
+    {% else %}
+      <a href="/login" class="btn btn-ghost">Entrar</a>
+      <a href="/cadastro_cliente" class="btn btn-gold">Cadastrar</a>
+    {% endif %}
+  </div>
+</nav>
 
-        <div class="card">
-            <h2>Sou Prestador</h2>
-            <p>Cadastre seu serviço e aumente sua clientela.</p>
-            <form action="/cadastrar" method="POST">
-                <button type="button" class="btn-salvar">Fechar Cadastro</button>
-                <input type="text" name="nome" placeholder="Seu Nome Completo" required>
-                <input type="text" name="profissao" placeholder="Sua Profissão" required>
-                <input type="text" name="bairro" placeholder="Seu Bairro/Cidade" required>
-                <textarea name="bio" rows="3" placeholder="Conte sobre sua experiência..."></textarea>
-                <button type="submit" class="btn-pesquisar">Finalizar Cadastro</button>
-            </form>
-        </div>
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-tag">✦ Marketplace de Serviços Locais</div>
+  <h1>Encontre ajuda <em>perto de você</em></h1>
+  <p>Conectamos você aos melhores profissionais da sua região de forma rápida e confiável.</p>
+
+  <form class="search-bar" action="/pesquisar">
+    <input name="busca" placeholder="Profissão, nome ou bairro..." autocomplete="off" required>
+    <button type="submit" class="btn btn-gold">Buscar</button>
+  </form>
+</section>
+
+<!-- ACCESS CARDS -->
+<div class="grid-2">
+  <div class="access-card client">
+    <div class="card-icon">👤</div>
+    <h3>Sou Cliente</h3>
+    <p>Encontre profissionais confiáveis para qualquer serviço em minutos.</p>
+    {% if user %}
+      <a href="/pesquisar?busca=" class="btn btn-gold">Buscar profissionais</a>
+    {% else %}
+      <a href="/cadastro_cliente" class="btn btn-gold">Criar conta gratuita</a>
+    {% endif %}
+  </div>
+
+  <div class="access-card provider">
+    <div class="card-icon">🛠️</div>
+    <h3>Sou Prestador</h3>
+    <p>Cadastre seus serviços e alcance clientes na sua região agora mesmo.</p>
+    <a href="/cadastro_prestador" class="btn btn-outline">Divulgar serviço</a>
+  </div>
+</div>
+
+<!-- TOBIAS -->
+<button id="tobias-toggle" title="Falar com Tobias">🤖</button>
+
+<div id="tobias-chat">
+  <div class="tobias-head">
+    <div class="tobias-avatar">🤖</div>
+    <div class="tobias-head-info">
+      <strong>Tobias</strong>
+      <span>● Online agora</span>
     </div>
+    <button class="tobias-close" onclick="toggleChat()">✕</button>
+  </div>
 
-    <div id="tobias-box">
-        <b>Tobias AI:</b>
-        <input type="text" id="msg-tobias" placeholder="Pergunte algo...">
-        <button onclick="enviarTobias()" style="cursor:pointer">Enviar</button>
-    </div>
+  <div class="tobias-msgs" id="msgs">
+    <div class="msg-bubble msg-bot">Oi! Sou o Tobias 👋 Me diga que serviço você precisa e eu encontro profissionais pra você!</div>
+  </div>
 
-    <script>
-        async function enviarTobias() {
-            const msg = document.getElementById('msg-tobias').value;
-            const res = await fetch('/tobias', {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({ mensagem: msg })
-            });
-            const data = await res.json();
-            alert("Tobias: " + data.resposta);
-        }
-    </script>
+  <div class="typing" id="typing" style="display:none">Tobias está digitando...</div>
+
+  <div class="tobias-input-row">
+    <input id="msg" type="text" placeholder="Ex: preciso de um eletricista..." autocomplete="off">
+    <button onclick="enviar()">➤</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="{{ url_for('static', filename='script.js') }}"></script>
 </body>
 </html>

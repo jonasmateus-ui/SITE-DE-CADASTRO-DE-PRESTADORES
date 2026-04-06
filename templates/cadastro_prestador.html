@@ -1,27 +1,74 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-    <meta charset="UTF-8">
-    <title>Cadastro de Prestador</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cadastro de Prestador — Conecta Comunidade</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
-    <div class="container">
-        <div class="card">
-            <h2>Cadastro de Profissional</h2>
-            <form action="/salvar_prestador" method="POST">
-                <input type="text" name="nome" required placeholder="Nome Completo">
-                <input type="text" name="profissao" required placeholder="Sua Profissão (Ex: Pedreiro, TI)">
-                <input type="text" name="bairro" required placeholder="Seu Bairro Principal">
-                <input type="number" name="raio" required placeholder="Raio de Atendimento (km)">
-                <input type="text" name="contato" required placeholder="WhatsApp/Telefone">
-                <input type="email" name="email" required placeholder="E-mail para Login">
-                <input type="password" name="senha" required placeholder="Crie uma Senha">
-                <textarea name="bio" rows="4" placeholder="Fale um pouco sobre seu trabalho..."></textarea>
-                <button type="submit" class="btn-salvar">Cadastrar meu Serviço</button>
-            </form>
-            <a href="/">Voltar ao início</a>
+
+<nav>
+  <a href="/" class="nav-logo">Conecta<span>.</span></a>
+</nav>
+
+<div class="section" style="padding-top:2rem;padding-bottom:3rem">
+  <div class="form-wrap" style="width:100%;max-width:560px">
+    <h2>Divulgue seu serviço</h2>
+    <p class="sub">Cadastre-se gratuitamente e alcance clientes na sua região.</p>
+
+    <form action="/salvar_prestador" method="POST">
+      <div class="form-row">
+        <div class="form-group">
+          <label>Nome completo</label>
+          <input type="text" name="nome" placeholder="Seu nome" required>
         </div>
+        <div class="form-group">
+          <label>Profissão / Serviço</label>
+          <input type="text" name="profissao" placeholder="Ex: Pedreiro, Eletricista" required>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>Bairro principal</label>
+          <input type="text" name="bairro" placeholder="Seu bairro" required>
+        </div>
+        <div class="form-group">
+          <label>Raio de atendimento (km)</label>
+          <input type="number" name="raio" placeholder="Ex: 10" min="1" max="100" value="10">
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>WhatsApp / Telefone</label>
+          <input type="text" name="contato" placeholder="(11) 99999-0000">
+        </div>
+        <div class="form-group">
+          <label>E-mail</label>
+          <input type="email" name="email" placeholder="seu@email.com" required>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Senha</label>
+        <input type="password" name="senha" placeholder="Crie uma senha" required minlength="6">
+      </div>
+
+      <div class="form-group">
+        <label>Sobre você / seus serviços</label>
+        <textarea name="bio" rows="4" placeholder="Descreva sua experiência, especialidades, disponibilidade..."></textarea>
+      </div>
+
+      <button type="submit" class="btn btn-gold btn-full">Publicar meu perfil</button>
+    </form>
+
+    <div class="form-link" style="margin-top:1rem">
+      Já tem conta? <a href="/login">Entrar</a>
     </div>
+  </div>
+</div>
+
 </body>
 </html>

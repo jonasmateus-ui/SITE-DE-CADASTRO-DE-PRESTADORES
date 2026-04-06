@@ -1,27 +1,125 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-    <meta charset="UTF-8">
-    <title>Resultados da Busca</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Resultados — Conecta Comunidade</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
-    <header>
-        <h1>Resultados para: {{ busca }}</h1>
-        <a href="/" style="color: white;">Voltar ao Início</a>
-    </header>
-    <div class="container">
-        {% for p in prestadores %}
-        <div class="card" style="width: 300px; margin-bottom: 20px;">
-            <h3>{{ p.nome }}</h3>
-            <p><b>Profissão:</b> {{ p.profissao }}</p>
-            <p><b>Bairro:</b> {{ p.bairro }}</p>
-            <p style="font-size: 0.9em;">{{ p.bio }}</p>
-            <button class="btn-pesquisar">Contratar</button>
-        </div>
-        {% else %}
-        <p>Nenhum profissional encontrado.</p>
-        {% endfor %}
+
+<nav>
+  <a href="/" class="nav-logo">Conecta<span>.</span></a>
+  <div class="nav-links">
+    {% if session.get('user') %}
+      <a href="/logout" class="btn btn-ghost">Sair</a>
+    {% else %}
+      <a href="/login" class="btn btn-ghost">Entrar</a>
+      <a href="/cadastro_cliente" class="btn btn-gold">Cadastrar</a>
+    {% endif %}
+  </div>
+</nav>
+
+<div class="page-header">
+  <a href="/" class="back-link">← Voltar</a>
+  <h2>
+    {% if prestadores %}
+      {{ prestadores|length }} resultado{% if prestadores|length != 1 %}s{% endif %} para
+    {% else %}
+      Nenhum resultado para
+    {% endif %}
+    "<em style="color:var(--gold)">{{ busca }}</em>"
+  </h2>
+  <p>{% if prestadores %}Clique em "Contratar" para entrar em contato com o profissional.{% endif %}</p>
+</div>
+
+<!-- NOVA BUSCA -->
+<div style="max-width:1100px;margin:1.25rem auto;padding:0 2rem">
+  <form class="search-bar" action="/pesquisar" style="max-width:480px;margin:0">
+    <input name="busca" value="{{ busca }}" placeholder="Nova busca...">
+    <button type="submit" class="btn btn-gold">Buscar</button>
+  </form>
+</div>
+
+<div class="results-grid">
+  {% for p in prestadores %}
+  <div class="pro-card" style="animation-delay:{{ loop.index0 * 0.06 }}s">
+    <div class="pro-card-header">
+      <div class="pro-avatar">{{ p.nome[0].upper() }}</div>
+      <div class="pro-info">
+        <h3>{{ p.nome }}</h3>
+        <span class="pro-badge">{{ p.profissao }}</span>
+      </div>
     </div>
+
+    <div class="pro-location">
+      📍 {{ p.bairro }}
+      {% if p.raio %}· até {{ p.raio }} km{% endif %}
+    </div>
+
+    {% if p.bio %}
+    <p class="pro-bio">{{ p.bio }}</p>
+    {% else %}
+    <p class="pro-bio" style="font-style:italic">Sem descrição cadastrada.</p>
+    {% endif %}
+
+    <div class="pro-card-footer">
+      <button class="btn btn-gold" style="flex:1"
+              onclick="contratar({{ p.id }}, '{{ p.nome }}', '{{ p.contato or '' }}')">
+        Contratar
+      </button>
+      {% if p.contato %}
+      <a href="https://wa.me/55{{ p.contato | replace(' ','') | replace('-','') | replace('(','') | replace(')','') }}"
+         target="_blank" class="btn btn-ghost" title="WhatsApp">💬</a>
+      {% endif %}
+    </div>
+  </div>
+
+  {% else %}
+  <div class="no-results">
+    <h3>Nenhum profissional encontrado</h3>
+    <p>Tente outro termo ou use o Tobias 🤖 para ajuda personalizada.</p>
+    <a href="/" class="btn btn-gold" style="margin-top:1rem">Voltar ao início</a>
+  </div>
+  {% endfor %}
+</div>
+
+<!-- TOBIAS -->
+<button id="tobias-toggle" title="Falar com Tobias">🤖</button>
+
+<div id="tobias-chat">
+  <div class="tobias-head">
+    <div class="tobias-avatar">🤖</div>
+    <div class="tobias-head-info">
+      <strong>Tobias</strong>
+      <span>● Online agora</span>
+    </div>
+    <button class="tobias-close" onclick="toggleChat()">✕</button>
+  </div>
+  <div class="tobias-msgs" id="msgs">
+    <div class="msg-bubble msg-bot">Olá! Não encontrou o que buscava? Me diga e eu te ajudo! 😊</div>
+  </div>
+  <div class="typing" id="typing" style="display:none">Tobias está digitando...</div>
+  <div class="tobias-input-row">
+    <input id="msg" type="text" placeholder="Ex: preciso de um pintor..." autocomplete="off">
+    <button onclick="enviar()">➤</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="{{ url_for('static', filename='script.js') }}"></script>
+
+<script>
+async function contratar(id, nome, contato) {
+  const res = await fetch(`/contratar/${id}`);
+  const data = await res.json();
+  if (data.ok) {
+    showToast(`✓ ${data.mensagem}`);
+  } else {
+    window.location.href = '/login';
+  }
+}
+</script>
 </body>
 </html>
