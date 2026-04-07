@@ -45,14 +45,31 @@
   .logo-text { font-family: 'Lora', serif; font-size: 1.3rem; color: #fff; font-weight: 600; line-height: 1.1; }
   .logo-text span { display: block; font-family: 'Nunito', sans-serif; font-size: 0.7rem; font-weight: 400; opacity: 0.85; }
 
+  /* ── LOADING OVERLAY ── */
+  .loading-overlay {
+    position: fixed; inset: 0;
+    background: rgba(255,255,255,0.85);
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    z-index: 9999;
+    gap: 14px;
+    font-size: 1rem; font-weight: 700; color: var(--green);
+  }
+  .loading-overlay.hidden { display: none; }
+  .spinner {
+    width: 40px; height: 40px;
+    border: 4px solid var(--green-light);
+    border-top-color: var(--green);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
   /* ── MAIN PAGES ── */
   .page { display: none; }
   .page.active { display: block; }
 
   /* ── HOME ── */
-  #page-home {
-    padding: 0;
-  }
+  #page-home { padding: 0; }
   .hero {
     background: linear-gradient(160deg, var(--green) 0%, #3a9970 100%);
     padding: 40px 20px 60px;
@@ -78,52 +95,31 @@
     margin: 0 auto;
   }
   .search-box input {
-    flex: 1;
-    border: none;
-    outline: none;
-    font-size: 1rem;
-    font-family: 'Nunito', sans-serif;
-    color: var(--text);
-    background: transparent;
-    padding: 6px 0;
+    flex: 1; border: none; outline: none;
+    font-size: 1rem; font-family: 'Nunito', sans-serif;
+    color: var(--text); background: transparent; padding: 6px 0;
   }
   .search-box input::placeholder { color: #aaa; }
   .btn-buscar {
-    background: var(--orange);
-    color: #fff;
-    border: none;
-    border-radius: 12px;
-    padding: 14px 22px;
-    font-size: 1rem;
-    font-weight: 700;
-    font-family: 'Nunito', sans-serif;
-    cursor: pointer;
-    white-space: nowrap;
-    transition: background 0.18s;
+    background: var(--orange); color: #fff; border: none;
+    border-radius: 12px; padding: 14px 22px; font-size: 1rem;
+    font-weight: 700; font-family: 'Nunito', sans-serif; cursor: pointer;
+    white-space: nowrap; transition: background 0.18s;
   }
   .btn-buscar:hover { background: #c96a28; }
 
   .btn-cadastrar {
-    display: block;
-    margin: 16px auto 0;
-    background: transparent;
-    border: 2px solid rgba(255,255,255,0.6);
-    color: #fff;
-    border-radius: 12px;
-    padding: 13px 28px;
-    font-size: 0.95rem;
-    font-weight: 700;
-    font-family: 'Nunito', sans-serif;
-    cursor: pointer;
-    max-width: 280px;
+    display: block; margin: 16px auto 0;
+    background: transparent; border: 2px solid rgba(255,255,255,0.6);
+    color: #fff; border-radius: 12px; padding: 13px 28px;
+    font-size: 0.95rem; font-weight: 700; font-family: 'Nunito', sans-serif;
+    cursor: pointer; max-width: 280px;
     transition: background 0.18s, border-color 0.18s;
   }
   .btn-cadastrar:hover { background: rgba(255,255,255,0.15); border-color: #fff; }
 
   /* ── CATEGORIES ── */
-  .categories {
-    padding: 28px 16px 16px;
-  }
+  .categories { padding: 28px 16px 16px; }
   .categories h2 { font-size: 1.1rem; font-weight: 700; margin-bottom: 14px; color: var(--text); }
   .cat-grid {
     display: grid;
@@ -131,60 +127,40 @@
     gap: 10px;
   }
   .cat-item {
-    background: var(--white);
-    border-radius: 12px;
-    padding: 14px 8px;
-    text-align: center;
-    cursor: pointer;
-    border: 2px solid transparent;
-    transition: border-color 0.18s, box-shadow 0.18s;
-    box-shadow: var(--shadow);
+    background: var(--white); border-radius: 12px; padding: 14px 8px;
+    text-align: center; cursor: pointer; border: 2px solid transparent;
+    transition: border-color 0.18s, box-shadow 0.18s; box-shadow: var(--shadow);
   }
   .cat-item:hover { border-color: var(--green); box-shadow: 0 4px 16px rgba(46,125,94,0.15); }
   .cat-item .cat-emoji { font-size: 1.8rem; }
   .cat-item .cat-label { font-size: 0.75rem; font-weight: 700; margin-top: 6px; color: var(--text-muted); }
 
   /* ── RESULTS ── */
-  #page-results {
-    padding: 0 0 100px;
-  }
+  #page-results { padding: 0 0 100px; }
   .results-header {
-    background: var(--white);
-    padding: 16px 16px 14px;
+    background: var(--white); padding: 16px 16px 14px;
     border-bottom: 1px solid var(--border);
     position: sticky; top: 60px; z-index: 50;
-    display: flex;
-    gap: 8px;
-    align-items: center;
+    display: flex; gap: 8px; align-items: center;
   }
   .results-header input {
-    flex: 1;
-    border: 2px solid var(--border);
-    border-radius: 10px;
-    padding: 12px 14px;
-    font-size: 1rem;
-    font-family: 'Nunito', sans-serif;
-    outline: none;
-    transition: border-color 0.18s;
+    flex: 1; border: 2px solid var(--border); border-radius: 10px;
+    padding: 12px 14px; font-size: 1rem; font-family: 'Nunito', sans-serif;
+    outline: none; transition: border-color 0.18s;
   }
   .results-header input:focus { border-color: var(--green); }
   .results-header .btn-buscar { padding: 12px 18px; font-size: 0.9rem; }
 
   .results-meta {
-    padding: 14px 16px 6px;
-    font-size: 0.9rem;
-    color: var(--text-muted);
-    font-weight: 600;
+    padding: 14px 16px 6px; font-size: 0.9rem;
+    color: var(--text-muted); font-weight: 600;
   }
 
   .cards-list { padding: 8px 16px; display: flex; flex-direction: column; gap: 14px; }
 
   .provider-card {
-    background: var(--white);
-    border-radius: var(--radius);
-    padding: 18px;
-    box-shadow: var(--shadow);
-    border-left: 5px solid var(--green);
+    background: var(--white); border-radius: var(--radius); padding: 18px;
+    box-shadow: var(--shadow); border-left: 5px solid var(--green);
     transition: box-shadow 0.18s;
   }
   .provider-card:hover { box-shadow: 0 4px 20px rgba(0,0,0,0.14); }
@@ -194,31 +170,22 @@
     width: 52px; height: 52px; border-radius: 50%;
     background: var(--green-light);
     display: flex; align-items: center; justify-content: center;
-    font-size: 1.5rem; flex-shrink: 0;
-    border: 2px solid var(--green);
+    font-size: 1.5rem; flex-shrink: 0; border: 2px solid var(--green);
   }
   .card-info { flex: 1; }
   .card-name { font-size: 1.05rem; font-weight: 900; color: var(--text); }
   .card-profession { font-size: 0.85rem; font-weight: 700; color: var(--green); margin-top: 2px; }
-  .card-bairro {
-    font-size: 0.8rem; color: var(--text-muted); margin-top: 2px;
-    display: flex; align-items: center; gap: 4px;
-  }
+  .card-bairro { font-size: 0.8rem; color: var(--text-muted); margin-top: 2px; display: flex; align-items: center; gap: 4px; }
 
   .card-desc {
-    font-size: 0.9rem; color: #444; line-height: 1.5;
-    margin-bottom: 14px;
-    padding: 10px 12px;
-    background: var(--bg);
-    border-radius: 8px;
+    font-size: 0.9rem; color: #444; line-height: 1.5; margin-bottom: 14px;
+    padding: 10px 12px; background: var(--bg); border-radius: 8px;
   }
 
   .card-contacts { display: flex; flex-direction: column; gap: 8px; }
   .contact-item {
     display: flex; align-items: center; gap: 10px;
-    background: var(--green-light);
-    border-radius: 10px;
-    padding: 10px 14px;
+    background: var(--green-light); border-radius: 10px; padding: 10px 14px;
   }
   .contact-item .contact-icon { font-size: 1.2rem; }
   .contact-item a {
@@ -227,74 +194,44 @@
   }
   .contact-item a:hover { text-decoration: underline; }
 
-  .no-results {
-    text-align: center;
-    padding: 60px 20px;
-    color: var(--text-muted);
-  }
+  .no-results { text-align: center; padding: 60px 20px; color: var(--text-muted); }
   .no-results .emoji { font-size: 3rem; }
   .no-results p { margin-top: 12px; font-size: 1rem; line-height: 1.5; }
 
   /* ── CADASTRO ── */
   #page-cadastro { padding: 0 0 100px; }
-  .form-header {
-    background: var(--green);
-    color: #fff;
-    padding: 24px 20px;
-  }
+  .form-header { background: var(--green); color: #fff; padding: 24px 20px; }
   .form-header h2 { font-family: 'Lora', serif; font-size: 1.4rem; }
   .form-header p { font-size: 0.88rem; opacity: 0.88; margin-top: 4px; }
 
   .form-body { padding: 24px 16px; max-width: 560px; margin: 0 auto; }
 
   .form-group { margin-bottom: 18px; }
-  .form-group label {
-    display: block; font-size: 0.9rem; font-weight: 700;
-    color: var(--text); margin-bottom: 7px;
-  }
+  .form-group label { display: block; font-size: 0.9rem; font-weight: 700; color: var(--text); margin-bottom: 7px; }
   .form-group label .obrigatorio { color: var(--orange); margin-left: 3px; }
   .form-group input,
   .form-group textarea,
   .form-group select {
-    width: 100%;
-    border: 2px solid var(--border);
-    border-radius: 10px;
-    padding: 14px 14px;
-    font-size: 1rem;
-    font-family: 'Nunito', sans-serif;
-    color: var(--text);
-    background: #fff;
-    outline: none;
-    transition: border-color 0.18s;
+    width: 100%; border: 2px solid var(--border); border-radius: 10px;
+    padding: 14px 14px; font-size: 1rem; font-family: 'Nunito', sans-serif;
+    color: var(--text); background: #fff; outline: none; transition: border-color 0.18s;
   }
   .form-group input:focus,
   .form-group textarea:focus { border-color: var(--green); }
   .form-group textarea { resize: vertical; min-height: 90px; }
 
   .btn-salvar {
-    width: 100%;
-    background: var(--green);
-    color: #fff;
-    border: none;
-    border-radius: 12px;
-    padding: 18px;
-    font-size: 1.1rem;
-    font-weight: 900;
-    font-family: 'Nunito', sans-serif;
-    cursor: pointer;
-    margin-top: 8px;
-    transition: background 0.18s;
+    width: 100%; background: var(--green); color: #fff; border: none;
+    border-radius: 12px; padding: 18px; font-size: 1.1rem; font-weight: 900;
+    font-family: 'Nunito', sans-serif; cursor: pointer; margin-top: 8px;
+    transition: background 0.18s, opacity 0.18s;
   }
   .btn-salvar:hover { background: var(--green-dark); }
+  .btn-salvar:disabled { opacity: 0.6; cursor: not-allowed; }
 
   .success-msg {
-    display: none;
-    background: var(--green-light);
-    border: 2px solid var(--green);
-    border-radius: 12px;
-    padding: 20px;
-    text-align: center;
-    margin-top: 20px;
+    display: none; background: var(--green-light); border: 2px solid var(--green);
+    border-radius: 12px; padding: 20px; text-align: center; margin-top: 20px;
   }
   .success-msg .emoji { font-size: 2.5rem; }
   .success-msg p { font-weight: 700; margin-top: 8px; color: var(--green-dark); font-size: 1rem; }
@@ -302,74 +239,47 @@
   /* ── NAV BOTTOM ── */
   .bottom-nav {
     position: fixed; bottom: 0; left: 0; right: 0;
-    background: #fff;
-    border-top: 1px solid var(--border);
-    display: flex;
-    z-index: 100;
+    background: #fff; border-top: 1px solid var(--border);
+    display: flex; z-index: 100;
   }
   .nav-btn {
-    flex: 1;
-    display: flex; flex-direction: column; align-items: center;
-    padding: 10px 4px;
-    cursor: pointer;
-    background: none;
-    border: none;
-    font-family: 'Nunito', sans-serif;
-    color: var(--text-muted);
-    font-size: 0.72rem;
-    font-weight: 700;
-    transition: color 0.15s;
-    gap: 2px;
+    flex: 1; display: flex; flex-direction: column; align-items: center;
+    padding: 10px 4px; cursor: pointer; background: none; border: none;
+    font-family: 'Nunito', sans-serif; color: var(--text-muted);
+    font-size: 0.72rem; font-weight: 700; transition: color 0.15s; gap: 2px;
   }
   .nav-btn .nav-icon { font-size: 1.5rem; }
   .nav-btn.active { color: var(--green); }
 
   /* ── TOBIAS CHAT ── */
   .tobias-fab {
-    position: fixed;
-    bottom: 74px; right: 16px;
-    width: 58px; height: 58px;
-    background: var(--orange);
-    border-radius: 50%;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 1.7rem;
-    cursor: pointer;
-    box-shadow: 0 4px 16px rgba(224,123,58,0.45);
-    border: none;
-    z-index: 200;
-    transition: transform 0.18s;
+    position: fixed; bottom: 74px; right: 16px;
+    width: 58px; height: 58px; background: var(--orange);
+    border-radius: 50%; display: flex; align-items: center; justify-content: center;
+    font-size: 1.7rem; cursor: pointer; box-shadow: 0 4px 16px rgba(224,123,58,0.45);
+    border: none; z-index: 200; transition: transform 0.18s;
   }
   .tobias-fab:hover { transform: scale(1.08); }
 
   .tobias-badge {
     position: absolute; top: -4px; right: -4px;
-    background: var(--green);
-    color: #fff; font-size: 0.65rem; font-weight: 700;
-    border-radius: 10px; padding: 2px 6px;
-    font-family: 'Nunito', sans-serif;
+    background: var(--green); color: #fff; font-size: 0.65rem; font-weight: 700;
+    border-radius: 10px; padding: 2px 6px; font-family: 'Nunito', sans-serif;
   }
 
   .tobias-window {
-    position: fixed;
-    bottom: 140px; right: 12px;
-    width: min(340px, calc(100vw - 24px));
-    background: #fff;
-    border-radius: 18px;
-    box-shadow: 0 8px 40px rgba(0,0,0,0.22);
-    display: flex; flex-direction: column;
-    z-index: 300;
-    overflow: hidden;
-    max-height: 65vh;
-    transition: transform 0.22s, opacity 0.22s;
-    transform-origin: bottom right;
+    position: fixed; bottom: 140px; right: 12px;
+    width: min(340px, calc(100vw - 24px)); background: #fff;
+    border-radius: 18px; box-shadow: 0 8px 40px rgba(0,0,0,0.22);
+    display: flex; flex-direction: column; z-index: 300;
+    overflow: hidden; max-height: 65vh;
+    transition: transform 0.22s, opacity 0.22s; transform-origin: bottom right;
   }
   .tobias-window.hidden { transform: scale(0.85); opacity: 0; pointer-events: none; }
 
   .tobias-head {
-    background: var(--orange);
-    padding: 14px 16px;
-    display: flex; align-items: center; gap: 10px;
-    color: #fff;
+    background: var(--orange); padding: 14px 16px;
+    display: flex; align-items: center; gap: 10px; color: #fff;
   }
   .tobias-head .avatar { font-size: 1.6rem; }
   .tobias-head .info { flex: 1; }
@@ -378,22 +288,15 @@
   .tobias-close { background: none; border: none; color: #fff; font-size: 1.3rem; cursor: pointer; padding: 4px; }
 
   .tobias-msgs {
-    flex: 1; overflow-y: auto;
-    padding: 14px 12px;
-    display: flex; flex-direction: column; gap: 10px;
-    min-height: 160px;
+    flex: 1; overflow-y: auto; padding: 14px 12px;
+    display: flex; flex-direction: column; gap: 10px; min-height: 160px;
   }
 
   .msg { max-width: 82%; }
   .msg.bot { align-self: flex-start; }
   .msg.user { align-self: flex-end; }
 
-  .msg-bubble {
-    border-radius: 14px;
-    padding: 10px 13px;
-    font-size: 0.88rem;
-    line-height: 1.45;
-  }
+  .msg-bubble { border-radius: 14px; padding: 10px 13px; font-size: 0.88rem; line-height: 1.45; }
   .msg.bot .msg-bubble { background: var(--bg); color: var(--text); border-bottom-left-radius: 4px; }
   .msg.user .msg-bubble { background: var(--orange); color: #fff; border-bottom-right-radius: 4px; }
 
@@ -407,30 +310,15 @@
   .typing-dots span:nth-child(3) { animation-delay: 0.3s; }
   @keyframes bounce { 0%,60%,100%{transform:translateY(0)} 30%{transform:translateY(-5px)} }
 
-  .tobias-input-area {
-    border-top: 1px solid var(--border);
-    padding: 10px;
-    display: flex; gap: 8px;
-  }
+  .tobias-input-area { border-top: 1px solid var(--border); padding: 10px; display: flex; gap: 8px; }
   .tobias-input {
-    flex: 1;
-    border: 2px solid var(--border);
-    border-radius: 10px;
-    padding: 10px 12px;
-    font-size: 0.9rem;
-    font-family: 'Nunito', sans-serif;
-    outline: none;
+    flex: 1; border: 2px solid var(--border); border-radius: 10px;
+    padding: 10px 12px; font-size: 0.9rem; font-family: 'Nunito', sans-serif; outline: none;
   }
   .tobias-input:focus { border-color: var(--orange); }
   .tobias-send {
-    background: var(--orange);
-    border: none;
-    border-radius: 10px;
-    color: #fff;
-    font-size: 1.2rem;
-    width: 44px;
-    cursor: pointer;
-    transition: background 0.15s;
+    background: var(--orange); border: none; border-radius: 10px;
+    color: #fff; font-size: 1.2rem; width: 44px; cursor: pointer; transition: background 0.15s;
   }
   .tobias-send:hover { background: #c96a28; }
 
@@ -443,6 +331,12 @@
 </style>
 </head>
 <body>
+
+<!-- LOADING -->
+<div class="loading-overlay" id="loading-overlay">
+  <div class="spinner"></div>
+  <span>Conectando ao banco de dados…</span>
+</div>
 
 <header>
   <div class="logo-icon">🤝</div>
@@ -522,7 +416,7 @@
       <label>E-mail <span style="color:#aaa;font-weight:400;font-size:0.82rem">(opcional)</span></label>
       <input type="email" id="f-email" placeholder="seuemail@exemplo.com"/>
     </div>
-    <button class="btn-salvar" onclick="salvarCadastro()">💾 Salvar cadastro</button>
+    <button class="btn-salvar" id="btn-salvar" onclick="salvarCadastro()">💾 Salvar cadastro</button>
     <div class="success-msg" id="success-msg">
       <div class="emoji">🎉</div>
       <p>Cadastro salvo com sucesso!<br>Clientes já podem te encontrar.</p>
@@ -563,55 +457,123 @@
   </div>
 </div>
 
+<!-- Firebase SDK -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
+  import {
+    getFirestore, collection, getDocs, addDoc, query, orderBy, serverTimestamp
+  } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
+
+  // ─── CONFIG FIREBASE ──────────────────────────────────────
+  const firebaseConfig = {
+    apiKey: "AIzaSyAyZrw4sWqJg_J-HLVbliNt6n-tBdcty14",
+    authDomain: "cadastro-brabo.firebaseapp.com",
+    projectId: "cadastro-brabo",
+    storageBucket: "cadastro-brabo.firebasestorage.app",
+    messagingSenderId: "741810547986",
+    appId: "1:741810547986:web:7ba7f6fa1b2273db9257cb",
+    measurementId: "G-98VJ04Q09N"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db  = getFirestore(app);
+
+  // ─── DADOS DEMO (exibidos enquanto o Firestore carrega) ───
+  const DEMO = [
+    { id:'d1', nome:'Carlos Rodrigues', profissao:'Eletricista', bairro:'Centro', descricao:'Instalações elétricas residenciais e comerciais. 10 anos de experiência. Faço laudos e AVCB.', telefone:'(11) 98765-4321', email:'' },
+    { id:'d2', nome:'Marcia Souza', profissao:'Faxineira', bairro:'Jardim América', descricao:'Limpeza residencial e comercial. Diarista ou semanal. Tenho produtos e equipamentos próprios.', telefone:'(11) 91234-5678', email:'marcia.faxina@gmail.com' },
+    { id:'d3', nome:'José Pereira', profissao:'Pedreiro', bairro:'Vila Nova', descricao:'Reformas, construção, reboco, azulejo e contrapiso. Trabalho com qualidade e prazo combinado.', telefone:'(11) 97654-3210', email:'' },
+    { id:'d4', nome:'Ana Lima', profissao:'Cozinheira', bairro:'Centro', descricao:'Marmitas fitness e caseiras. Encomendas para festas e eventos. Cardápio semanal disponível.', telefone:'(11) 99887-6655', email:'ana.marmitas@hotmail.com' },
+    { id:'d5', nome:'Roberto Nunes', profissao:'Pintor', bairro:'Jardim América', descricao:'Pintura interna e externa, textura, grafiato e verniz. Trabalho limpo e caprichado.', telefone:'(11) 95544-3322', email:'' },
+    { id:'d6', nome:'Fernanda Costa', profissao:'Costureira', bairro:'Bela Vista', descricao:'Consertos, ajustes e confecção sob medida. Roupas sociais, festas e uniformes.', telefone:'(11) 94433-2211', email:'fe.costura@gmail.com' },
+    { id:'d7', nome:'Paulo Mendes', profissao:'Encanador', bairro:'Centro', descricao:'Conserto de vazamentos, instalação de torneiras, registros e caixas d\'água. Rápido e confiável.', telefone:'(11) 98811-2233', email:'' },
+    { id:'d8', nome:'Tânia Oliveira', profissao:'Diarista', bairro:'Vila Nova', descricao:'Limpeza geral de casa, organização de armários e passa roupa. Disponível segunda a sábado.', telefone:'(11) 96677-8899', email:'' },
+  ];
+
+  // ─── CACHE LOCAL DOS PRESTADORES ─────────────────────────
+  let allPrestadores = [];
+
+  // ─── CARREGAR DO FIRESTORE ────────────────────────────────
+  async function loadPrestadores() {
+    try {
+      const q = query(collection(db, 'prestadores'), orderBy('criadoEm', 'desc'));
+      const snap = await getDocs(q);
+      const fromDB = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      // Demo + Firestore (sem duplicar demos que possam ter sido salvos)
+      allPrestadores = [...DEMO, ...fromDB];
+    } catch (err) {
+      console.warn('Firestore offline, usando dados demo.', err);
+      allPrestadores = [...DEMO];
+    } finally {
+      document.getElementById('loading-overlay').classList.add('hidden');
+      renderResults('');
+    }
+  }
+
+  // ─── SALVAR NO FIRESTORE ──────────────────────────────────
+  window.salvarCadastro = async function () {
+    const nome      = document.getElementById('f-nome').value.trim();
+    const profissao = document.getElementById('f-profissao').value.trim();
+    const bairro    = document.getElementById('f-bairro').value.trim();
+    const descricao = document.getElementById('f-descricao').value.trim();
+    const telefone  = document.getElementById('f-telefone').value.trim();
+    const email     = document.getElementById('f-email').value.trim();
+
+    if (!nome || !profissao || !bairro || !descricao || !telefone) {
+      alert('Por favor, preencha todos os campos obrigatórios (*).');
+      return;
+    }
+
+    const btn = document.getElementById('btn-salvar');
+    btn.disabled = true;
+    btn.textContent = '⏳ Salvando…';
+
+    try {
+      const docRef = await addDoc(collection(db, 'prestadores'), {
+        nome, profissao, bairro, descricao, telefone, email,
+        criadoEm: serverTimestamp()
+      });
+
+      // Adiciona ao cache local imediatamente
+      allPrestadores.push({ id: docRef.id, nome, profissao, bairro, descricao, telefone, email });
+
+      // Limpa formulário
+      ['f-nome','f-profissao','f-bairro','f-descricao','f-telefone','f-email']
+        .forEach(id => document.getElementById(id).value = '');
+
+      document.getElementById('success-msg').style.display = 'block';
+      setTimeout(() => document.getElementById('success-msg').style.display = 'none', 4000);
+
+    } catch (err) {
+      alert('Erro ao salvar. Verifique sua conexão e tente novamente.');
+      console.error(err);
+    } finally {
+      btn.disabled = false;
+      btn.textContent = '💾 Salvar cadastro';
+    }
+  };
+
+  // ─── EXPÕE getDB para o Tobias ────────────────────────────
+  window.getDB = () => allPrestadores;
+
+  // ─── INICIA ───────────────────────────────────────────────
+  loadPrestadores();
+</script>
+
 <script>
-// ─── BANCO DE DADOS (localStorage) ───────────────────────────
-const DB_KEY = 'conecta_prestadores';
-
-const DEMO = [
-  { id:'d1', nome:'Carlos Rodrigues', profissao:'Eletricista', bairro:'Centro', descricao:'Instalações elétricas residenciais e comerciais. 10 anos de experiência. Faço laudos e AVCB.', telefone:'(11) 98765-4321', email:'' },
-  { id:'d2', nome:'Marcia Souza', profissao:'Faxineira', bairro:'Jardim América', descricao:'Limpeza residencial e comercial. Diarista ou semanal. Tenho produtos e equipamentos próprios.', telefone:'(11) 91234-5678', email:'marcia.faxina@gmail.com' },
-  { id:'d3', nome:'José Pereira', profissao:'Pedreiro', bairro:'Vila Nova', descricao:'Reformas, construção, reboco, azulejo e contrapiso. Trabalho com qualidade e prazo combinado.', telefone:'(11) 97654-3210', email:'' },
-  { id:'d4', nome:'Ana Lima', profissao:'Cozinheira', bairro:'Centro', descricao:'Marmitas fitness e caseiras. Encomendas para festas e eventos. Cardápio semanal disponível.', telefone:'(11) 99887-6655', email:'ana.marmitas@hotmail.com' },
-  { id:'d5', nome:'Roberto Nunes', profissao:'Pintor', bairro:'Jardim América', descricao:'Pintura interna e externa, textura, grafiato e verniz. Trabalho limpo e caprichado.', telefone:'(11) 95544-3322', email:'' },
-  { id:'d6', nome:'Fernanda Costa', profissao:'Costureira', bairro:'Bela Vista', descricao:'Consertos, ajustes e confecção sob medida. Roupas sociais, festas e uniformes.', telefone:'(11) 94433-2211', email:'fe.costura@gmail.com' },
-  { id:'d7', nome:'Paulo Mendes', profissao:'Encanador', bairro:'Centro', descricao:'Conserto de vazamentos, instalação de torneiras, registros e caixas d\'água. Rápido e confiável.', telefone:'(11) 98811-2233', email:'' },
-  { id:'d8', nome:'Tânia Oliveira', profissao:'Diarista', bairro:'Vila Nova', descricao:'Limpeza geral de casa, organização de armários e passa roupa. Disponível segunda a sábado.', telefone:'(11) 96677-8899', email:'' },
-];
-
-function getDB() {
-  try {
-    const raw = localStorage.getItem(DB_KEY);
-    if (!raw) return [...DEMO];
-    const user = JSON.parse(raw);
-    return [...DEMO, ...user];
-  } catch { return [...DEMO]; }
-}
-
-function saveDB(list) {
-  // salva apenas os não-demo
-  const userOnly = list.filter(p => !p.id.startsWith('d'));
-  localStorage.setItem(DB_KEY, JSON.stringify(userOnly));
-}
-
 // ─── NAVEGAÇÃO ───────────────────────────────────────────────
-let currentPage = 'home';
-
 function goPage(page) {
   document.querySelectorAll('.page').forEach(el => el.classList.remove('active'));
   document.querySelectorAll('.nav-btn').forEach(el => el.classList.remove('active'));
   document.getElementById('page-' + page).classList.add('active');
   const navEl = document.getElementById('nav-' + page);
   if (navEl) navEl.classList.add('active');
-  currentPage = page;
   window.scrollTo(0, 0);
 }
 
 // ─── BUSCA ───────────────────────────────────────────────────
-let lastQuery = '';
-
 function doSearch() {
   const q = document.getElementById('hero-search').value.trim();
-  lastQuery = q;
   document.getElementById('results-search').value = q;
   renderResults(q);
   goPage('results');
@@ -619,25 +581,23 @@ function doSearch() {
 
 function refreshSearch() {
   const q = document.getElementById('results-search').value.trim();
-  lastQuery = q;
   renderResults(q);
 }
 
 function searchCat(cat) {
   document.getElementById('hero-search').value = cat;
   document.getElementById('results-search').value = cat;
-  lastQuery = cat;
   renderResults(cat);
   goPage('results');
 }
 
 function renderResults(q) {
-  const list = getDB();
-  const term = q.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+  const list = (typeof window.getDB === 'function') ? window.getDB() : [];
+  const term = q.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
 
   const filtered = list.filter(p => {
     const hay = (p.nome + ' ' + p.profissao + ' ' + p.bairro + ' ' + p.descricao)
-      .toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+      .toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
     return !term || hay.includes(term);
   });
 
@@ -711,38 +671,6 @@ function esc(str) {
   return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 
-// ─── CADASTRO ────────────────────────────────────────────────
-function salvarCadastro() {
-  const nome = document.getElementById('f-nome').value.trim();
-  const profissao = document.getElementById('f-profissao').value.trim();
-  const bairro = document.getElementById('f-bairro').value.trim();
-  const descricao = document.getElementById('f-descricao').value.trim();
-  const telefone = document.getElementById('f-telefone').value.trim();
-  const email = document.getElementById('f-email').value.trim();
-
-  if (!nome || !profissao || !bairro || !descricao || !telefone) {
-    alert('Por favor, preencha todos os campos obrigatórios (*).');
-    return;
-  }
-
-  const list = getDB().filter(p => !p.id.startsWith('d'));
-  const novo = { id: 'u' + Date.now(), nome, profissao, bairro, descricao, telefone, email };
-  list.push(novo);
-  saveDB(list);
-
-  document.getElementById('success-msg').style.display = 'block';
-  document.getElementById('f-nome').value = '';
-  document.getElementById('f-profissao').value = '';
-  document.getElementById('f-bairro').value = '';
-  document.getElementById('f-descricao').value = '';
-  document.getElementById('f-telefone').value = '';
-  document.getElementById('f-email').value = '';
-
-  setTimeout(() => {
-    document.getElementById('success-msg').style.display = 'none';
-  }, 4000);
-}
-
 // ─── TOBIAS ──────────────────────────────────────────────────
 let tobiasOpen = false;
 let tobiasHistory = [];
@@ -799,7 +727,6 @@ function removeTyping() {
 function formatMsg(text) {
   return text
     .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-    .replace(/•/g, '•')
     .replace(/\n/g, '<br>');
 }
 
@@ -811,7 +738,7 @@ async function sendTobias() {
   addUserMsg(text);
   showTyping();
 
-  const prestadores = getDB();
+  const prestadores = (typeof window.getDB === 'function') ? window.getDB() : [];
   const resumo = prestadores.map(p =>
     `- ${p.nome} | ${p.profissao} | ${p.bairro} | Tel: ${p.telefone}${p.email ? ' | Email: ' + p.email : ''}`
   ).join('\n');
@@ -831,13 +758,6 @@ SEU PAPEL:
 - Responda sempre em português do Brasil
 - Seja breve: máximo 3-4 linhas por resposta`;
 
-  const messages = [
-    ...tobiasHistory.slice(-10).filter((_, i, arr) => {
-      const last = arr[arr.length - 1];
-      return last.role === 'user' ? true : true;
-    }),
-  ];
-
   try {
     const res = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
@@ -846,7 +766,7 @@ SEU PAPEL:
         model: 'claude-sonnet-4-20250514',
         max_tokens: 400,
         system: systemPrompt,
-        messages,
+        messages: tobiasHistory.slice(-10),
       })
     });
     const data = await res.json();
@@ -863,9 +783,6 @@ SEU PAPEL:
 document.getElementById('hero-search').addEventListener('keydown', e => {
   if (e.key === 'Enter') doSearch();
 });
-
-// Init
-renderResults('');
 </script>
 </body>
 </html>
