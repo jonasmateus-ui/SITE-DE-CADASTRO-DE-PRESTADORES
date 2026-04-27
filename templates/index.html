@@ -1,0 +1,945 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Comuniq – Serviços da Comunidade</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --verde: #2D6A4F;
+    --verde-claro: #52B788;
+    --verde-menta: #D8F3DC;
+    --areia: #F8F4EE;
+    --areia-escuro: #E8E2D7;
+    --texto: #1A1A1A;
+    --texto-suave: #5A5A5A;
+    --branco: #FFFFFF;
+    --laranja: #E76F51;
+    --laranja-claro: #FDEBD0;
+    --vermelho: #C0392B;
+    --vermelho-claro: #FDECEA;
+    --amarelo: #F39C12;
+    --amarelo-claro: #FEF9E7;
+    --sombra: 0 4px 24px rgba(45,106,79,0.10);
+    --sombra-forte: 0 8px 40px rgba(45,106,79,0.18);
+    --radius: 18px;
+    --radius-sm: 10px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'DM Sans', sans-serif; background: var(--areia); color: var(--texto); min-height: 100vh; }
+
+  /* HEADER */
+  header { background: var(--verde); padding: 0 20px; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 16px rgba(0,0,0,0.15); }
+  .header-inner { max-width: 900px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; height: 62px; }
+  .logo { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.55rem; color: #fff; letter-spacing: -0.5px; display: flex; align-items: center; gap: 8px; cursor:pointer; }
+  .logo-badge { background: var(--laranja); color: #fff; border-radius: 6px; padding: 2px 7px; font-size: 0.75rem; font-weight: 700; letter-spacing: 0.5px; }
+  nav { display: flex; gap: 4px; }
+  .nav-btn { background: transparent; color: rgba(255,255,255,0.75); border: none; padding: 7px 14px; border-radius: 8px; font-family: 'DM Sans', sans-serif; font-size: 0.88rem; font-weight: 500; cursor: pointer; transition: all 0.18s; }
+  .nav-btn:hover, .nav-btn.active { background: rgba(255,255,255,0.15); color: #fff; }
+
+  /* PAGES */
+  .page { display: none; }
+  .page.active { display: block; }
+
+  /* HERO */
+  .hero { background: linear-gradient(135deg, var(--verde) 0%, #1B4332 100%); padding: 52px 20px 60px; text-align: center; position: relative; overflow: hidden; }
+  .hero::before { content:''; position:absolute; top:-60px; right:-60px; width:260px; height:260px; border-radius:50%; background:rgba(255,255,255,0.04); }
+  .hero::after { content:''; position:absolute; bottom:-40px; left:-40px; width:180px; height:180px; border-radius:50%; background:rgba(82,183,136,0.10); }
+  .hero h1 { font-family:'Syne',sans-serif; font-size:2.1rem; font-weight:800; color:#fff; line-height:1.18; margin-bottom:12px; position:relative; z-index:1; }
+  .hero h1 em { color:var(--verde-claro); font-style:normal; }
+  .hero p { color:rgba(255,255,255,0.75); font-size:1rem; max-width:420px; margin:0 auto 28px; line-height:1.55; position:relative; z-index:1; }
+  .hero-btns { display:flex; gap:12px; justify-content:center; flex-wrap:wrap; position:relative; z-index:1; }
+  .btn-primary { background:var(--laranja); color:#fff; border:none; padding:13px 26px; border-radius:50px; font-family:'DM Sans',sans-serif; font-size:0.97rem; font-weight:600; cursor:pointer; transition:all 0.2s; box-shadow:0 4px 18px rgba(231,111,81,0.35); }
+  .btn-primary:hover { background:#CF5A3E; transform:translateY(-2px); }
+  .btn-outline { background:rgba(255,255,255,0.1); color:#fff; border:1.5px solid rgba(255,255,255,0.35); padding:13px 26px; border-radius:50px; font-family:'DM Sans',sans-serif; font-size:0.97rem; font-weight:500; cursor:pointer; transition:all 0.2s; }
+  .btn-outline:hover { background:rgba(255,255,255,0.2); }
+
+  /* STATS */
+  .stats-bar { background:var(--branco); padding:18px 20px; display:flex; justify-content:center; gap:40px; border-bottom:1px solid var(--areia-escuro); flex-wrap:wrap; }
+  .stat { text-align:center; }
+  .stat-num { font-family:'Syne',sans-serif; font-size:1.45rem; font-weight:800; color:var(--verde); }
+  .stat-label { font-size:0.78rem; color:var(--texto-suave); margin-top:2px; }
+
+  /* AVISO GOLPE — banner vermelho */
+  .aviso-banner {
+    background: var(--vermelho-claro);
+    border-left: 4px solid var(--vermelho);
+    max-width: 900px; margin: 18px auto 0; border-radius: 12px;
+    padding: 14px 16px; display: flex; gap: 12px; align-items: flex-start;
+    position: relative;
+  }
+  .aviso-banner .aviso-icon { font-size: 1.5rem; flex-shrink: 0; margin-top: 1px; }
+  .aviso-banner .aviso-body { flex: 1; }
+  .aviso-banner .aviso-title { font-family:'Syne',sans-serif; font-weight:700; font-size:0.92rem; color:var(--vermelho); margin-bottom:4px; }
+  .aviso-banner .aviso-text { font-size:0.82rem; color:#7a1f1f; line-height:1.5; }
+  .aviso-banner .aviso-text strong { font-weight:700; }
+  .aviso-close { position:absolute; top:10px; right:12px; background:none; border:none; font-size:1.1rem; color:#aaa; cursor:pointer; line-height:1; }
+  .aviso-close:hover { color:var(--vermelho); }
+
+  /* AVISO ISENÇÃO — banner amarelo */
+  .aviso-isencao {
+    background: var(--amarelo-claro);
+    border-left: 4px solid var(--amarelo);
+    max-width: 900px; margin: 10px auto 0; border-radius: 12px;
+    padding: 12px 16px; display: flex; gap: 10px; align-items: flex-start;
+  }
+  .aviso-isencao .aviso-icon { font-size: 1.3rem; flex-shrink: 0; }
+  .aviso-isencao .aviso-text { font-size: 0.8rem; color: #7a5c00; line-height: 1.5; }
+  .aviso-isencao .aviso-text strong { font-weight: 700; }
+
+  /* SECTION */
+  .section { max-width:900px; margin:0 auto; padding:36px 16px; }
+  .section-title { font-family:'Syne',sans-serif; font-size:1.2rem; font-weight:700; color:var(--texto); margin-bottom:18px; }
+
+  /* LEGENDA VERIFICACAO */
+  .legenda-verificacao {
+    background: var(--branco); border-radius: 12px; padding: 14px 18px;
+    display: flex; gap: 20px; flex-wrap: wrap; margin-bottom: 18px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05); font-size: 0.8rem; color: var(--texto-suave);
+    align-items: center;
+  }
+  .legenda-verificacao .lv-item { display:flex; align-items:center; gap:6px; }
+  .legenda-verificacao strong { color: var(--texto); }
+
+  /* CATS GRID */
+  .cats-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(100px,1fr)); gap:10px; }
+  .cat-item { background:var(--branco); border:2px solid transparent; border-radius:var(--radius-sm); padding:14px 8px; text-align:center; cursor:pointer; transition:all 0.18s; box-shadow:0 2px 8px rgba(0,0,0,0.05); }
+  .cat-item:hover { border-color:var(--verde-claro); transform:translateY(-2px); box-shadow:var(--sombra); }
+  .cat-icon { font-size:1.6rem; margin-bottom:5px; }
+  .cat-name { font-size:0.75rem; font-weight:500; color:var(--texto-suave); line-height:1.2; }
+
+  /* SEARCH */
+  .search-box { background:var(--branco); border-radius:var(--radius); padding:20px; box-shadow:var(--sombra); margin-bottom:20px; }
+  .search-row { display:flex; gap:10px; margin-bottom:14px; flex-wrap:wrap; }
+  .search-input { flex:1; min-width:150px; border:1.5px solid var(--areia-escuro); border-radius:10px; padding:11px 15px; font-family:'DM Sans',sans-serif; font-size:0.94rem; color:var(--texto); background:var(--areia); outline:none; transition:border-color 0.18s; }
+  .search-input:focus { border-color:var(--verde-claro); background:#fff; }
+  .search-input::placeholder { color:#aaa; }
+  select.search-input { cursor:pointer; }
+  .btn-search { background:var(--verde); color:#fff; border:none; padding:11px 22px; border-radius:10px; font-family:'DM Sans',sans-serif; font-size:0.94rem; font-weight:600; cursor:pointer; transition:background 0.18s; white-space:nowrap; }
+  .btn-search:hover { background:#1B4332; }
+  .divider { height:1px; background:var(--areia-escuro); margin:8px 0 16px; }
+  .search-id-row { display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
+  .search-id-label { font-size:0.82rem; color:var(--texto-suave); white-space:nowrap; }
+
+  /* CARDS */
+  .cards-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(290px,1fr)); gap:16px; }
+  .card { background:var(--branco); border-radius:var(--radius); padding:20px; box-shadow:var(--sombra); transition:all 0.22s; border:1.5px solid transparent; position:relative; }
+  .card:hover { transform:translateY(-3px); box-shadow:var(--sombra-forte); border-color:var(--verde-menta); }
+  .card-top { display:flex; align-items:flex-start; gap:13px; margin-bottom:12px; }
+  .card-avatar { width:48px; height:48px; border-radius:14px; display:flex; align-items:center; justify-content:center; font-size:1.4rem; background:var(--verde-menta); flex-shrink:0; }
+  .card-info { flex:1; min-width:0; }
+  .card-name { font-family:'Syne',sans-serif; font-size:1rem; font-weight:700; color:var(--texto); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .card-service { font-size:0.82rem; color:var(--verde); font-weight:600; margin-top:1px; }
+  .card-bairro { font-size:0.78rem; color:var(--texto-suave); margin-top:2px; }
+  .verified-badge { display:inline-flex; align-items:center; gap:3px; border-radius:20px; padding:2px 8px; font-size:0.71rem; font-weight:600; margin-top:4px; }
+  .verified-yes { background:#E8F5E9; color:#2D6A4F; }
+  .verified-no { background:#f5f5f5; color:#999; }
+  .card-id { font-size:0.71rem; color:#bbb; margin-bottom:10px; font-family:monospace; letter-spacing:0.5px; }
+  .card-desc { font-size:0.83rem; color:var(--texto-suave); line-height:1.5; margin-bottom:12px; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
+  .card-stars { display:flex; align-items:center; gap:6px; margin-bottom:12px; }
+  .stars { color:#F4A261; font-size:0.9rem; letter-spacing:1px; }
+  .rating-num { font-weight:700; font-size:0.88rem; color:var(--texto); }
+  .rating-count { font-size:0.77rem; color:var(--texto-suave); }
+  .recommended-tag { position:absolute; top:14px; right:14px; background:var(--laranja); color:#fff; font-size:0.68rem; font-weight:700; padding:3px 8px; border-radius:20px; }
+  .card-actions { display:flex; gap:8px; flex-wrap:wrap; }
+  .btn-wpp { flex:1; background:#25D366; color:#fff; border:none; padding:10px 12px; border-radius:9px; font-family:'DM Sans',sans-serif; font-size:0.83rem; font-weight:600; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:5px; transition:background 0.18s; }
+  .btn-wpp:hover { background:#1DAA54; }
+  .btn-tel { background:var(--areia-escuro); color:var(--texto); border:none; padding:10px 12px; border-radius:9px; font-family:'DM Sans',sans-serif; font-size:0.83rem; font-weight:500; cursor:pointer; display:flex; align-items:center; gap:5px; transition:background 0.18s; white-space:nowrap; }
+  .btn-tel:hover { background:#d0c8bb; }
+  .btn-rate { background:var(--laranja-claro); color:var(--laranja); border:none; padding:10px 12px; border-radius:9px; font-family:'DM Sans',sans-serif; font-size:0.83rem; font-weight:600; cursor:pointer; display:flex; align-items:center; gap:4px; transition:background 0.18s; }
+  .btn-rate:hover { background:#f7c897; }
+  .btn-denunciar {
+    width:100%; margin-top:8px; background:none; border:1.5px solid #e8c5c0;
+    color:#a93226; border-radius:9px; padding:7px 12px; font-family:'DM Sans',sans-serif;
+    font-size:0.78rem; font-weight:600; cursor:pointer; transition:all 0.18s;
+    display:flex; align-items:center; justify-content:center; gap:5px;
+  }
+  .btn-denunciar:hover { background:var(--vermelho-claro); border-color:var(--vermelho); }
+
+  /* MODAL DENÚNCIA */
+  .modal-denuncia { max-width:440px; }
+  .modal-denuncia .modal-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:14px; }
+  .modal-denuncia .modal-title { font-family:'Syne',sans-serif; font-size:1.05rem; font-weight:800; color:var(--vermelho); display:flex; align-items:center; gap:8px; }
+  .modal-denuncia .modal-close-btn { background:none; border:1.5px solid var(--areia-escuro); border-radius:50%; width:30px; height:30px; font-size:0.9rem; cursor:pointer; color:var(--texto-suave); display:flex; align-items:center; justify-content:center; }
+  .modal-denuncia .modal-close-btn:hover { background:var(--areia-escuro); }
+  .modal-denuncia .modal-sub { font-size:0.83rem; color:var(--texto-suave); margin-bottom:16px; }
+
+  /* Motivos */
+  .motivo-list { display:flex; flex-direction:column; gap:8px; margin-bottom:16px; }
+  .motivo-item {
+    border:1.5px solid var(--areia-escuro); border-radius:10px; padding:11px 14px;
+    cursor:pointer; display:flex; align-items:center; gap:10px; font-size:0.88rem;
+    color:var(--texto); background:var(--areia); transition:all 0.15s; font-weight:500;
+  }
+  .motivo-item:hover { border-color:var(--vermelho); background:var(--vermelho-claro); color:var(--vermelho); }
+  .motivo-item.selected { border-color:var(--vermelho); background:var(--vermelho-claro); color:var(--vermelho); font-weight:700; }
+  .motivo-icon { font-size:1.15rem; flex-shrink:0; }
+
+  /* Resumo da denúncia */
+  .denuncia-resumo {
+    background:#fafafa; border:1.5px solid var(--areia-escuro); border-radius:12px;
+    padding:14px 16px; margin-bottom:14px; display:none;
+  }
+  .denuncia-resumo.show { display:block; }
+  .denuncia-resumo .resumo-title { font-size:0.78rem; font-weight:700; color:var(--texto-suave); text-transform:uppercase; letter-spacing:0.5px; margin-bottom:10px; }
+  .denuncia-resumo .resumo-row { display:flex; gap:8px; margin-bottom:7px; font-size:0.83rem; align-items:flex-start; }
+  .denuncia-resumo .resumo-row:last-child { margin-bottom:0; }
+  .denuncia-resumo .resumo-label { color:var(--texto-suave); min-width:72px; flex-shrink:0; }
+  .denuncia-resumo .resumo-val { color:var(--texto); font-weight:600; word-break:break-word; }
+  .denuncia-resumo .resumo-val.motivo-val { color:var(--vermelho); }
+
+  /* Orientações (amarelo) */
+  .denuncia-orientacao {
+    background:var(--amarelo-claro); border-left:3px solid var(--amarelo);
+    border-radius:0 10px 10px 0; padding:12px 14px; margin-bottom:14px;
+    font-size:0.82rem; color:#6b4a00; line-height:1.55; display:none;
+  }
+  .denuncia-orientacao.show { display:block; }
+  .denuncia-orientacao strong { font-weight:700; color:#5a3d00; }
+  .denuncia-orientacao ol { margin:8px 0 0 16px; }
+  .denuncia-orientacao ol li { margin-bottom:4px; }
+
+  .btn-enviar-denuncia {
+    width:100%; background:#25D366; color:#fff; border:none; border-radius:10px;
+    padding:13px; font-family:'Syne',sans-serif; font-size:0.95rem; font-weight:700;
+    cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px;
+    transition:background 0.18s; display:none;
+  }
+  .btn-enviar-denuncia.show { display:flex; }
+  .btn-enviar-denuncia:hover { background:#1DAA54; }
+  .btn-cancel-denuncia {
+    width:100%; background:none; border:none; color:var(--texto-suave); font-size:0.83rem;
+    cursor:pointer; margin-top:10px; font-family:'DM Sans',sans-serif; padding:4px;
+  }
+  .btn-cancel-denuncia:hover { color:var(--texto); }
+  .tel-reveal { background:var(--verde-menta); color:var(--verde); border-radius:8px; padding:8px 12px; font-size:0.88rem; font-weight:600; margin-top:8px; display:none; align-items:center; gap:6px; }
+  .tel-reveal.open { display:flex; }
+
+  /* EMPTY */
+  .empty-state { text-align:center; padding:60px 20px; color:var(--texto-suave); }
+  .empty-icon { font-size:3rem; margin-bottom:12px; }
+  .empty-state h3 { font-family:'Syne',sans-serif; font-size:1.1rem; color:var(--texto); margin-bottom:6px; }
+  .results-info { font-size:0.83rem; color:var(--texto-suave); margin-bottom:14px; padding-left:2px; }
+
+  /* FORM */
+  .form-card { background:var(--branco); border-radius:var(--radius); padding:28px 22px; box-shadow:var(--sombra); max-width:600px; margin:0 auto; }
+  .form-title { font-family:'Syne',sans-serif; font-size:1.35rem; font-weight:800; color:var(--verde); margin-bottom:6px; }
+  .form-subtitle { font-size:0.88rem; color:var(--texto-suave); margin-bottom:22px; line-height:1.5; }
+  .form-group { margin-bottom:16px; }
+  label { display:block; font-size:0.84rem; font-weight:600; color:var(--texto); margin-bottom:6px; }
+  .required { color:var(--laranja); }
+  .form-input { width:100%; border:1.5px solid var(--areia-escuro); border-radius:10px; padding:12px 15px; font-family:'DM Sans',sans-serif; font-size:0.94rem; color:var(--texto); background:var(--areia); outline:none; transition:border-color 0.18s; }
+  .form-input:focus { border-color:var(--verde-claro); background:#fff; }
+  textarea.form-input { resize:vertical; min-height:88px; }
+  select.form-input { cursor:pointer; }
+  .form-row { display:flex; gap:12px; }
+  .form-row .form-group { flex:1; }
+  .form-hint { font-size:0.77rem; color:var(--texto-suave); margin-top:4px; }
+
+  /* CNPJ verificação */
+  .cnpj-strip {
+    background: #EAF6EE; border: 1.5px solid var(--verde-claro);
+    border-radius: 10px; padding: 12px 14px; margin-top: 8px;
+    display: flex; align-items: center; gap: 8px; display:none;
+  }
+  .cnpj-strip.show { display:flex; }
+  .cnpj-strip .cs-icon { font-size:1.2rem; }
+  .cnpj-strip .cs-text { font-size:0.8rem; color:var(--verde); font-weight:600; }
+
+  .cnpj-field-wrap { position: relative; }
+  .cnpj-field-wrap .cnpj-ok-icon {
+    position:absolute; right:12px; top:50%; transform:translateY(-50%);
+    font-size:1.1rem; display:none;
+  }
+  .cnpj-field-wrap.valid .cnpj-ok-icon { display:block; }
+  .cnpj-field-wrap.valid .form-input { border-color: var(--verde-claro); background:#f0fbf4; }
+
+  .cats-select-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(115px,1fr)); gap:8px; }
+  .cat-select-item { border:2px solid var(--areia-escuro); border-radius:9px; padding:10px 8px; text-align:center; cursor:pointer; transition:all 0.15s; background:var(--areia); font-size:0.77rem; font-weight:500; color:var(--texto-suave); }
+  .cat-select-item:hover { border-color:var(--verde-claro); }
+  .cat-select-item.selected { border-color:var(--verde); background:var(--verde-menta); color:var(--verde); font-weight:700; }
+  .cat-select-icon { font-size:1.3rem; display:block; margin-bottom:4px; }
+  .btn-submit { width:100%; background:var(--verde); color:#fff; border:none; padding:15px; border-radius:12px; font-family:'Syne',sans-serif; font-size:1rem; font-weight:700; cursor:pointer; margin-top:8px; transition:all 0.2s; letter-spacing:0.3px; }
+  .btn-submit:hover { background:#1B4332; transform:translateY(-1px); }
+  .info-strip { background:var(--laranja-claro); border-left:3px solid var(--laranja); border-radius:0 8px 8px 0; padding:10px 14px; font-size:0.83rem; color:#7a3a20; margin-bottom:20px; line-height:1.5; }
+  .success-msg { background:var(--verde-menta); border:1.5px solid var(--verde-claro); border-radius:var(--radius-sm); padding:18px; margin-bottom:20px; display:none; }
+  .success-msg.show { display:block; }
+  .success-msg p { font-size:0.9rem; color:var(--verde); font-weight:700; margin-bottom:8px; }
+  .id-label { font-size:0.78rem; color:var(--texto-suave); margin-bottom:4px; }
+  .id-value { font-family:monospace; font-size:1.15rem; font-weight:700; color:var(--verde); letter-spacing:2px; }
+  .id-hint { font-size:0.76rem; color:#555; margin-top:8px; }
+
+  /* MODAL AVALIAÇÃO */
+  .modal-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.45); z-index:200; align-items:center; justify-content:center; padding:16px; backdrop-filter:blur(3px); }
+  .modal-overlay.open { display:flex; }
+  .modal { background:var(--branco); border-radius:var(--radius); padding:28px 22px; max-width:400px; width:100%; box-shadow:0 16px 60px rgba(0,0,0,0.25); animation:slideUp 0.25s ease; }
+  @keyframes slideUp { from{transform:translateY(30px);opacity:0} to{transform:translateY(0);opacity:1} }
+  .modal-title { font-family:'Syne',sans-serif; font-size:1.1rem; font-weight:800; margin-bottom:6px; }
+  .modal-sub { font-size:0.85rem; color:var(--texto-suave); margin-bottom:16px; }
+  .stars-select { display:flex; gap:10px; justify-content:center; margin:16px 0; }
+  .star-btn { font-size:2.2rem; cursor:pointer; color:#ddd; transition:all 0.15s; background:none; border:none; line-height:1; }
+  .star-btn.active { color:#F4A261; transform:scale(1.1); }
+  .star-label { text-align:center; font-size:0.85rem; color:var(--texto-suave); min-height:20px; }
+  .modal-actions { display:flex; gap:10px; margin-top:18px; }
+  .btn-cancel { flex:1; background:var(--areia-escuro); color:var(--texto); border:none; padding:12px; border-radius:10px; font-family:'DM Sans',sans-serif; font-size:0.93rem; font-weight:600; cursor:pointer; }
+  .btn-cancel:hover { background:#ccc; }
+  .btn-confirm { flex:1; background:var(--laranja); color:#fff; border:none; padding:12px; border-radius:10px; font-family:'DM Sans',sans-serif; font-size:0.93rem; font-weight:700; cursor:pointer; }
+  .btn-confirm:hover { background:#CF5A3E; }
+
+  /* MODAL AVISO WPP */
+  .modal-aviso .modal-icon { font-size:2.5rem; text-align:center; margin-bottom:10px; }
+  .modal-aviso .aviso-list { list-style:none; padding:0; margin:12px 0; }
+  .modal-aviso .aviso-list li { font-size:0.85rem; color:var(--texto-suave); padding:6px 0; border-bottom:1px solid var(--areia-escuro); display:flex; gap:8px; align-items:flex-start; line-height:1.4; }
+  .modal-aviso .aviso-list li:last-child { border:none; }
+  .modal-aviso .aviso-list li .li-icon { flex-shrink:0; margin-top:1px; }
+  .btn-confirm-green { flex:1; background:#25D366; color:#fff; border:none; padding:12px; border-radius:10px; font-family:'DM Sans',sans-serif; font-size:0.93rem; font-weight:700; cursor:pointer; }
+  .btn-confirm-green:hover { background:#1DAA54; }
+
+  /* TOAST */
+  .toast { position:fixed; bottom:24px; left:50%; transform:translateX(-50%) translateY(120px); background:var(--verde); color:#fff; padding:14px 24px; border-radius:50px; font-size:0.9rem; font-weight:600; z-index:500; box-shadow:var(--sombra-forte); transition:transform 0.35s cubic-bezier(.34,1.56,.64,1); white-space:nowrap; }
+  .toast.show { transform:translateX(-50%) translateY(0); }
+
+  /* MOBILE NAV */
+  .mobile-nav { display:none; position:fixed; bottom:0; left:0; right:0; background:var(--verde); padding:10px 0 14px; z-index:100; box-shadow:0 -4px 20px rgba(0,0,0,0.15); }
+  .mobile-nav-inner { display:flex; justify-content:space-around; }
+  .mobile-nav-btn { display:flex; flex-direction:column; align-items:center; gap:3px; background:none; border:none; color:rgba(255,255,255,0.6); font-family:'DM Sans',sans-serif; font-size:0.67rem; font-weight:500; cursor:pointer; padding:0 12px; transition:color 0.15s; }
+  .mobile-nav-btn .m-icon { font-size:1.25rem; }
+  .mobile-nav-btn.active { color:#fff; }
+
+  @media(max-width:540px) {
+    .hero h1 { font-size:1.65rem; }
+    .stats-bar { gap:20px; }
+    nav { display:none; }
+    .mobile-nav { display:block; }
+    body { padding-bottom:72px; }
+    .form-row { flex-direction:column; gap:0; }
+    .cards-grid { grid-template-columns:1fr; }
+    .search-row { flex-direction:column; }
+    .aviso-banner { margin:12px 12px 0; }
+    .aviso-isencao { margin:8px 12px 0; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <div class="logo" onclick="showPage('home')">🤝 Comuniq <span class="logo-badge">BETA</span></div>
+    <nav>
+      <button class="nav-btn active" onclick="showPage('home')">Início</button>
+      <button class="nav-btn" onclick="showPage('busca')">Buscar</button>
+      <button class="nav-btn" onclick="showPage('cadastro')">Cadastrar</button>
+    </nav>
+  </div>
+</header>
+
+<!-- ════ HOME ════ -->
+<div id="page-home" class="page active">
+  <div class="hero">
+    <h1>Serviços da <em>comunidade</em>,<br>para a comunidade 🏘️</h1>
+    <p>Encontre profissionais do seu bairro de forma rápida e fácil. Negocie diretamente pelo WhatsApp.</p>
+    <div class="hero-btns">
+      <button class="btn-primary" onclick="showPage('busca')">🔍 Buscar Serviço</button>
+      <button class="btn-outline" onclick="showPage('cadastro')">📝 Me Cadastrar</button>
+    </div>
+  </div>
+
+  <div class="stats-bar">
+    <div class="stat"><div class="stat-num" id="stat-total">0</div><div class="stat-label">Profissionais</div></div>
+    <div class="stat"><div class="stat-num" id="stat-verified">0</div><div class="stat-label">Verificados ✅</div></div>
+    <div class="stat"><div class="stat-num">5</div><div class="stat-label">Bairros</div></div>
+  </div>
+
+  <!-- ⚠️ AVISO GOLPES -->
+  <div class="aviso-banner" id="aviso-golpe">
+    <div class="aviso-icon">🚨</div>
+    <div class="aviso-body">
+      <div class="aviso-title">Atenção: cuidado com golpes!</div>
+      <div class="aviso-text">
+        Prefira sempre prestadores com o selo <strong>✅ Verificado</strong> — eles enviaram CNPJ e são mais confiáveis.<br>
+        <strong>Nunca faça pagamentos adiantados</strong> sem conhecer o profissional pessoalmente. Em caso de suspeita, não continue a negociação.
+      </div>
+    </div>
+    <button class="aviso-close" onclick="fecharAviso()">✕</button>
+  </div>
+
+  <!-- ℹ️ ISENÇÃO DE RESPONSABILIDADE -->
+  <div class="aviso-isencao">
+    <div class="aviso-icon">ℹ️</div>
+    <div class="aviso-text">
+      <strong>O Comuniq não se responsabiliza</strong> por negociações, acordos ou conversas realizadas diretamente entre clientes e prestadores via WhatsApp ou qualquer outro canal. Somos apenas uma vitrine de profissionais locais.
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">🏅 Mais Recomendados</div>
+    <div class="cards-grid" id="home-recommended"></div>
+  </div>
+  <div class="section" style="padding-top:0">
+    <div class="section-title">📂 Navegar por Categoria</div>
+    <div class="cats-grid" id="home-cats"></div>
+  </div>
+</div>
+
+<!-- ════ BUSCA ════ -->
+<div id="page-busca" class="page">
+  <div class="section">
+    <div class="section-title">🔍 Encontrar Profissional</div>
+
+    <!-- Legenda verificação -->
+    <div class="legenda-verificacao">
+      <div class="lv-item"><span>✅</span><span><strong>Verificado:</strong> prestador enviou CNPJ — mais confiável</span></div>
+      <div class="lv-item"><span>❓</span><span><strong>Não verificado:</strong> sem CNPJ cadastrado — tome mais cuidado</span></div>
+    </div>
+
+    <div class="search-box">
+      <div class="search-row">
+        <input type="text" id="search-nome" class="search-input" placeholder="Buscar por nome...">
+        <select id="search-cat" class="search-input"><option value="">Todos os serviços</option></select>
+        <select id="search-bairro" class="search-input">
+          <option value="">Todos os bairros</option>
+          <option>Cidade Tiradentes</option>
+          <option>Guaianases</option>
+          <option>Capão Redondo</option>
+          <option>Heliópolis</option>
+          <option>Brasilândia</option>
+        </select>
+        <button class="btn-search" onclick="buscar()">Buscar</button>
+      </div>
+      <div class="divider"></div>
+      <div class="search-id-row">
+        <span class="search-id-label">🆔 Buscar por ID:</span>
+        <input type="text" id="search-id" class="search-input" placeholder="Ex: CQ-00001" style="flex:1;min-width:140px">
+        <button class="btn-search" onclick="buscarPorId()">Buscar</button>
+      </div>
+    </div>
+
+    <!-- Aviso isenção na busca -->
+    <div class="aviso-isencao" style="margin:0 0 14px">
+      <div class="aviso-icon">⚠️</div>
+      <div class="aviso-text">
+        <strong>Negocie com segurança.</strong> O Comuniq <strong>não intermedia</strong> o contato entre você e o prestador. Toda conversa e negociação é feita diretamente via WhatsApp, sob responsabilidade das partes. Desconfie de pedidos de pagamento antecipado.
+      </div>
+    </div>
+
+    <div class="results-info" id="results-info"></div>
+    <div class="cards-grid" id="busca-results"></div>
+    <div class="empty-state" id="busca-empty" style="display:none">
+      <div class="empty-icon">🔎</div>
+      <h3>Nenhum resultado encontrado</h3>
+      <p>Tente outros termos ou categorias.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ════ CADASTRO ════ -->
+<div id="page-cadastro" class="page">
+  <div class="section">
+    <div class="form-card">
+      <div class="form-title">📝 Cadastrar Serviço</div>
+      <div class="form-subtitle">Sem criar conta ou senha! Preencha seus dados e comece a receber clientes pela Comuniq.</div>
+      <div class="info-strip">💡 Após o cadastro você receberá um <strong>ID único</strong>. Guarde esse código — clientes podem te achar diretamente por ele!</div>
+
+      <div class="success-msg" id="cadastro-success">
+        <p>✅ Cadastro realizado com sucesso!</p>
+        <div class="id-label">Seu ID único é:</div>
+        <div class="id-value" id="success-id">—</div>
+        <div class="id-hint">📸 Tire uma foto ou anote esse código. Com ele, clientes te acham direto na busca!</div>
+      </div>
+
+      <div class="form-group">
+        <label>Nome completo <span class="required">*</span></label>
+        <input type="text" id="f-nome" class="form-input" placeholder="Ex: João da Silva">
+      </div>
+      <div class="form-group">
+        <label>Tipo de serviço <span class="required">*</span></label>
+        <div class="cats-select-grid" id="form-cats"></div>
+      </div>
+      <div class="form-group">
+        <label>Descrição / Experiência <span class="required">*</span></label>
+        <textarea id="f-desc" class="form-input" placeholder="Fale sobre você, sua experiência e o que faz de melhor..."></textarea>
+      </div>
+      <div class="form-group">
+        <label>Bairro onde atende <span class="required">*</span></label>
+        <select id="f-bairro" class="form-input">
+          <option value="">Selecione o bairro...</option>
+          <option>Cidade Tiradentes</option>
+          <option>Guaianases</option>
+          <option>Capão Redondo</option>
+          <option>Heliópolis</option>
+          <option>Brasilândia</option>
+        </select>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>WhatsApp <span class="required">*</span></label>
+          <input type="tel" id="f-wpp" class="form-input" placeholder="(11) 99999-0000">
+          <div class="form-hint">Com DDD, apenas números</div>
+        </div>
+        <div class="form-group">
+          <label>Telefone</label>
+          <input type="tel" id="f-tel" class="form-input" placeholder="(11) 3333-0000">
+          <div class="form-hint">Opcional</div>
+        </div>
+      </div>
+
+      <!-- CNPJ para verificação -->
+      <div class="form-group">
+        <label>CNPJ <span style="font-size:0.78rem;font-weight:400;color:var(--texto-suave)">(opcional — garante o selo ✅ Verificado)</span></label>
+        <div class="cnpj-field-wrap" id="cnpj-wrap">
+          <input type="text" id="f-cnpj" class="form-input" placeholder="00.000.000/0001-00"
+            maxlength="18" oninput="onCnpjInput(this)" autocomplete="off">
+          <span class="cnpj-ok-icon">✅</span>
+        </div>
+        <div class="cnpj-strip" id="cnpj-strip">
+          <span class="cs-icon">🔒</span>
+          <span class="cs-text">CNPJ válido! Seu perfil receberá o selo <strong>✅ Verificado</strong> automaticamente.</span>
+        </div>
+        <div class="form-hint">Seu CNPJ é usado apenas para validar o selo. Não será exibido publicamente.</div>
+      </div>
+
+      <button class="btn-submit" onclick="cadastrar()">✅ Finalizar Cadastro Gratuito</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL AVALIAÇÃO -->
+<div class="modal-overlay" id="modal-rating">
+  <div class="modal">
+    <div class="modal-title">⭐ Avaliar Prestador</div>
+    <div class="modal-sub" id="modal-rating-name">Como foi o serviço?</div>
+    <div class="stars-select" id="stars-container">
+      <button class="star-btn" onclick="selectStar(1)">★</button>
+      <button class="star-btn" onclick="selectStar(2)">★</button>
+      <button class="star-btn" onclick="selectStar(3)">★</button>
+      <button class="star-btn" onclick="selectStar(4)">★</button>
+      <button class="star-btn" onclick="selectStar(5)">★</button>
+    </div>
+    <div class="star-label" id="star-label">Toque em uma estrela para avaliar</div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeModal()">Cancelar</button>
+      <button class="btn-confirm" onclick="confirmarAvaliacao()">Enviar ⭐</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL AVISO ANTES DO WHATSAPP -->
+<div class="modal-overlay" id="modal-wpp">
+  <div class="modal modal-aviso">
+    <div class="modal-icon">📲</div>
+    <div class="modal-title">Antes de continuar</div>
+    <div class="modal-sub">Você está prestes a contatar <strong id="wpp-nome-modal">este profissional</strong> pelo WhatsApp.</div>
+    <ul class="aviso-list">
+      <li><span class="li-icon">⚠️</span><span><strong>Nunca pague adiantado</strong> antes de conhecer o serviço e o profissional.</span></li>
+      <li><span class="li-icon">🔍</span><span>Prefira profissionais com o selo <strong>✅ Verificado</strong> — eles têm CNPJ confirmado.</span></li>
+      <li><span class="li-icon">📵</span><span>Desconfie de quem pede <strong>PIX ou transferência antecipada</strong> sem orçamento formal.</span></li>
+      <li><span class="li-icon">ℹ️</span><span>O <strong>Comuniq não se responsabiliza</strong> por negociações feitas fora desta plataforma.</span></li>
+    </ul>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="fecharModalWpp()">Cancelar</button>
+      <button class="btn-confirm-green" id="btn-ir-wpp" onclick="confirmarWpp()">Entendi, ir ao WhatsApp →</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL DENÚNCIA -->
+<div class="modal-overlay" id="modal-denuncia">
+  <div class="modal modal-denuncia">
+
+    <div class="modal-header">
+      <div class="modal-title">🚩 Denunciar Prestador</div>
+      <button class="modal-close-btn" onclick="fecharDenuncia()">✕</button>
+    </div>
+    <div class="modal-sub">Selecione o motivo da denúncia:</div>
+
+    <!-- Lista de motivos -->
+    <div class="motivo-list" id="motivo-list">
+      <div class="motivo-item" onclick="selecionarMotivo(this,'💰 Golpe ou tentativa de fraude')">
+        <span class="motivo-icon">💰</span> Golpe ou tentativa de fraude
+      </div>
+      <div class="motivo-item" onclick="selecionarMotivo(this,'😤 Informações falsas no perfil')">
+        <span class="motivo-icon">😤</span> Informações falsas no perfil
+      </div>
+      <div class="motivo-item" onclick="selecionarMotivo(this,'😡 Comportamento abusivo ou ameaças')">
+        <span class="motivo-icon">😡</span> Comportamento abusivo ou ameaças
+      </div>
+      <div class="motivo-item" onclick="selecionarMotivo(this,'📵 Número de contato errado ou inexistente')">
+        <span class="motivo-icon">📵</span> Número de contato errado ou inexistente
+      </div>
+      <div class="motivo-item" onclick="selecionarMotivo(this,'❌ Serviço não realizado após pagamento')">
+        <span class="motivo-icon">❌</span> Serviço não realizado após pagamento
+      </div>
+      <div class="motivo-item" onclick="selecionarMotivo(this,'📝 Outro motivo')">
+        <span class="motivo-icon">📝</span> Outro motivo
+      </div>
+    </div>
+
+    <!-- Resumo da denúncia (aparece após selecionar motivo) -->
+    <div class="denuncia-resumo" id="denuncia-resumo">
+      <div class="resumo-title">📋 Resumo da denúncia</div>
+      <div class="resumo-row">
+        <span class="resumo-label">Prestador ID:</span>
+        <span class="resumo-val" id="resumo-id">—</span>
+      </div>
+      <div class="resumo-row">
+        <span class="resumo-label">Nome:</span>
+        <span class="resumo-val" id="resumo-nome">—</span>
+      </div>
+      <div class="resumo-row">
+        <span class="resumo-label">Motivo:</span>
+        <span class="resumo-val motivo-val" id="resumo-motivo">—</span>
+      </div>
+    </div>
+
+    <!-- Orientações (aparece após selecionar motivo) -->
+    <div class="denuncia-orientacao" id="denuncia-orientacao">
+      <strong>ℹ️ Como vamos orientar sua denúncia:</strong>
+      <ol>
+        <li>Ao clicar em "Enviar denúncia", você será direcionado ao nosso <strong>WhatsApp oficial</strong> com os dados desta denúncia já preenchidos.</li>
+        <li>Nossa equipe irá <strong>analisar o caso</strong> e poderá <strong>remover o perfil</strong> se comprovada a irregularidade.</li>
+        <li>Se você sofreu um golpe, <strong>registre um Boletim de Ocorrência</strong> na delegacia mais próxima ou pelo site da SESP do seu estado.</li>
+        <li><strong>Nunca faça pagamentos adiantados</strong> sem um acordo formal e sem conhecer o profissional pessoalmente.</li>
+      </ol>
+      <br>
+      <strong>Não nos responsabilizamos</strong> por negociações realizadas fora do Comuniq — mas tomamos todas as denúncias a sério e agimos para proteger a comunidade.
+    </div>
+
+    <!-- Botão enviar (aparece após selecionar motivo) -->
+    <button class="btn-enviar-denuncia" id="btn-enviar-denuncia" onclick="enviarDenuncia()">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.122.555 4.113 1.524 5.84L0 24l6.335-1.483A11.95 11.95 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-1.933 0-3.742-.516-5.295-1.415l-.38-.225-3.76.88.92-3.658-.247-.396A9.932 9.932 0 012 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z"/></svg>
+      Enviar denúncia pelo WhatsApp
+    </button>
+    <button class="btn-cancel-denuncia" onclick="fecharDenuncia()">Cancelar</button>
+
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<div class="mobile-nav">
+  <div class="mobile-nav-inner">
+    <button class="mobile-nav-btn active" id="mnav-home" onclick="showPage('home')"><span class="m-icon">🏠</span>Início</button>
+    <button class="mobile-nav-btn" id="mnav-busca" onclick="showPage('busca')"><span class="m-icon">🔍</span>Buscar</button>
+    <button class="mobile-nav-btn" id="mnav-cadastro" onclick="showPage('cadastro')"><span class="m-icon">📝</span>Cadastrar</button>
+  </div>
+</div>
+
+<script>
+const CATS = [
+  {id:'pedreiro',nome:'Pedreiro',icon:'🧱'},
+  {id:'eletricista',nome:'Eletricista',icon:'⚡'},
+  {id:'encanador',nome:'Encanador',icon:'🔧'},
+  {id:'pintor',nome:'Pintor',icon:'🖌️'},
+  {id:'marceneiro',nome:'Marceneiro',icon:'🪵'},
+  {id:'diarista',nome:'Diarista',icon:'🧹'},
+  {id:'cabeleireiro',nome:'Cabeleireiro(a)',icon:'✂️'},
+  {id:'manicure',nome:'Manicure',icon:'💅'},
+  {id:'costureira',nome:'Costureira',icon:'🧵'},
+  {id:'doceiro',nome:'Doceiro(a)',icon:'🍰'},
+  {id:'mecanico',nome:'Mecânico',icon:'🔩'},
+  {id:'informatica',nome:'Informática',icon:'💻'},
+  {id:'jardineiro',nome:'Jardineiro',icon:'🌱'},
+  {id:'cuidador',nome:'Cuidador(a)',icon:'🤲'},
+  {id:'fotografo',nome:'Fotógrafo(a)',icon:'📷'},
+  {id:'outros',nome:'Outros',icon:'🛠️'}
+];
+
+const KEY = 'comuniq_v3';
+let selectedCat = '';
+let currentRatingId = null;
+let currentStar = 0;
+let pendingCatFilter = '';
+let pendingWppUrl = '';
+let pendingWppNome = '';
+
+// ─── STORAGE ──────────────────────────────────────────────────
+function getP(){ try{ return JSON.parse(localStorage.getItem(KEY))||[]; }catch{ return []; } }
+function setP(l){ localStorage.setItem(KEY, JSON.stringify(l)); }
+function media(av){ if(!av||!av.length) return 0; return av.reduce((a,b)=>a+b,0)/av.length; }
+function stars(m){ if(!m) return '☆☆☆☆☆'; let s=''; for(let i=1;i<=5;i++) s+=i<=Math.round(m)?'★':'☆'; return s; }
+function genId(){ const l=getP(); return 'CQ-'+(l.length+1).toString().padStart(5,'0'); }
+
+// ─── NAVEGAÇÃO ────────────────────────────────────────────────
+function showPage(name){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById('page-'+name).classList.add('active');
+  document.querySelectorAll('.nav-btn').forEach((b,i)=>b.classList.toggle('active',['home','busca','cadastro'][i]===name));
+  document.querySelectorAll('.mobile-nav-btn').forEach(b=>b.classList.remove('active'));
+  const mb = document.getElementById('mnav-'+name);
+  if(mb) mb.classList.add('active');
+  window.scrollTo(0,0);
+  if(name==='home') renderHome();
+  if(name==='busca') initBusca();
+  if(name==='cadastro') resetForm();
+}
+
+// ─── CARD HTML ────────────────────────────────────────────────
+function cardHtml(p, rec=false){
+  const m = media(p.avaliacoes);
+  const cat = CATS.find(c=>c.id===p.categoria)||{nome:p.categoria,icon:'🛠️'};
+  const wpp = (p.whatsapp||'').replace(/\D/g,'');
+  const nomeEsc = (p.nome||'').replace(/'/g,"\\'").replace(/"/g,'&quot;');
+  return `<div class="card">
+    ${rec?'<div class="recommended-tag">🏅 Mais Recomendado</div>':''}
+    <div class="card-top">
+      <div class="card-avatar">${cat.icon}</div>
+      <div class="card-info">
+        <div class="card-name">${p.nome}</div>
+        <div class="card-service">${cat.nome}</div>
+        <div class="card-bairro">📍 ${p.bairro}</div>
+        <div class="verified-badge ${p.verificado?'verified-yes':'verified-no'}">${p.verificado?'✅ Verificado':'❓ Não verificado'}</div>
+      </div>
+    </div>
+    <div class="card-id">ID: ${p.id}</div>
+    <div class="card-desc">${p.descricao}</div>
+    <div class="card-stars">
+      <span class="stars">${stars(m)}</span>
+      <span class="rating-num">${m>0?m.toFixed(1):'–'}</span>
+      <span class="rating-count">(${(p.avaliacoes||[]).length} avaliações)</span>
+    </div>
+    <div class="card-actions">
+      <button class="btn-wpp" onclick="abrirWpp('${wpp}','${nomeEsc}')">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.122.555 4.113 1.524 5.84L0 24l6.335-1.483A11.95 11.95 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-1.933 0-3.742-.516-5.295-1.415l-.38-.225-3.76.88.92-3.658-.247-.396A9.932 9.932 0 012 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z"/></svg>
+        WhatsApp
+      </button>
+      ${p.telefone?`<button class="btn-tel" onclick="toggleTel('tel-${p.id}')">📞 Tel.</button>`:''}
+      <button class="btn-rate" onclick="openRating('${p.id}','${nomeEsc}')">⭐ Avaliar</button>
+    </div>
+    <button class="btn-denunciar" onclick="abrirDenuncia('${p.id}','${nomeEsc}')">🚩 Denunciar</button>
+    <div class="tel-reveal" id="tel-${p.id}">📞 ${p.telefone}</div>
+  </div>`;
+}
+
+// ─── WHATSAPP COM AVISO ────────────────────────────────────────
+function abrirWpp(num, nome){
+  pendingWppUrl = `https://wa.me/55${num}?text=Olá%20${encodeURIComponent(nome)},%20vi%20seu%20perfil%20no%20Comuniq%20e%20gostaria%20de%20mais%20informações%20sobre%20seus%20serviços!`;
+  pendingWppNome = nome;
+  document.getElementById('wpp-nome-modal').textContent = nome;
+  document.getElementById('modal-wpp').classList.add('open');
+}
+function confirmarWpp(){
+  document.getElementById('modal-wpp').classList.remove('open');
+  window.open(pendingWppUrl, '_blank');
+}
+function fecharModalWpp(){
+  document.getElementById('modal-wpp').classList.remove('open');
+}
+
+function toggleTel(id){ document.getElementById(id).classList.toggle('open'); }
+
+// ─── AVISO GOLPE ──────────────────────────────────────────────
+function fecharAviso(){
+  document.getElementById('aviso-golpe').style.display = 'none';
+  localStorage.setItem('aviso_fechado', '1');
+}
+if(localStorage.getItem('aviso_fechado')==='1'){
+  document.getElementById('aviso-golpe').style.display='none';
+}
+
+// ─── HOME ─────────────────────────────────────────────────────
+function sortedList(list){
+  return [...list].sort((a,b)=>{
+    const ma=media(a.avaliacoes), mb2=media(b.avaliacoes);
+    if(mb2!==ma) return mb2-ma;
+    return new Date(a.dataHora)-new Date(b.dataHora);
+  });
+}
+
+function renderHome(){
+  const list = getP();
+  document.getElementById('stat-total').textContent = list.length;
+  document.getElementById('stat-verified').textContent = list.filter(p=>p.verificado).length;
+  const top = sortedList(list).slice(0,3);
+  const rc = document.getElementById('home-recommended');
+  rc.innerHTML = top.length ? top.map((p,i)=>cardHtml(p,i===0&&top.length>1)).join('') :
+    '<div class="empty-state"><div class="empty-icon">👷</div><h3>Nenhum profissional ainda</h3><p>Seja o primeiro a se cadastrar!</p></div>';
+  document.getElementById('home-cats').innerHTML = CATS.map(c=>`
+    <div class="cat-item" onclick="showPage('busca');pendingCatFilter='${c.id}';initBusca()">
+      <div class="cat-icon">${c.icon}</div>
+      <div class="cat-name">${c.nome}</div>
+    </div>`).join('');
+}
+
+// ─── BUSCA ────────────────────────────────────────────────────
+function initBusca(){
+  const sel = document.getElementById('search-cat');
+  if(sel.options.length<=1){
+    CATS.forEach(c=>{ const o=document.createElement('option'); o.value=c.id; o.textContent=c.icon+' '+c.nome; sel.appendChild(o); });
+  }
+  if(pendingCatFilter){ sel.value=pendingCatFilter; pendingCatFilter=''; }
+  buscar();
+}
+
+function buscar(){
+  const nome=(document.getElementById('search-nome').value||'').toLowerCase().trim();
+  const cat=document.getElementById('search-cat').value;
+  const bairro=document.getElementById('search-bairro').value;
+  let list=getP();
+  if(nome) list=list.filter(p=>(p.nome||'').toLowerCase().includes(nome)||(p.descricao||'').toLowerCase().includes(nome));
+  if(cat) list=list.filter(p=>p.categoria===cat);
+  if(bairro) list=list.filter(p=>p.bairro===bairro);
+  renderResultados(sortedList(list));
+}
+
+function buscarPorId(){
+  const id=(document.getElementById('search-id').value||'').trim().toUpperCase();
+  if(!id) return showToast('⚠️ Digite um ID para buscar');
+  const found=getP().filter(p=>p.id===id);
+  renderResultados(found);
+  if(!found.length) showToast('❌ ID não encontrado: '+id);
+}
+
+function renderResultados(list){
+  const c=document.getElementById('busca-results');
+  const e=document.getElementById('busca-empty');
+  const i=document.getElementById('results-info');
+  if(!list.length){ c.innerHTML=''; e.style.display='block'; i.textContent=''; }
+  else { e.style.display='none'; i.textContent=list.length+' profissional'+(list.length>1?'is':'')+' encontrado'+(list.length>1?'s':''); c.innerHTML=list.map((p,idx)=>cardHtml(p,idx===0&&list.length>1)).join(''); }
+}
+
+// ─── CNPJ ────────────────────────────────────────────────────
+function formatarCnpj(v){
+  v=v.replace(/\D/g,'').slice(0,14);
+  if(v.length>12) v=v.slice(0,2)+'.'+v.slice(2,5)+'.'+v.slice(5,8)+'/'+v.slice(8,12)+'-'+v.slice(12);
+  else if(v.length>8) v=v.slice(0,2)+'.'+v.slice(2,5)+'.'+v.slice(5,8)+'/'+v.slice(8);
+  else if(v.length>5) v=v.slice(0,2)+'.'+v.slice(2,5)+'.'+v.slice(5);
+  else if(v.length>2) v=v.slice(0,2)+'.'+v.slice(2);
+  return v;
+}
+
+function validarCnpj(cnpj){
+  cnpj=cnpj.replace(/\D/g,'');
+  if(cnpj.length!==14) return false;
+  if(/^(\d)\1+$/.test(cnpj)) return false; // todos iguais
+  let s=0,r; const c=cnpj;
+  for(let i=0;i<12;i++) s+=parseInt(c[i])*(i<4?5-i:13-i);
+  r=s%11<2?0:11-s%11;
+  if(parseInt(c[12])!==r) return false;
+  s=0;
+  for(let i=0;i<13;i++) s+=parseInt(c[i])*(i<5?6-i:14-i);
+  r=s%11<2?0:11-s%11;
+  return parseInt(c[13])===r;
+}
+
+function onCnpjInput(el){
+  const formatted = formatarCnpj(el.value);
+  el.value = formatted;
+  const wrap = document.getElementById('cnpj-wrap');
+  const strip = document.getElementById('cnpj-strip');
+  const digits = formatted.replace(/\D/g,'');
+  if(digits.length===14 && validarCnpj(digits)){
+    wrap.classList.add('valid');
+    strip.classList.add('show');
+  } else {
+    wrap.classList.remove('valid');
+    strip.classList.remove('show');
+  }
+}
+
+// ─── CADASTRO ────────────────────────────────────────────────
+function resetForm(){
+  selectedCat='';
+  ['f-nome','f-desc','f-wpp','f-tel','f-cnpj'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  const b=document.getElementById('f-bairro'); if(b) b.value='';
+  document.getElementById('cadastro-success').classList.remove('show');
+  document.getElementById('cnpj-wrap').classList.remove('valid');
+  document.getElementById('cnpj-strip').classList.remove('show');
+  renderFormCats();
+}
+
+function renderFormCats(){
+  document.getElementById('form-cats').innerHTML=CATS.map(c=>`
+    <div class="cat-select-item ${selectedCat===c.id?'selected':''}" onclick="selectCatForm('${c.id}')">
+      <span class="cat-select-icon">${c.icon}</span>${c.nome}
+    </div>`).join('');
+}
+
+function selectCatForm(id){ selectedCat=id; renderFormCats(); }
+
+function cadastrar(){
+  const nome=document.getElementById('f-nome').value.trim();
+  const desc=document.getElementById('f-desc').value.trim();
+  const bairro=document.getElementById('f-bairro').value;
+  const wpp=document.getElementById('f-wpp').value.trim();
+  const tel=document.getElementById('f-tel').value.trim();
+  const cnpjRaw=(document.getElementById('f-cnpj').value||'').replace(/\D/g,'');
+  const verificado = cnpjRaw.length===14 && validarCnpj(cnpjRaw);
+
+  if(!nome) return showToast('⚠️ Informe seu nome!');
+  if(!selectedCat) return showToast('⚠️ Selecione um tipo de serviço!');
+  if(!desc) return showToast('⚠️ Escreva uma descrição!');
+  if(!bairro) return showToast('⚠️ Selecione o bairro!');
+  if(!wpp) return showToast('⚠️ Informe o WhatsApp!');
+
+  const list=getP();
+  const id=genId();
+  // CNPJ não é salvo para exibição pública — apenas o status verificado
+  list.push({id,nome,categoria:selectedCat,descricao:desc,bairro,whatsapp:wpp,telefone:tel,verificado,avaliacoes:[],dataHora:new Date().toISOString()});
+  setP(list);
+  document.getElementById('success-id').textContent=id;
+  document.getElementById('cadastro-success').classList.add('show');
+  const msg = verificado ? '✅ Cadastrado com selo Verificado! Seu ID: '+id : '✅ Cadastrado! Seu ID: '+id;
+  showToast(msg);
+  selectedCat='';
+  ['f-nome','f-desc','f-wpp','f-tel','f-cnpj'].forEach(i=>{const e=document.getElementById(i);if(e)e.value='';});
+  document.getElementById('f-bairro').value='';
+  document.getElementById('cnpj-wrap').classList.remove('valid');
+  document.getElementById('cnpj-strip').classList.remove('show');
+  renderFormCats();
+  window.scrollTo(0,0);
+}
+
+// ─── AVALIAÇÃO ────────────────────────────────────────────────
+function openRating(id,nome){
+  currentRatingId=id; currentStar=0;
+  document.getElementById('modal-rating-name').textContent='Avalie o serviço de '+nome;
+  document.getElementById('star-label').textContent='Toque em uma estrela para avaliar';
+  document.querySelectorAll('.star-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('modal-rating').classList.add('open');
+}
+function closeModal(){ document.getElementById('modal-rating').classList.remove('open'); currentRatingId=null; currentStar=0; }
+function selectStar(n){
+  currentStar=n;
+  const labels=['','Ruim 😞','Regular 😐','Bom 👍','Muito bom 😊','Excelente! 🌟'];
+  document.getElementById('star-label').textContent=labels[n];
+  document.querySelectorAll('.star-btn').forEach((b,i)=>b.classList.toggle('active',i<n));
+}
+function confirmarAvaliacao(){
+  if(!currentStar) return showToast('⚠️ Escolha quantas estrelas!');
+  const list=getP();
+  const idx=list.findIndex(p=>p.id===currentRatingId);
+  if(idx===-1) return;
+  if(!list[idx].avaliacoes) list[idx].avaliacoes=[];
+  list[idx].avaliacoes.push(currentStar);
+  setP(list);
+  closeModal();
+  showToast('⭐ Avaliação enviada! Obrigado.');
+  const ap=document.querySelector('.page.active').id;
+  if(ap==='page-home') renderHome();
+  if(ap==='page-busca') buscar();
+}
+
+// ─── TOAST ───────────────────────────────────────────────────
+function showToast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg;
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),3200);
+}
+
+// ─── SEED ────────────────────────────────────────────────────
+function seed(){
+  if(getP().length>0) return;
+  setP([
+    {id:'CQ-00001',nome:'João Pereira',categoria:'pedreiro',descricao:'10 anos de experiência em reformas, construções e reparos. Trabalho com qualidade e prazo garantido.',bairro:'Cidade Tiradentes',whatsapp:'11991110001',telefone:'1133330001',verificado:true,avaliacoes:[5,5,4,5,5],dataHora:'2024-01-10T08:00:00Z'},
+    {id:'CQ-00002',nome:'Maria Souza',categoria:'diarista',descricao:'Faxina completa e organização da sua casa. Pontual e dedicada há mais de 8 anos. Referência no bairro!',bairro:'Heliópolis',whatsapp:'11992220002',telefone:'',verificado:true,avaliacoes:[5,4,5,5,5],dataHora:'2024-01-12T09:00:00Z'},
+    {id:'CQ-00003',nome:'Carlos Eletro',categoria:'eletricista',descricao:'Instalações elétricas residenciais, troca de fiação, tomadas e quadros. Rápido e seguro.',bairro:'Brasilândia',whatsapp:'11993330003',telefone:'1133330003',verificado:false,avaliacoes:[4,4,3,4],dataHora:'2024-02-01T10:00:00Z'},
+    {id:'CQ-00004',nome:'Ana Paula Cabelos',categoria:'cabeleireiro',descricao:'Cortes, coloração, hidratação e tranças. Atendo em domicílio também! 5 anos de experiência.',bairro:'Guaianases',whatsapp:'11994440004',telefone:'',verificado:true,avaliacoes:[5,5,5,4,5],dataHora:'2024-03-05T11:00:00Z'},
+  ]);
+}
+seed();
+renderHome();
+</script>
+</body>
+</html> 
