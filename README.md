@@ -1,70 +1,58 @@
-
+cat << 'EOF' > README.md
 # Comuniq 🚀 | Conectando a Comunidade
 
 ![Status](https://img.shields.io/badge/status-Beta-yellow.svg)
 ![Tecnologia](https://img.shields.io/badge/stack-Vanilla%20JS-orange.svg)
 ![IA](https://img.shields.io/badge/IA-Gemini%20%26%20Claude-blue.svg)
 
-O **Comuniq** é uma plataforma comunitária voltada para moradores de periferias de São Paulo. O projeto visa facilitar a conexão entre quem precisa de um serviço (pedreiros, eletricistas, cabeleireiros, etc.) e prestadores de serviços locais, eliminando a dependência exclusiva do "boca a boca" e democratizando a divulgação de autônomos.
+O **Comuniq** é uma plataforma comunitária voltada para moradores de periferias de São Paulo. O projeto facilita a conexão entre quem precisa de um serviço e prestadores locais, democratizando a divulgação de profissionais autônomos por meio de tecnologia acessível.[cite: 1, 4]
+
+---
+
+## 🔗 Atalhos do Projeto
+
+*   📂 **[Abrir Plataforma (HTML)](./comuniq.html)** - Versão executável do sistema.[cite: 3, 5]
+*   📑 **[Memorial de Construção](./Memorial-de%20Construção.pdf)** - Problemas resolvidos e visão do produto.[cite: 1]
+*   ⚙️ **[Engenharia de Prompts](./Comuniq_Prompts.pdf)** - Detalhamento técnico das IAs (Tobias).[cite: 2]
+*   📘 **[Documentação Completa](./Comuniq_Documentacao_Completa.pdf)** - Guia técnico e funcional.[cite: 3]
 
 ---
 
 ## 📋 Funcionalidades Principais
 
-* **Cadastro Simplificado:** Prestadores se cadastram sem necessidade de senhas, gerando um ID único (ex: CQ-00001).
-* **Busca Inteligente (Tobias IA):** Sistema que interpreta a necessidade do usuário (ex: "estou com vazamento") para sugerir profissionais compatíveis.
-* **Contato Direto:** Integração via API do WhatsApp, garantindo negociação direta entre cliente e prestador.
-* **Verificação:** Selo de "Verificado" para profissionais que fornecem CNPJ.
-* **Sistema de Alertas:** Notificações via WhatsApp baseadas em categorias e bairros de interesse.
-* **Avaliação Segura:** Sistema de estrelas com moderação automática de conteúdo via IA para evitar ofensas.
+*   **Busca Inteligente (Tobias IA):** Interpreta o que você precisa e encontra o profissional certo.[cite: 3]
+*   **Contato Direto:** Integração com a API do WhatsApp para negociações.[cite: 3]
+*   **Selo Verificado:** Identificação para prestadores com CNPJ.[cite: 1, 3]
+*   **Sistema de Alertas:** Notificações de novos serviços no seu bairro.[cite: 1]
+*   **Moderação por IA:** Avaliações filtradas para manter um ambiente respeitoso.[cite: 2, 3]
 
 ---
 
 ## 🤖 Ecossistema de IA (Tobias)
 
-O Comuniq utiliza uma camada de inteligência artificial otimizada para diferentes tarefas:
-
 | Funcionalidade | Modelo | Função |
 | :--- | :--- | :--- |
-| **Chat Tobias** | Gemini Flash | Atendimento geral, tom informal e acolhedor. |
-| **Busca IA** | Claude Haiku | Traduz linguagem natural para filtros de busca. |
-| **Moderação** | Gemini Flash | Filtra avaliações para evitar discursos de ódio. |
-| **Descrição** | Gemini Flash | Auxilia prestadores a escreverem seus perfis. |
+| **Chat Tobias** | Gemini Flash | Atendimento geral e acolhedor.[cite: 2] |
+| **Busca IA** | Claude Haiku | Classificação de categorias e filtros.[cite: 2] |
+| **Moderação** | Gemini Flash | Bloqueio de ofensas em feedbacks.[cite: 2] |
+| **Gerador de Perfil** | Gemini Flash | Criação de descrições profissionais.[cite: 2] |
 
 ---
 
-## 🛠️ Tecnologias e Arquitetura
+## 🛠️ Tecnologias
 
-O projeto foi construído com foco em acessibilidade e rapidez:
-
-* **Frontend:** HTML5, CSS3 (Mobile-first) e JavaScript Vanilla.
-* **Armazenamento:** `localStorage` (Persistência no navegador do usuário).
-* **Integrações:** API do WhatsApp, Anthropic API (Claude), Google Gemini API.
-
-> **Nota sobre Dados:** Por ser uma versão Beta, os dados são armazenados localmente no dispositivo (LocalStorage). Não há banco de dados centralizado nesta versão, portanto, a troca de aparelho resetará as configurações locais.
+*   **Linguagens:** HTML5, CSS3 (Mobile-first) e JavaScript Vanilla.[cite: 3, 5]
+*   **Armazenamento:** `localStorage` (Persistência local no navegador).[cite: 3]
+*   **Modelos:** Google Gemini API e Anthropic Claude API.[cite: 2]
 
 ---
 
-## 🚀 Como Rodar
+## 🎓 Créditos Acadêmicos
 
-Este projeto é *client-side only*. Você não precisa de servidores complexos ou banco de dados para testar.
-
-1.  Clone o repositório ou baixe os arquivos.
-2.  Abra o arquivo `comuniq.html` em qualquer navegador moderno.
-3.  Utilize as ferramentas de busca ou cadastro diretamente na interface.
+Este projeto foi desenvolvido para a disciplina de **Engenharia de Prompt e Aplicações em IA** da **UNICID** (2026).[cite: 1, 2, 3]
 
 ---
-
-## 📝 Documentação Complementar
-Este projeto foi desenvolvido como entrega final para a disciplina de **Engenharia de Prompt e Aplicações em IA** da **UNICID (2026)**. 
-
-Mais detalhes podem ser consultados nos arquivos entregues:
-* `Memorial-de Construção.pdf` (Concepção e problemas resolvidos)
-* `Comuniq_Prompts.pdf` (Detalhamento técnico da engenharia de prompts)
-* `Comuniq_Documentacao_Completa.pdf` (Visão geral do projeto)
-
----
-*Desenvolvido com carinho para a comunidade paulistana. 💙*
+*Desenvolvido para fortalecer a economia local. 💙*
 EOF
 
-echo "✅ README.md gerado com sucesso!"
+echo "✅ README.md com links gerado com sucesso!"
