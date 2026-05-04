@@ -1,0 +1,1927 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Comuniq – Serviços da Comunidade</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --verde: #2D6A4F;
+    --verde-claro: #52B788;
+    --verde-menta: #D8F3DC;
+    --areia: #F8F4EE;
+    --areia-escuro: #E8E2D7;
+    --texto: #1A1A1A;
+    --texto-suave: #5A5A5A;
+    --branco: #FFFFFF;
+    --laranja: #E76F51;
+    --laranja-claro: #FDEBD0;
+    --vermelho: #C0392B;
+    --vermelho-claro: #FDECEA;
+    --amarelo: #F39C12;
+    --amarelo-claro: #FEF9E7;
+    --sombra: 0 4px 24px rgba(45,106,79,0.10);
+    --sombra-forte: 0 8px 40px rgba(45,106,79,0.18);
+    --radius: 18px;
+    --radius-sm: 10px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'DM Sans', sans-serif; background: var(--areia); color: var(--texto); min-height: 100vh; }
+
+  #termos-overlay {
+    position: fixed; inset: 0; z-index: 99999;
+    background: rgba(0,0,0,0.72); backdrop-filter: blur(4px);
+    display: flex; align-items: center; justify-content: center; padding: 16px;
+  }
+  #termos-overlay.hide { display: none; }
+  #termos-box {
+    background: var(--branco); border-radius: 20px; max-width: 480px; width: 100%;
+    max-height: 90vh; overflow: hidden; display: flex; flex-direction: column;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.35);
+    animation: slideUp 0.3s ease;
+  }
+  #termos-header {
+    background: var(--verde); padding: 20px 22px; flex-shrink: 0;
+    display: flex; align-items: center; gap: 10px;
+  }
+  #termos-header .t-ico { font-size: 1.8rem; }
+  #termos-header h2 { font-family:'Syne',sans-serif; color:#fff; font-size:1.1rem; font-weight:800; margin:0; }
+  #termos-header p { color:rgba(255,255,255,0.75); font-size:0.78rem; margin:2px 0 0; }
+  #termos-body { flex:1; overflow-y:auto; padding:20px 22px; }
+  .termos-section { margin-bottom:18px; }
+  .termos-section h3 { font-family:'Syne',sans-serif; font-size:0.88rem; font-weight:700; color:var(--verde); margin-bottom:7px; }
+  .termos-section p, .termos-section li { font-size:0.82rem; color:var(--texto-suave); line-height:1.6; }
+  .termos-section ul { padding-left:16px; }
+  .termos-section li { margin-bottom:4px; }
+  .termos-isencao {
+    background: #FEF3CD; border-left:4px solid var(--amarelo);
+    border-radius:8px; padding:12px 14px; margin-bottom:18px;
+  }
+  .termos-isencao p { font-size:0.82rem; color:#7a5c00; line-height:1.6; }
+  .termos-isencao strong { color:#5a3e00; }
+  #termos-footer { padding:16px 22px; border-top:1px solid var(--areia-escuro); flex-shrink:0; background:var(--areia); }
+  .termos-check-row {
+    display:flex; align-items:flex-start; gap:10px; margin-bottom:14px;
+    background:var(--branco); border-radius:10px; padding:12px 14px;
+    border:1.5px solid var(--areia-escuro);
+  }
+  .termos-check-row input[type=checkbox] { width:18px; height:18px; flex-shrink:0; margin-top:1px; accent-color:var(--verde); cursor:pointer; }
+  .termos-check-row label { font-size:0.82rem; color:var(--texto); line-height:1.5; cursor:pointer; }
+  .termos-check-row label strong { color:var(--verde); }
+  #btn-aceitar-termos {
+    width:100%; background:var(--verde); color:#fff; border:none; border-radius:12px;
+    padding:14px; font-family:'Syne',sans-serif; font-size:0.95rem; font-weight:700;
+    cursor:pointer; transition:background 0.18s; opacity:0.45; pointer-events:none;
+  }
+  #btn-aceitar-termos.ready { opacity:1; pointer-events:all; }
+  #btn-aceitar-termos:hover.ready { background:#1B4332; }
+
+  .btn-report {
+    background: var(--vermelho-claro); color: var(--vermelho);
+    border: 1px solid #f5c6c6; padding: 7px 10px; border-radius: 9px;
+    font-family:'DM Sans',sans-serif; font-size:0.78rem; font-weight:600;
+    cursor:pointer; display:flex; align-items:center; gap:4px; transition:background 0.18s;
+    white-space:nowrap;
+  }
+  .btn-report:hover { background:#f8d0d0; }
+
+  #modal-denuncia { align-items: flex-end; padding: 0; }
+  #modal-denuncia .modal {
+    max-width: 460px; width: 100%;
+    max-height: 92vh; overflow-y: auto;
+    border-radius: 20px 20px 0 0;
+    margin: 0; padding: 20px 18px 24px;
+  }
+  @media(min-width: 541px){
+    #modal-denuncia { align-items: center; padding: 16px; }
+    #modal-denuncia .modal { border-radius: 18px; margin: auto; }
+  }
+  .denuncia-motivos { display:grid; grid-template-columns:1fr 1fr; gap:7px; margin:12px 0 0; }
+  .denuncia-motivo {
+    border:1.5px solid var(--areia-escuro); border-radius:10px;
+    padding:8px 10px; cursor:pointer; font-size:0.78rem;
+    display:flex; align-items:center; gap:6px; transition:all 0.15s;
+    color:var(--texto-suave); line-height:1.3;
+  }
+  .denuncia-motivo:hover { border-color:var(--vermelho); color:var(--vermelho); background:var(--vermelho-claro); }
+  .denuncia-motivo.sel { border-color:var(--vermelho); color:var(--vermelho); background:var(--vermelho-claro); font-weight:700; }
+  .denuncia-motivo .dm-ico { font-size:1rem; flex-shrink:0; }
+  .btn-wpp-suporte {
+    width:100%; background:#25D366; color:#fff; border:none; border-radius:12px;
+    padding:14px; font-family:'Syne',sans-serif; font-size:0.95rem; font-weight:700;
+    cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px;
+    transition:background 0.18s; margin-top:8px;
+  }
+  .btn-wpp-suporte:hover { background:#1DAA54; }
+  .denuncia-aviso { background:var(--amarelo-claro); border-left:3px solid var(--amarelo); border-radius:8px; padding:10px 14px; font-size:0.78rem; color:#7a5c00; line-height:1.5; margin-top:12px; }
+
+  header { background: var(--verde); padding: 0 20px; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 16px rgba(0,0,0,0.15); }
+  .header-inner { max-width: 900px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; height: 62px; padding: 0; }
+  .logo { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.55rem; color: #fff; letter-spacing: -0.5px; display: flex; align-items: center; gap: 8px; cursor:pointer; }
+  .logo-badge { background: var(--laranja); color: #fff; border-radius: 6px; padding: 2px 7px; font-size: 0.75rem; font-weight: 700; letter-spacing: 0.5px; }
+  nav { display: flex; gap: 4px; }
+  .nav-btn { background: transparent; color: rgba(255,255,255,0.75); border: none; padding: 7px 14px; border-radius: 8px; font-family: 'DM Sans', sans-serif; font-size: 0.88rem; font-weight: 500; cursor: pointer; transition: all 0.18s; }
+  .nav-btn:hover, .nav-btn.active { background: rgba(255,255,255,0.15); color: #fff; }
+
+  .page { display: none; }
+  .page.active { display: block; }
+
+  .hero { background: var(--verde); padding: 52px 20px 48px; text-align: center; position: relative; overflow: hidden; }
+  .hero h1 { font-family:'Syne',sans-serif; font-size:2.1rem; font-weight:800; color:#fff; line-height:1.18; margin-bottom:12px; }
+  .hero h1 em { color:var(--verde-claro); font-style:normal; }
+  .hero p { color:rgba(255,255,255,0.78); font-size:1rem; max-width:420px; margin:0 auto 28px; line-height:1.55; }
+  .hero-btns { display:flex; gap:12px; justify-content:center; flex-wrap:wrap; }
+
+  .bairros-carrossel-wrap { background: var(--verde); padding: 0 0 22px; overflow: hidden; }
+  .bairros-carrossel-label { text-align:center; font-size:0.72rem; font-weight:700; color:rgba(255,255,255,0.5); letter-spacing:1px; text-transform:uppercase; margin-bottom:14px; padding-top:2px; }
+  .bairros-carrossel { display: flex; gap: 12px; overflow-x: auto; scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch; scrollbar-width: none; cursor: grab; padding: 0 20px 12px; }
+  .bairros-carrossel::-webkit-scrollbar { display: none; }
+  .bairros-carrossel.dragging { cursor: grabbing; user-select: none; }
+  .bairro-card { flex-shrink: 0; scroll-snap-align: start; background: rgba(255,255,255,0.12); border: 1.5px solid rgba(255,255,255,0.18); border-radius: 14px; padding: 14px 18px; text-align: center; min-width: 130px; transition: background 0.18s, transform 0.18s; cursor: pointer; }
+  .bairro-card:hover { background: rgba(255,255,255,0.2); transform: translateY(-2px); }
+  .bairro-card.active-card { background: rgba(255,255,255,0.22); border-color: rgba(255,255,255,0.55); }
+  .bairro-card .bc-emoji { font-size: 1.5rem; margin-bottom: 5px; }
+  .bairro-card .bc-name { font-size: 0.8rem; font-weight: 700; color: #fff; line-height: 1.2; }
+  .carrossel-dots { display: flex; justify-content: center; gap: 6px; padding: 4px 0 0; }
+  .carrossel-dot { width: 7px; height: 7px; border-radius: 50%; background: rgba(255,255,255,0.28); border: none; padding: 0; cursor: pointer; transition: background 0.2s, width 0.2s; flex-shrink: 0; }
+  .carrossel-dot.active { background: #fff; width: 20px; border-radius: 4px; }
+  .btn-primary { background:var(--laranja); color:#fff; border:none; padding:13px 26px; border-radius:50px; font-family:'DM Sans',sans-serif; font-size:0.97rem; font-weight:600; cursor:pointer; transition:all 0.2s; box-shadow:0 4px 18px rgba(231,111,81,0.35); }
+  .btn-primary:hover { background:#CF5A3E; transform:translateY(-2px); }
+  .btn-outline { background:rgba(255,255,255,0.1); color:#fff; border:1.5px solid rgba(255,255,255,0.35); padding:13px 26px; border-radius:50px; font-family:'DM Sans',sans-serif; font-size:0.97rem; font-weight:500; cursor:pointer; transition:all 0.2s; }
+  .btn-outline:hover { background:rgba(255,255,255,0.2); }
+
+  .stats-bar { background:var(--branco); padding:18px 20px; display:flex; justify-content:center; gap:40px; border-bottom:1px solid var(--areia-escuro); flex-wrap:wrap; }
+  .stat { text-align:center; }
+  .stat-num { font-family:'Syne',sans-serif; font-size:1.45rem; font-weight:800; color:var(--verde); }
+  .stat-label { font-size:0.78rem; color:var(--texto-suave); margin-top:2px; }
+
+  .aviso-banner { background: var(--vermelho-claro); border-left: 4px solid var(--vermelho); max-width: 900px; margin: 18px auto 0; border-radius: 12px; padding: 14px 16px; display: flex; gap: 12px; align-items: flex-start; position: relative; }
+  .aviso-banner .aviso-icon { font-size: 1.5rem; flex-shrink: 0; margin-top: 1px; }
+  .aviso-banner .aviso-body { flex: 1; }
+  .aviso-banner .aviso-title { font-family:'Syne',sans-serif; font-weight:700; font-size:0.92rem; color:var(--vermelho); margin-bottom:4px; }
+  .aviso-banner .aviso-text { font-size:0.82rem; color:#7a1f1f; line-height:1.5; }
+  .aviso-banner .aviso-text strong { font-weight:700; }
+  .aviso-close { position:absolute; top:10px; right:12px; background:none; border:none; font-size:1.1rem; color:#aaa; cursor:pointer; line-height:1; }
+  .aviso-close:hover { color:var(--vermelho); }
+
+  .aviso-isencao { background: var(--amarelo-claro); border-left: 4px solid var(--amarelo); max-width: 900px; margin: 10px auto 0; border-radius: 12px; padding: 12px 16px; display: flex; gap: 10px; align-items: flex-start; }
+  .aviso-isencao .aviso-icon { font-size: 1.3rem; flex-shrink: 0; }
+  .aviso-isencao .aviso-text { font-size: 0.8rem; color: #7a5c00; line-height: 1.5; }
+  .aviso-isencao .aviso-text strong { font-weight: 700; }
+
+  .section { max-width:900px; margin:0 auto; padding:36px 16px; }
+  .section-title { font-family:'Syne',sans-serif; font-size:1.2rem; font-weight:700; color:var(--texto); margin-bottom:18px; }
+
+  .legenda-verificacao { background: var(--branco); border-radius: 12px; padding: 14px 18px; display: flex; gap: 20px; flex-wrap: wrap; margin-bottom: 18px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); font-size: 0.8rem; color: var(--texto-suave); align-items: center; }
+  .legenda-verificacao .lv-item { display:flex; align-items:center; gap:6px; }
+  .legenda-verificacao strong { color: var(--texto); }
+
+  .cats-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(100px,1fr)); gap:10px; }
+  .cat-item { background:var(--branco); border:2px solid transparent; border-radius:var(--radius-sm); padding:14px 8px; text-align:center; cursor:pointer; transition:all 0.18s; box-shadow:0 2px 8px rgba(0,0,0,0.05); }
+  .cat-item:hover { border-color:var(--verde-claro); transform:translateY(-2px); box-shadow:var(--sombra); }
+  .cat-icon { font-size:1.6rem; margin-bottom:5px; }
+  .cat-name { font-size:0.75rem; font-weight:500; color:var(--texto-suave); line-height:1.2; }
+
+  .search-box { background:var(--branco); border-radius:var(--radius); padding:20px; box-shadow:var(--sombra); margin-bottom:20px; }
+  .search-row { display:flex; gap:10px; margin-bottom:14px; flex-wrap:wrap; }
+  .search-input { flex:1; min-width:150px; border:1.5px solid var(--areia-escuro); border-radius:10px; padding:11px 15px; font-family:'DM Sans',sans-serif; font-size:0.94rem; color:var(--texto); background:var(--areia); outline:none; transition:border-color 0.18s; }
+  .search-input:focus { border-color:var(--verde-claro); background:#fff; }
+  .search-input::placeholder { color:#aaa; }
+  select.search-input { cursor:pointer; }
+  .btn-search { background:var(--verde); color:#fff; border:none; padding:11px 22px; border-radius:10px; font-family:'DM Sans',sans-serif; font-size:0.94rem; font-weight:600; cursor:pointer; transition:background 0.18s; white-space:nowrap; }
+  .btn-search:hover { background:#1B4332; }
+  .divider { height:1px; background:var(--areia-escuro); margin:8px 0 16px; }
+  .search-id-row { display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
+  .search-id-label { font-size:0.82rem; color:var(--texto-suave); white-space:nowrap; }
+
+  .cards-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(290px,1fr)); gap:16px; }
+  .card { background:var(--branco); border-radius:var(--radius); padding:20px; box-shadow:var(--sombra); transition:all 0.22s; border:1.5px solid transparent; position:relative; }
+  .card:hover { transform:translateY(-3px); box-shadow:var(--sombra-forte); border-color:var(--verde-menta); }
+  .card-top { display:flex; align-items:flex-start; gap:13px; margin-bottom:12px; }
+  .card-avatar { width:48px; height:48px; border-radius:14px; display:flex; align-items:center; justify-content:center; font-size:1.4rem; background:var(--verde-menta); flex-shrink:0; }
+  .card-info { flex:1; min-width:0; }
+  .card-name { font-family:'Syne',sans-serif; font-size:1rem; font-weight:700; color:var(--texto); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .card-service { font-size:0.82rem; color:var(--verde); font-weight:600; margin-top:1px; }
+  .card-bairro { font-size:0.78rem; color:var(--texto-suave); margin-top:2px; }
+  .verified-badge { display:inline-flex; align-items:center; gap:3px; border-radius:20px; padding:2px 8px; font-size:0.71rem; font-weight:600; margin-top:4px; }
+  .verified-yes { background:#E8F5E9; color:#2D6A4F; }
+  .verified-no { background:#f5f5f5; color:#999; }
+  .card-id { font-size:0.71rem; color:#bbb; margin-bottom:10px; font-family:monospace; letter-spacing:0.5px; }
+  .card-desc { font-size:0.83rem; color:var(--texto-suave); line-height:1.5; margin-bottom:12px; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
+  .card-stars { display:flex; align-items:center; gap:6px; margin-bottom:12px; }
+  .stars { color:#F4A261; font-size:0.9rem; letter-spacing:1px; }
+  .rating-num { font-weight:700; font-size:0.88rem; color:var(--texto); }
+  .rating-count { font-size:0.77rem; color:var(--texto-suave); }
+  .recommended-tag { position:absolute; top:14px; right:14px; background:var(--laranja); color:#fff; font-size:0.68rem; font-weight:700; padding:3px 8px; border-radius:20px; }
+  .card-actions { display:flex; gap:8px; flex-wrap:wrap; }
+  .btn-wpp { flex:1; background:#25D366; color:#fff; border:none; padding:10px 12px; border-radius:9px; font-family:'DM Sans',sans-serif; font-size:0.83rem; font-weight:600; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:5px; transition:background 0.18s; }
+  .btn-wpp:hover { background:#1DAA54; }
+  .btn-tel { background:var(--areia-escuro); color:var(--texto); border:none; padding:10px 12px; border-radius:9px; font-family:'DM Sans',sans-serif; font-size:0.83rem; font-weight:500; cursor:pointer; display:flex; align-items:center; gap:5px; transition:background 0.18s; white-space:nowrap; }
+  .btn-tel:hover { background:#d0c8bb; }
+  .btn-rate { background:var(--laranja-claro); color:var(--laranja); border:none; padding:10px 12px; border-radius:9px; font-family:'DM Sans',sans-serif; font-size:0.83rem; font-weight:600; cursor:pointer; display:flex; align-items:center; gap:4px; transition:background 0.18s; }
+  .btn-rate:hover { background:#f7c897; }
+  .tel-reveal { background:var(--verde-menta); color:var(--verde); border-radius:8px; padding:8px 12px; font-size:0.88rem; font-weight:600; margin-top:8px; display:none; align-items:center; gap:6px; }
+  .tel-reveal.open { display:flex; }
+
+  .empty-state { text-align:center; padding:60px 20px; color:var(--texto-suave); }
+  .empty-icon { font-size:3rem; margin-bottom:12px; }
+  .empty-state h3 { font-family:'Syne',sans-serif; font-size:1.1rem; color:var(--texto); margin-bottom:6px; }
+  .results-info { font-size:0.83rem; color:var(--texto-suave); margin-bottom:14px; padding-left:2px; }
+
+  .form-card { background:var(--branco); border-radius:var(--radius); padding:28px 22px; box-shadow:var(--sombra); max-width:600px; margin:0 auto; }
+  .form-title { font-family:'Syne',sans-serif; font-size:1.35rem; font-weight:800; color:var(--verde); margin-bottom:6px; }
+  .form-subtitle { font-size:0.88rem; color:var(--texto-suave); margin-bottom:22px; line-height:1.5; }
+  .form-group { margin-bottom:16px; }
+  label { display:block; font-size:0.84rem; font-weight:600; color:var(--texto); margin-bottom:6px; }
+  .required { color:var(--laranja); }
+  .form-input { width:100%; border:1.5px solid var(--areia-escuro); border-radius:10px; padding:12px 15px; font-family:'DM Sans',sans-serif; font-size:0.94rem; color:var(--texto); background:var(--areia); outline:none; transition:border-color 0.18s; }
+  .form-input:focus { border-color:var(--verde-claro); background:#fff; }
+  textarea.form-input { resize:vertical; min-height:88px; }
+  select.form-input { cursor:pointer; }
+  .form-row { display:flex; gap:12px; }
+  .form-row .form-group { flex:1; }
+  .form-hint { font-size:0.77rem; color:var(--texto-suave); margin-top:4px; }
+
+  .cnpj-strip { background: #EAF6EE; border: 1.5px solid var(--verde-claro); border-radius: 10px; padding: 12px 14px; margin-top: 8px; display: flex; align-items: center; gap: 8px; display:none; }
+  .cnpj-strip.show { display:flex; }
+  .cnpj-strip .cs-icon { font-size:1.2rem; }
+  .cnpj-strip .cs-text { font-size:0.8rem; color:var(--verde); font-weight:600; }
+  .cnpj-field-wrap { position: relative; }
+  .cnpj-field-wrap .cnpj-ok-icon { position:absolute; right:12px; top:50%; transform:translateY(-50%); font-size:1.1rem; display:none; }
+  .cnpj-field-wrap.valid .cnpj-ok-icon { display:block; }
+  .cnpj-field-wrap.valid .form-input { border-color: var(--verde-claro); background:#f0fbf4; }
+
+  .cats-select-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(115px,1fr)); gap:8px; }
+  .cat-select-item { border:2px solid var(--areia-escuro); border-radius:9px; padding:10px 8px; text-align:center; cursor:pointer; transition:all 0.15s; background:var(--areia); font-size:0.77rem; font-weight:500; color:var(--texto-suave); }
+  .cat-select-item:hover { border-color:var(--verde-claro); }
+  .cat-select-item.selected { border-color:var(--verde); background:var(--verde-menta); color:var(--verde); font-weight:700; }
+  .cat-select-icon { font-size:1.3rem; display:block; margin-bottom:4px; }
+  .btn-submit { width:100%; background:var(--verde); color:#fff; border:none; padding:15px; border-radius:12px; font-family:'Syne',sans-serif; font-size:1rem; font-weight:700; cursor:pointer; margin-top:8px; transition:all 0.2s; letter-spacing:0.3px; }
+  .btn-submit:hover { background:#1B4332; transform:translateY(-1px); }
+  .info-strip { background:var(--laranja-claro); border-left:3px solid var(--laranja); border-radius:0 8px 8px 0; padding:10px 14px; font-size:0.83rem; color:#7a3a20; margin-bottom:20px; line-height:1.5; }
+  .success-msg { background:var(--verde-menta); border:1.5px solid var(--verde-claro); border-radius:var(--radius-sm); padding:18px; margin-bottom:20px; display:none; }
+  .success-msg.show { display:block; }
+  .success-msg p { font-size:0.9rem; color:var(--verde); font-weight:700; margin-bottom:8px; }
+  .id-label { font-size:0.78rem; color:var(--texto-suave); margin-bottom:4px; }
+  .id-value { font-family:monospace; font-size:1.15rem; font-weight:700; color:var(--verde); letter-spacing:2px; }
+  .id-hint { font-size:0.76rem; color:#555; margin-top:8px; }
+
+  .modal-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.45); z-index:200; align-items:center; justify-content:center; padding:16px; backdrop-filter:blur(3px); }
+  .modal-overlay.open { display:flex; }
+  .modal { background:var(--branco); border-radius:var(--radius); padding:28px 22px; max-width:400px; width:100%; box-shadow:0 16px 60px rgba(0,0,0,0.25); animation:slideUp 0.25s ease; }
+  @keyframes slideUp { from{transform:translateY(30px);opacity:0} to{transform:translateY(0);opacity:1} }
+  .modal-title { font-family:'Syne',sans-serif; font-size:1.1rem; font-weight:800; margin-bottom:6px; }
+  .modal-sub { font-size:0.85rem; color:var(--texto-suave); margin-bottom:16px; }
+  .stars-select { display:flex; gap:10px; justify-content:center; margin:16px 0; }
+  .star-btn { font-size:2.2rem; cursor:pointer; color:#ddd; transition:all 0.15s; background:none; border:none; line-height:1; }
+  .star-btn.active { color:#F4A261; transform:scale(1.1); }
+  .star-label { text-align:center; font-size:0.85rem; color:var(--texto-suave); min-height:20px; }
+  .modal-actions { display:flex; gap:10px; margin-top:18px; }
+  .btn-cancel { flex:1; background:var(--areia-escuro); color:var(--texto); border:none; padding:12px; border-radius:10px; font-family:'DM Sans',sans-serif; font-size:0.93rem; font-weight:600; cursor:pointer; }
+  .btn-cancel:hover { background:#ccc; }
+  .btn-confirm { flex:1; background:var(--laranja); color:#fff; border:none; padding:12px; border-radius:10px; font-family:'DM Sans',sans-serif; font-size:0.93rem; font-weight:700; cursor:pointer; }
+  .btn-confirm:hover { background:#CF5A3E; }
+  .modal-aviso .modal-icon { font-size:2.5rem; text-align:center; margin-bottom:10px; }
+  .modal-aviso .aviso-list { list-style:none; padding:0; margin:12px 0; }
+  .modal-aviso .aviso-list li { font-size:0.85rem; color:var(--texto-suave); padding:6px 0; border-bottom:1px solid var(--areia-escuro); display:flex; gap:8px; align-items:flex-start; line-height:1.4; }
+  .modal-aviso .aviso-list li:last-child { border:none; }
+  .modal-aviso .aviso-list li .li-icon { flex-shrink:0; margin-top:1px; }
+  .btn-confirm-green { flex:1; background:#25D366; color:#fff; border:none; padding:12px; border-radius:10px; font-family:'DM Sans',sans-serif; font-size:0.93rem; font-weight:700; cursor:pointer; }
+  .btn-confirm-green:hover { background:#1DAA54; }
+
+  #banner-gem-preco { animation: gemGlow 3.5s ease-in-out infinite; }
+  @keyframes gemGlow { 0%, 100% { box-shadow: 0 4px 24px rgba(0,0,0,0.32), 0 0 0 0 rgba(82,183,136,0); } 50% { box-shadow: 0 4px 24px rgba(0,0,0,0.32), 0 0 20px 3px rgba(82,183,136,0.18); } }
+  #banner-gem-preco:hover { animation: none; }
+
+  .toast { position:fixed; bottom:24px; left:50%; transform:translateX(-50%) translateY(120px); background:var(--verde); color:#fff; padding:14px 24px; border-radius:50px; font-size:0.9rem; font-weight:600; z-index:500; box-shadow:var(--sombra-forte); transition:transform 0.35s cubic-bezier(.34,1.56,.64,1); white-space:nowrap; }
+  .toast.show { transform:translateX(-50%) translateY(0); }
+
+  .mobile-nav { display:none; position:fixed; bottom:0; left:0; right:0; background:var(--verde); padding:8px 0 12px; z-index:100; box-shadow:0 -4px 20px rgba(0,0,0,0.15); }
+  .mobile-nav-inner { display:flex; justify-content:space-around; align-items:flex-start; }
+  .mobile-nav-btn { display:flex; flex-direction:column; align-items:center; gap:2px; background:none; border:none; color:rgba(255,255,255,0.6); font-family:'DM Sans',sans-serif; font-size:0.58rem; font-weight:500; cursor:pointer; padding:0 4px; transition:color 0.15s; position:relative; min-width:44px; }
+  .mobile-nav-btn .m-icon { font-size:1.15rem; }
+  .mobile-nav-btn.active { color:#fff; }
+
+  @media(max-width:540px) {
+    .hero h1 { font-size:1.65rem; }
+    .stats-bar { gap:20px; }
+    nav { display:none; }
+    .mobile-nav { display:block; }
+    body { padding-bottom:72px; }
+    .form-row { flex-direction:column; gap:0; }
+    .cards-grid { grid-template-columns:1fr; }
+    .search-row { flex-direction:column; }
+    .aviso-banner { margin:12px 12px 0; }
+    .aviso-isencao { margin:8px 12px 0; }
+  }
+</style>
+</head>
+<body>
+
+<!-- TERMOS DE USO -->
+<div id="termos-overlay">
+  <div id="termos-box">
+    <div id="termos-header">
+      <div class="t-ico">📋</div>
+      <div><h2>Termos de Uso</h2><p>Leia antes de continuar no Comuniq</p></div>
+    </div>
+    <div id="termos-body">
+      <div class="termos-isencao">
+        <p>⚠️ <strong>Isenção de responsabilidade:</strong> O Comuniq é uma <strong>vitrine de profissionais locais</strong>. Não intermediamos contratos, pagamentos ou negociações. <strong>Toda e qualquer negociação é de responsabilidade exclusiva das partes envolvidas</strong> (cliente e prestador). O Comuniq não se responsabiliza por danos, golpes, prejuízos ou qualquer consequência das transações realizadas fora desta plataforma.</p>
+      </div>
+      <div class="termos-section"><h3>1. O que é o Comuniq</h3><p>O Comuniq é uma plataforma gratuita para conectar moradores da periferia com prestadores de serviço locais. Somos apenas uma vitrine — não participamos de nenhuma etapa da contratação.</p></div>
+      <div class="termos-section"><h3>2. Responsabilidades do Usuário (Cliente)</h3><ul><li>Você é o único responsável pela decisão de contratar um prestador.</li><li>O Comuniq não garante a qualidade, idoneidade ou pontualidade de nenhum prestador.</li><li>Nunca faça pagamentos adiantados sem conhecer o profissional pessoalmente.</li><li>Em caso de golpe, registre Boletim de Ocorrência online (Polícia Civil SP).</li></ul></div>
+      <div class="termos-section"><h3>3. Responsabilidades do Prestador</h3><ul><li>As informações cadastradas são de sua exclusiva responsabilidade.</li><li>Cadastros falsos ou fraudulentos poderão ser removidos e reportados às autoridades.</li><li>O CNPJ informado é usado apenas para verificação — não será exibido publicamente.</li><li>Você é responsável pelo cumprimento dos serviços que oferecer.</li></ul></div>
+      <div class="termos-section"><h3>4. Negociações e Contratos</h3><p>Toda negociação ocorre <strong>diretamente entre cliente e prestador via WhatsApp</strong> ou outro canal escolhido por eles. O Comuniq não participa, não registra e não é responsável por essas conversas ou acordos.</p></div>
+      <div class="termos-section"><h3>5. Denúncias</h3><p>Você pode reportar perfis suspeitos usando o botão <strong>"🚩 Denunciar"</strong> em cada card ou falando com o <strong>Tobias</strong> no chat.</p></div>
+      <div class="termos-section"><h3>6. Dados e Privacidade</h3><p>Os dados cadastrados ficam armazenados localmente no seu navegador (localStorage). Não coletamos dados pessoais em servidores externos.</p></div>
+    </div>
+    <div id="termos-footer">
+      <div class="termos-check-row"><input type="checkbox" id="check-termos" onchange="verificarTermos()"><label for="check-termos">Li e aceito os <strong>Termos de Uso</strong> do Comuniq, incluindo a isenção de responsabilidade por negociações entre usuários.</label></div>
+      <div class="termos-check-row"><input type="checkbox" id="check-golpe" onchange="verificarTermos()"><label for="check-golpe">Estou ciente que o Comuniq <strong>não se responsabiliza</strong> por golpes ou prejuízos em negociações realizadas fora da plataforma.</label></div>
+      <button id="btn-aceitar-termos" onclick="aceitarTermos()">✅ Aceitar e Entrar no Comuniq</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL DENÚNCIA -->
+<div class="modal-overlay" id="modal-denuncia">
+  <div class="modal">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:2px">
+      <div class="modal-title">🚩 Denunciar Prestador</div>
+      <button onclick="fecharDenuncia()" style="background:var(--areia-escuro);border:none;border-radius:50%;width:28px;height:28px;cursor:pointer;font-size:1rem;display:flex;align-items:center;justify-content:center">✕</button>
+    </div>
+    <div class="modal-sub" id="denuncia-sub">Selecione o motivo da denúncia:</div>
+    <div class="denuncia-motivos" id="denuncia-motivos">
+      <div class="denuncia-motivo" onclick="selecionarMotivo(this,'Golpe ou tentativa de fraude')"><span class="dm-ico">💸</span> Golpe ou tentativa de fraude</div>
+      <div class="denuncia-motivo" onclick="selecionarMotivo(this,'Informações falsas no perfil')"><span class="dm-ico">🤥</span> Informações falsas no perfil</div>
+      <div class="denuncia-motivo" onclick="selecionarMotivo(this,'Comportamento abusivo ou ameaças')"><span class="dm-ico">😡</span> Comportamento abusivo</div>
+      <div class="denuncia-motivo" onclick="selecionarMotivo(this,'Número de contato errado ou inexistente')"><span class="dm-ico">📵</span> Contato errado ou falso</div>
+      <div class="denuncia-motivo" onclick="selecionarMotivo(this,'Serviço não realizado após pagamento')"><span class="dm-ico">❌</span> Serviço não realizado</div>
+      <div class="denuncia-motivo" onclick="selecionarMotivo(this,'Outro motivo')"><span class="dm-ico">📝</span> Outro motivo</div>
+    </div>
+    <div id="denuncia-campos" style="display:none;flex-direction:column;gap:10px;margin-top:12px">
+      <div style="background:var(--amarelo-claro);border-left:3px solid var(--amarelo);border-radius:8px;padding:10px 12px;font-size:0.78rem;color:#7a5c00;line-height:1.5">📋 <strong>Vamos te orientar em cada etapa!</strong> Preencha os dados abaixo e nossa equipe vai receber a denúncia. 💪</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+        <div><label style="font-size:0.78rem;font-weight:700;color:var(--texto);margin-bottom:4px;display:block">Prestador ID <span style="color:#bbb;font-weight:400">(opcional)</span></label><input id="denuncia-field-id" type="text" placeholder="Ex: CQ-00001" style="width:100%;border:1.5px solid var(--areia-escuro);border-radius:9px;padding:9px 11px;font-family:'DM Sans',sans-serif;font-size:0.83rem;color:var(--texto);background:var(--areia);outline:none"></div>
+        <div><label style="font-size:0.78rem;font-weight:700;color:var(--texto);margin-bottom:4px;display:block">Nome do Prestador <span style="color:#bbb;font-weight:400">(opcional)</span></label><input id="denuncia-field-nome" type="text" placeholder="Ex: João Pereira" style="width:100%;border:1.5px solid var(--areia-escuro);border-radius:9px;padding:9px 11px;font-family:'DM Sans',sans-serif;font-size:0.83rem;color:var(--texto);background:var(--areia);outline:none"></div>
+      </div>
+      <div><label style="font-size:0.78rem;font-weight:700;color:var(--texto);margin-bottom:4px;display:block">Motivo</label><input id="denuncia-field-motivo" type="text" readonly style="width:100%;border:1.5px solid var(--vermelho);border-radius:9px;padding:9px 11px;font-family:'DM Sans',sans-serif;font-size:0.83rem;color:var(--vermelho);background:var(--vermelho-claro);outline:none;font-weight:600"></div>
+      <div><label style="font-size:0.78rem;font-weight:700;color:var(--texto);margin-bottom:4px;display:block">Descreva o que aconteceu <span style="color:var(--vermelho)">*</span></label><textarea id="denuncia-field-descricao" placeholder="Conte com detalhes o que ocorreu..." style="width:100%;border:1.5px solid var(--areia-escuro);border-radius:9px;padding:9px 11px;font-family:'DM Sans',sans-serif;font-size:0.83rem;color:var(--texto);background:var(--areia);outline:none;resize:vertical;min-height:72px;line-height:1.5"></textarea></div>
+    </div>
+    <div class="denuncia-aviso" style="margin-top:10px;font-size:0.76rem">ℹ️ Sua denúncia será enviada à equipe do Comuniq pelo WhatsApp.</div>
+    <button class="btn-wpp-suporte" id="btn-enviar-denuncia" onclick="enviarDenuncia()" style="opacity:0.4;pointer-events:none;margin-top:10px">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.122.555 4.113 1.524 5.84L0 24l6.335-1.483A11.95 11.95 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-1.933 0-3.742-.516-5.295-1.415l-.38-.225-3.76.88.92-3.658-.247-.396A9.932 9.932 0 012 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z"/></svg>
+      Enviar denúncia pelo WhatsApp
+    </button>
+  </div>
+</div>
+
+<header>
+  <div class="header-inner">
+    <div class="logo" onclick="showPage('home')">🤝 Comuniq <span class="logo-badge">BETA</span></div>
+    <nav>
+      <button class="nav-btn active" onclick="showPage('home')">Início</button>
+      <button class="nav-btn" onclick="showPage('busca')">Buscar</button>
+      <button class="nav-btn" onclick="showPage('cadastro')">Cadastrar</button>
+      <button class="nav-btn" id="btn-alertas-nav" onclick="abrirAlertas()" title="Alertas de novidades" style="position:relative">🔔<span id="badge-alertas" style="display:none;position:absolute;top:2px;right:2px;width:8px;height:8px;background:var(--laranja);border-radius:50%"></span></button>
+    </nav>
+  </div>
+</header>
+
+<!-- HOME -->
+<div id="page-home" class="page active">
+  <div class="hero">
+    <h1>Conectando a força da <em>comunidade</em>,<br>com quem precisa 🏘️</h1>
+    <p>Encontre profissionais qualificados de forma rápida e fácil. Negocie diretamente pelo WhatsApp.</p>
+    <div class="hero-btns">
+      <button class="btn-primary" onclick="showPage('busca')">🔍 Buscar Serviço</button>
+      <button class="btn-outline" onclick="showPage('cadastro')">📝 Me Cadastrar</button>
+    </div>
+  </div>
+  <div class="bairros-carrossel-wrap">
+    <div class="bairros-carrossel-label">🏘️ Comunidades atendidas</div>
+    <div class="bairros-carrossel" id="bairros-carrossel"></div>
+    <div class="carrossel-dots" id="carrossel-dots"></div>
+  </div>
+  <div class="stats-bar">
+    <div class="stat"><div class="stat-num" id="stat-total">0</div><div class="stat-label">Profissionais</div></div>
+    <div class="stat"><div class="stat-num" id="stat-verified">0</div><div class="stat-label">Verificados ✅</div></div>
+    <div class="stat"><div class="stat-num">20</div><div class="stat-label">Bairros</div></div>
+  </div>
+  <div class="aviso-banner" id="aviso-golpe">
+    <div class="aviso-icon">🚨</div>
+    <div class="aviso-body">
+      <div class="aviso-title">Atenção: cuidado com golpes!</div>
+      <div class="aviso-text">Prefira sempre prestadores com o selo <strong>✅ Verificado</strong>. <strong>Nunca faça pagamentos adiantados</strong> sem conhecer o profissional pessoalmente.</div>
+    </div>
+    <button class="aviso-close" onclick="fecharAviso()">✕</button>
+  </div>
+  <div class="aviso-isencao">
+    <div class="aviso-icon">ℹ️</div>
+    <div class="aviso-text"><strong>O Comuniq não se responsabiliza</strong> por negociações realizadas diretamente entre clientes e prestadores. Somos apenas uma vitrine de profissionais locais.</div>
+  </div>
+  <div class="section">
+    <div class="section-title">🏅 Mais Recomendados</div>
+    <div class="cards-grid" id="home-recommended"></div>
+  </div>
+  <div class="section" style="padding-top:0">
+    <div class="section-title">📂 Navegar por Categoria</div>
+    <div class="cats-grid" id="home-cats"></div>
+    <a href="https://gemini.google.com/gem/1iHdoRQWfaDVAUKB3YMZXwFQRH_m5akCG?usp=sharing" target="_blank" rel="noopener" id="banner-tobias-gem" style="margin-top:18px;display:flex;align-items:center;gap:14px;background:linear-gradient(135deg,#1B4332 0%,#2D6A4F 60%,#52B788 100%);border-radius:16px;padding:16px 18px;text-decoration:none;transition:transform 0.18s,box-shadow 0.18s;box-shadow:0 4px 20px rgba(45,106,79,0.28)" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">
+      <div style="width:48px;height:48px;background:rgba(255,255,255,0.15);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.6rem;flex-shrink:0;border:2px solid rgba(255,255,255,0.25)">🤖</div>
+      <div style="flex:1;min-width:0"><div style="font-family:'Syne',sans-serif;font-weight:800;font-size:0.95rem;color:#fff;margin-bottom:3px">Tobias no Gemini</div><div style="font-size:0.78rem;color:rgba(255,255,255,0.75);line-height:1.4">Perguntas mais complexas? Converse com o Tobias completo no Gemini!</div></div>
+      <div style="flex-shrink:0;background:rgba(255,255,255,0.18);border:1.5px solid rgba(255,255,255,0.35);color:#fff;font-size:0.78rem;font-weight:700;padding:8px 14px;border-radius:50px;white-space:nowrap">Abrir →</div>
+    </a>
+    <a href="https://gemini.google.com/gem/1rcDP0iHR5qlUQUZ_NKYYB454j9RVfCNF?usp=sharing" target="_blank" rel="noopener" id="banner-gem-preco" style="margin-top:14px;display:flex;align-items:center;gap:14px;background:linear-gradient(135deg,#0f2e1e 0%,#1a4a2e 50%,#0d3323 100%);border-radius:16px;padding:16px 18px;text-decoration:none;transition:transform 0.2s,box-shadow 0.2s;box-shadow:0 4px 24px rgba(0,0,0,0.32);border:1.5px solid rgba(82,183,136,0.25);position:relative;overflow:hidden">
+      <div style="width:52px;height:52px;background:linear-gradient(135deg,rgba(82,183,136,0.25),rgba(45,106,79,0.4));border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:1.6rem;flex-shrink:0;border:1.5px solid rgba(82,183,136,0.3)">💰</div>
+      <div style="flex:1;min-width:0;position:relative;z-index:1">
+        <div style="display:flex;align-items:center;gap:7px;margin-bottom:4px"><span style="font-family:'Syne',sans-serif;font-weight:800;font-size:0.97rem;color:#fff">Estimativa de Preço</span><span style="background:linear-gradient(90deg,var(--laranja),#f4a261);color:#fff;font-size:0.6rem;font-weight:800;padding:2px 8px;border-radius:20px;letter-spacing:0.5px;text-transform:uppercase;white-space:nowrap">IA Gemini</span></div>
+        <div style="font-size:0.78rem;color:rgba(255,255,255,0.65);line-height:1.45">Descubra quanto custa o serviço antes de contratar. Pergunte ao GEM especializado em preços!</div>
+      </div>
+      <div style="flex-shrink:0;background:linear-gradient(135deg,var(--verde-claro),#2D6A4F);color:#fff;font-size:0.78rem;font-weight:800;padding:9px 16px;border-radius:50px;white-space:nowrap;font-family:'Syne',sans-serif">Estimar →</div>
+    </a>
+    <div onclick="abrirDenunciaGeral()" style="margin-top:18px;display:flex;align-items:center;gap:12px;background:var(--vermelho-claro);border:1px solid #f5c6c6;border-radius:12px;padding:12px 16px;cursor:pointer;transition:background 0.18s" onmouseover="this.style.background='#f8d0d0'" onmouseout="this.style.background='var(--vermelho-claro)'">
+      <div style="font-size:1.5rem;flex-shrink:0">🚩</div>
+      <div><div style="font-family:'Syne',sans-serif;font-weight:700;font-size:0.82rem;color:var(--vermelho)">Encontrou algo suspeito?</div><div style="font-size:0.75rem;color:#a93226;line-height:1.4;margin-top:1px">Use este canal para denunciar perfis falsos ou comportamentos inadequados.</div></div>
+      <div style="margin-left:auto;flex-shrink:0;color:var(--vermelho);font-size:0.75rem;font-weight:700;white-space:nowrap">Denunciar →</div>
+    </div>
+  </div>
+</div>
+
+<!-- BUSCA -->
+<div id="page-busca" class="page">
+  <div class="section">
+    <div class="section-title">🔍 Encontrar Profissional</div>
+    <div class="legenda-verificacao">
+      <div class="lv-item"><span>✅</span><span><strong>Verificado:</strong> prestador enviou CNPJ — mais confiável</span></div>
+      <div class="lv-item"><span>❓</span><span><strong>Não verificado:</strong> sem CNPJ cadastrado — tome mais cuidado</span></div>
+    </div>
+
+    <!-- BUSCA INTELIGENTE COM TOBIAS + GEMINI -->
+    <div id="busca-ia-box" style="background:linear-gradient(135deg,#1B4332,#2D6A4F);border-radius:16px;padding:18px 20px;margin-bottom:16px;box-shadow:0 6px 28px rgba(45,106,79,0.28)">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
+        <div style="width:36px;height:36px;background:var(--verde-menta);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0">🤖</div>
+        <div>
+          <div style="color:#fff;font-weight:700;font-size:0.92rem;font-family:'Syne',sans-serif">Tobias · Busca Inteligente</div>
+          <div style="color:rgba(255,255,255,0.6);font-size:0.72rem">Descreva o que precisa em linguagem natural</div>
+        </div>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <input type="text" id="busca-ia-input" placeholder="Ex: preciso de alguém para reformar meu banheiro em Heliópolis..." style="flex:1;min-width:200px;border:none;border-radius:10px;padding:11px 15px;font-family:'DM Sans',sans-serif;font-size:0.88rem;background:rgba(255,255,255,0.12);color:#fff;outline:none" oninput="this.style.color='#fff'" onkeydown="if(event.key==='Enter')buscaIa()">
+        <button onclick="buscaIa()" style="background:var(--laranja);color:#fff;border:none;padding:11px 18px;border-radius:10px;font-family:'DM Sans',sans-serif;font-size:0.88rem;font-weight:700;cursor:pointer;white-space:nowrap;transition:background 0.18s" onmouseover="this.style.background='#CF5A3E'" onmouseout="this.style.background='var(--laranja)'">✨ Buscar com IA</button>
+      </div>
+      <div id="busca-ia-chips" style="display:flex;gap:6px;flex-wrap:wrap;margin-top:10px">
+        <span style="color:rgba(255,255,255,0.5);font-size:0.72rem;align-self:center">Exemplos:</span>
+        <button onclick="buscaIaChip('eletricista verificado em Brasilândia')" style="background:rgba(255,255,255,0.12);color:rgba(255,255,255,0.8);border:none;border-radius:20px;padding:4px 12px;font-size:0.72rem;cursor:pointer;font-family:'DM Sans',sans-serif">⚡ eletricista verificado</button>
+        <button onclick="buscaIaChip('cabeleireira que atende em domicílio')" style="background:rgba(255,255,255,0.12);color:rgba(255,255,255,0.8);border:none;border-radius:20px;padding:4px 12px;font-size:0.72rem;cursor:pointer;font-family:'DM Sans',sans-serif">✂️ cabeleireira domicílio</button>
+        <button onclick="buscaIaChip('quem tem mais avaliações positivas')" style="background:rgba(255,255,255,0.12);color:rgba(255,255,255,0.8);border:none;border-radius:20px;padding:4px 12px;font-size:0.72rem;cursor:pointer;font-family:'DM Sans',sans-serif">🏅 melhores avaliados</button>
+      </div>
+      <div id="busca-ia-loading" style="display:none;text-align:center;padding:10px 0;color:rgba(255,255,255,0.7);font-size:0.82rem"><span>⚙️</span> Tobias está interpretando sua busca...</div>
+      <div id="busca-ia-resultado" style="display:none;margin-top:12px;background:rgba(255,255,255,0.1);border-radius:10px;padding:12px 14px;color:rgba(255,255,255,0.9);font-size:0.82rem;line-height:1.6"></div>
+    </div>
+
+    <div class="search-box">
+      <div class="search-row">
+        <input type="text" id="search-nome" class="search-input" placeholder="Buscar por nome...">
+        <select id="search-cat" class="search-input"><option value="">Todos os serviços</option></select>
+        <select id="search-bairro" class="search-input">
+          <option value="">Todos os bairros</option>
+          <option>Heliópolis</option><option>Paraisópolis</option><option>Cidade Tiradentes</option><option>Capão Redondo</option><option>Jardim Ângela</option><option>Brasilândia</option><option>Grajaú</option><option>Guaianases</option><option>São Mateus</option><option>Itaim Paulista</option><option>Sapopemba</option><option>Cidade Ademar</option><option>Jardim São Luís</option><option>Campo Limpo</option><option>Itaquera</option><option>São Miguel Paulista</option><option>Perus</option><option>Pedreira</option><option>Cursino</option><option>Vila Prudente</option>
+        </select>
+        <button class="btn-search" onclick="buscar()">Buscar</button>
+      </div>
+      <div class="divider"></div>
+      <div class="search-id-row">
+        <span class="search-id-label">🆔 Buscar por ID:</span>
+        <input type="text" id="search-id" class="search-input" placeholder="Ex: CQ-00001" style="flex:1;min-width:140px">
+        <button class="btn-search" onclick="buscarPorId()">Buscar</button>
+      </div>
+    </div>
+    <div class="aviso-isencao" style="margin:0 0 14px">
+      <div class="aviso-icon">⚠️</div>
+      <div class="aviso-text"><strong>Negocie com segurança.</strong> O Comuniq <strong>não intermedia</strong> o contato. Desconfie de pedidos de pagamento antecipado.</div>
+    </div>
+    <a href="https://gemini.google.com/gem/1rcDP0iHR5qlUQUZ_NKYYB454j9RVfCNF?usp=sharing" target="_blank" rel="noopener" style="display:flex;align-items:center;gap:12px;background:linear-gradient(90deg,#0f2e1e,#1e5c3a);border-radius:12px;padding:12px 16px;margin-bottom:16px;text-decoration:none;border:1px solid rgba(82,183,136,0.3);transition:all 0.18s">
+      <div style="font-size:1.3rem;flex-shrink:0">💰</div>
+      <div style="flex:1;min-width:0"><div style="font-family:'Syne',sans-serif;font-weight:700;font-size:0.83rem;color:#fff">Quer saber quanto isso custa?</div><div style="font-size:0.73rem;color:rgba(255,255,255,0.6);margin-top:1px">Consulte o GEM de Estimativa de Preço antes de negociar</div></div>
+      <div style="flex-shrink:0;font-size:0.72rem;font-weight:800;color:var(--laranja);white-space:nowrap">IA Gemini →</div>
+    </a>
+    <div class="results-info" id="results-info"></div>
+    <div class="cards-grid" id="busca-results"></div>
+    <div class="empty-state" id="busca-empty" style="display:none"><div class="empty-icon">🔎</div><h3>Nenhum resultado encontrado</h3><p>Tente outros termos ou categorias.</p></div>
+  </div>
+</div>
+
+<!-- CADASTRO -->
+<div id="page-cadastro" class="page">
+  <div class="section">
+    <div class="form-card">
+      <div class="form-title">📝 Cadastrar Serviço</div>
+      <div class="form-subtitle">Sem criar conta ou senha! Preencha seus dados e comece a receber clientes pela Comuniq.</div>
+      <div class="info-strip">💡 Após o cadastro você receberá um <strong>ID único</strong>. Guarde esse código — clientes podem te achar diretamente por ele!</div>
+      <div class="success-msg" id="cadastro-success"><p>✅ Cadastro realizado com sucesso!</p><div class="id-label">Seu ID único é:</div><div class="id-value" id="success-id">—</div><div class="id-hint">📸 Tire uma foto ou anote esse código. Com ele, clientes te acham direto na busca!</div></div>
+      <div class="form-group"><label>Nome completo <span class="required">*</span></label><input type="text" id="f-nome" class="form-input" placeholder="Ex: João da Silva"></div>
+      <div class="form-group"><label>Data de nascimento <span class="required">*</span></label><input type="date" id="f-nascimento" class="form-input" max="" autocomplete="bday"><div class="form-hint" id="hint-nascimento">Somente maiores de 18 anos podem se cadastrar como prestadores.</div></div>
+      <div class="form-group"><label>Tipo de serviço <span class="required">*</span></label><div class="cats-select-grid" id="form-cats"></div></div>
+      <div class="form-group">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
+          <label style="margin-bottom:0">Descrição / Experiência <span class="required">*</span></label>
+          <button type="button" id="btn-gerar-desc" onclick="gerarDescricaoIA()" style="background:linear-gradient(135deg,#1B4332,#2D6A4F);color:#fff;border:none;border-radius:8px;padding:5px 12px;font-size:0.75rem;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;display:flex;align-items:center;gap:5px;transition:opacity 0.2s">🤖 Tobias gerar</button>
+        </div>
+        <textarea id="f-desc" class="form-input" placeholder="Fale sobre você, sua experiência e o que faz de melhor..." oninput="sugerirCategoria(this.value)"></textarea>
+        <div id="sugestao-cat" style="display:none;margin-top:6px;background:var(--verde-menta);border-radius:8px;padding:7px 12px;font-size:0.8rem;color:var(--verde);cursor:pointer" onclick="aplicarSugestaoCat()">🤖 Tobias sugere: <strong id="sugestao-cat-nome"></strong> — <span style="text-decoration:underline">clique para selecionar</span></div>
+      </div>
+      <div class="form-group">
+        <div style="display:flex;gap:12px;flex-wrap:wrap">
+          <div style="flex:1;min-width:140px"><label>Anos de experiência</label><select id="f-anos" class="form-input"><option value="">Selecione...</option><option value="1">Menos de 1 ano</option><option value="2">1 a 3 anos</option><option value="5">3 a 5 anos</option><option value="8">5 a 10 anos</option><option value="15">Mais de 10 anos</option></select></div>
+          <div style="flex:1;min-width:140px"><label>Diferencial (opcional)</label><input type="text" id="f-diferencial" class="form-input" placeholder="Ex: atendo domicílio, preço justo..."></div>
+        </div>
+      </div>
+      <div class="form-group"><label>Bairro onde atende <span class="required">*</span></label><select id="f-bairro" class="form-input"><option value="">Selecione o bairro...</option><option>Heliópolis</option><option>Paraisópolis</option><option>Cidade Tiradentes</option><option>Capão Redondo</option><option>Jardim Ângela</option><option>Brasilândia</option><option>Grajaú</option><option>Guaianases</option><option>São Mateus</option><option>Itaim Paulista</option><option>Sapopemba</option><option>Cidade Ademar</option><option>Jardim São Luís</option><option>Campo Limpo</option><option>Itaquera</option><option>São Miguel Paulista</option><option>Perus</option><option>Pedreira</option><option>Cursino</option><option>Vila Prudente</option></select></div>
+      <div class="form-row">
+        <div class="form-group"><label>WhatsApp <span class="required">*</span></label><input type="tel" id="f-wpp" class="form-input" placeholder="(11) 99999-0000"><div class="form-hint">Com DDD, apenas números</div></div>
+        <div class="form-group"><label>Telefone</label><input type="tel" id="f-tel" class="form-input" placeholder="(11) 3333-0000"><div class="form-hint">Opcional</div></div>
+      </div>
+      <div class="form-group">
+        <label>CNPJ <span style="font-size:0.78rem;font-weight:400;color:var(--texto-suave)">(opcional — garante o selo ✅ Verificado)</span></label>
+        <div class="cnpj-field-wrap" id="cnpj-wrap"><input type="text" id="f-cnpj" class="form-input" placeholder="00.000.000/0001-00" maxlength="18" oninput="onCnpjInput(this)" autocomplete="off"><span class="cnpj-ok-icon">✅</span></div>
+        <div class="cnpj-strip" id="cnpj-strip"><span class="cs-icon">🔒</span><span class="cs-text">CNPJ válido! Seu perfil receberá o selo <strong>✅ Verificado</strong> automaticamente.</span></div>
+        <div class="form-hint">Seu CNPJ é usado apenas para validar o selo. Não será exibido publicamente.</div>
+      </div>
+      <button class="btn-submit" onclick="cadastrar()">✅ Finalizar Cadastro Gratuito</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL AVALIAÇÃO -->
+<div class="modal-overlay" id="modal-rating">
+  <div class="modal" style="max-width:460px;width:100%">
+    <div class="modal-title">⭐ Avaliar Prestador</div>
+    <div class="modal-sub" id="modal-rating-name">Como foi o serviço?</div>
+    <div class="stars-select" id="stars-container">
+      <button class="star-btn" onclick="selectStar(1)">★</button><button class="star-btn" onclick="selectStar(2)">★</button><button class="star-btn" onclick="selectStar(3)">★</button><button class="star-btn" onclick="selectStar(4)">★</button><button class="star-btn" onclick="selectStar(5)">★</button>
+    </div>
+    <div class="star-label" id="star-label">Toque em uma estrela para avaliar</div>
+    <div class="form-group" style="margin-top:14px"><label style="font-size:0.82rem;font-weight:600;color:var(--texto);display:block;margin-bottom:6px">Seu nome <span style="color:#aaa;font-weight:400">(opcional)</span></label><input type="text" id="rating-autor" class="form-input" placeholder="Ex: Ana Lima" style="width:100%;border:1.5px solid var(--areia-escuro);border-radius:10px;padding:10px 13px;font-family:'DM Sans',sans-serif;font-size:0.88rem;background:var(--areia);outline:none;"></div>
+    <div class="form-group" style="margin-top:10px"><label style="font-size:0.82rem;font-weight:600;color:var(--texto);display:block;margin-bottom:6px">Conte como foi <span style="color:#aaa;font-weight:400">(opcional)</span></label><textarea id="rating-texto" class="form-input" placeholder="Ex: Serviço ótimo, muito pontual..." style="width:100%;border:1.5px solid var(--areia-escuro);border-radius:10px;padding:10px 13px;font-family:'DM Sans',sans-serif;font-size:0.88rem;background:var(--areia);outline:none;resize:vertical;min-height:76px;"></textarea></div>
+    <div class="modal-actions"><button class="btn-cancel" onclick="closeModal()">Cancelar</button><button class="btn-confirm" onclick="confirmarAvaliacao()">Enviar ⭐</button></div>
+  </div>
+</div>
+
+<!-- MODAL VER AVALIAÇÕES -->
+<div class="modal-overlay" id="modal-reviews">
+  <div class="modal" style="max-width:500px;width:100%;max-height:85vh;overflow-y:auto">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px">
+      <div class="modal-title" id="reviews-title">Avaliações</div>
+      <button onclick="fecharReviews()" style="background:var(--areia-escuro);border:none;border-radius:50%;width:28px;height:28px;cursor:pointer;font-size:1rem;display:flex;align-items:center;justify-content:center">✕</button>
+    </div>
+    <div id="reviews-stars-summary" style="margin-bottom:14px"></div>
+    <div id="tobias-box" style="background:linear-gradient(135deg,#1B4332,#2D6A4F);border-radius:14px;padding:14px 16px;margin-bottom:16px;display:none">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px"><div style="width:32px;height:32px;background:var(--verde-menta);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0">🤖</div><div><div style="color:#fff;font-weight:700;font-size:0.85rem">Tobias · Assistente IA Comuniq</div><div style="color:rgba(255,255,255,0.6);font-size:0.72rem">Resumo inteligente das avaliações</div></div></div>
+      <div id="tobias-text" style="color:rgba(255,255,255,0.92);font-size:0.83rem;line-height:1.6"></div>
+    </div>
+    <div id="tobias-loading" style="display:none;text-align:center;padding:14px 0"><div style="display:inline-flex;gap:6px;align-items:center;color:var(--verde);font-size:0.83rem;font-weight:600"><span id="tobias-spin" style="display:inline-block">⚙️</span> Tobias está analisando...</div></div>
+    <div id="reviews-list" style="display:flex;flex-direction:column;gap:10px"></div>
+    <div id="reviews-empty" style="text-align:center;padding:32px 16px;color:var(--texto-suave);display:none"><div style="font-size:2rem;margin-bottom:8px">💬</div><div style="font-size:0.88rem">Nenhuma avaliação escrita ainda.<br>Seja o primeiro a avaliar!</div></div>
+  </div>
+</div>
+
+<style>
+#busca-ia-input::placeholder { color: rgba(255,255,255,0.45); }
+#busca-ia-input { color: #fff !important; }
+@keyframes spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}
+#tobias-spin{animation:spin 1.2s linear infinite}
+#esp-spin{animation:spin 1.2s linear infinite}
+.review-card{background:var(--areia);border-radius:12px;padding:12px 14px;border-left:3px solid var(--verde-claro)}
+.review-card .rc-top{display:flex;align-items:center;gap:8px;margin-bottom:5px}
+.review-card .rc-avatar{width:30px;height:30px;background:var(--verde-menta);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:var(--verde);flex-shrink:0}
+.review-card .rc-nome{font-weight:700;font-size:0.82rem;color:var(--texto)}
+.review-card .rc-data{font-size:0.7rem;color:var(--texto-suave);margin-left:auto}
+.review-card .rc-stars{color:#F4A261;font-size:0.82rem;letter-spacing:1px;margin-bottom:3px}
+.review-card .rc-texto{font-size:0.81rem;color:var(--texto-suave);line-height:1.5}
+</style>
+
+<!-- MODAL ESPECIALISTA -->
+<div class="modal-overlay" id="modal-especialista">
+  <div class="modal" style="max-width:500px;width:100%;max-height:88vh;overflow-y:auto">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px">
+      <div class="modal-title" id="especialista-title">💡 Recomendação de Especialista</div>
+      <button onclick="fecharEspecialista()" style="background:var(--areia-escuro);border:none;border-radius:50%;width:28px;height:28px;cursor:pointer;font-size:1rem;display:flex;align-items:center;justify-content:center">✕</button>
+    </div>
+    <div class="modal-sub" id="especialista-sub">O Tobias analisou os profissionais disponíveis e preparou uma recomendação personalizada.</div>
+    <div style="background:linear-gradient(135deg,#1B4332,#2D6A4F);border-radius:14px;padding:14px 16px;margin-bottom:16px">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px"><div style="width:32px;height:32px;background:var(--verde-menta);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0">🤖</div><div><div style="color:#fff;font-weight:700;font-size:0.85rem">Tobias · Recomendação IA</div><div style="color:rgba(255,255,255,0.6);font-size:0.72rem">Análise personalizada para você</div></div></div>
+      <div id="especialista-loading" style="text-align:center;padding:12px 0;color:rgba(255,255,255,0.7);font-size:0.82rem"><span id="esp-spin" style="display:inline-block;animation:spin 1.2s linear infinite">⚙️</span> Tobias está analisando os profissionais...</div>
+      <div id="especialista-text" style="color:rgba(255,255,255,0.92);font-size:0.83rem;line-height:1.6;display:none"></div>
+    </div>
+    <div id="especialista-cards" style="display:flex;flex-direction:column;gap:10px"></div>
+    <div style="margin-top:14px"><button onclick="fecharEspecialista()" class="btn-cancel" style="width:100%">Fechar</button></div>
+  </div>
+</div>
+
+<!-- MODAL WPP -->
+<div class="modal-overlay" id="modal-wpp">
+  <div class="modal modal-aviso">
+    <div class="modal-icon">📲</div>
+    <div class="modal-title">Antes de continuar</div>
+    <div class="modal-sub">Você está prestes a contatar <strong id="wpp-nome-modal">este profissional</strong> pelo WhatsApp.</div>
+    <ul class="aviso-list">
+      <li><span class="li-icon">⚠️</span><span><strong>Nunca pague adiantado</strong> antes de conhecer o serviço e o profissional.</span></li>
+      <li><span class="li-icon">🔍</span><span>Prefira profissionais com o selo <strong>✅ Verificado</strong> — eles têm CNPJ confirmado.</span></li>
+      <li><span class="li-icon">📵</span><span>Desconfie de quem pede <strong>PIX ou transferência antecipada</strong> sem orçamento formal.</span></li>
+      <li><span class="li-icon">ℹ️</span><span>O <strong>Comuniq não se responsabiliza</strong> por negociações feitas fora desta plataforma.</span></li>
+    </ul>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="fecharModalWpp()">Cancelar</button>
+      <button class="btn-confirm-green" id="btn-ir-wpp" onclick="confirmarWpp()">Entendi, ir ao WhatsApp →</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<div class="mobile-nav">
+  <div class="mobile-nav-inner">
+    <button class="mobile-nav-btn active" id="mnav-home" onclick="showPage('home')"><span class="m-icon">🏠</span>Início</button>
+    <button class="mobile-nav-btn" id="mnav-busca" onclick="showPage('busca')"><span class="m-icon">🔍</span>Buscar</button>
+    <button class="mobile-nav-btn" id="mnav-cadastro" onclick="showPage('cadastro')"><span class="m-icon">📝</span>Cadastrar</button>
+    <button class="mobile-nav-btn" id="mnav-alertas" onclick="abrirAlertas()" style="position:relative"><span class="m-icon">🔔</span>Alertas<span id="badge-alertas-mob" style="display:none;position:absolute;top:4px;right:10px;width:8px;height:8px;background:var(--laranja);border-radius:50%"></span></button>
+  </div>
+</div>
+
+<script>
+const GKEY = 'AIzaSyCippQMnA6TPSgcRs3yWcZFoo1b9YiAPb4';
+const GURL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${GKEY}`;
+
+const CATS = [
+  {id:'pedreiro',nome:'Pedreiro',icon:'🧱'},{id:'eletricista',nome:'Eletricista',icon:'⚡'},
+  {id:'encanador',nome:'Encanador',icon:'🔧'},{id:'pintor',nome:'Pintor',icon:'🖌️'},
+  {id:'marceneiro',nome:'Marceneiro',icon:'🪵'},{id:'diarista',nome:'Diarista',icon:'🧹'},
+  {id:'cabeleireiro',nome:'Cabeleireiro(a)',icon:'✂️'},{id:'manicure',nome:'Manicure',icon:'💅'},
+  {id:'costureira',nome:'Costureira',icon:'🧵'},{id:'doceiro',nome:'Doceiro(a)',icon:'🍰'},
+  {id:'mecanico',nome:'Mecânico',icon:'🔩'},{id:'informatica',nome:'Informática',icon:'💻'},
+  {id:'jardineiro',nome:'Jardineiro',icon:'🌱'},{id:'cuidador',nome:'Cuidador(a)',icon:'🤲'},
+  {id:'fotografo',nome:'Fotógrafo(a)',icon:'📷'},{id:'outros',nome:'Outros',icon:'🛠️'}
+];
+
+const KEY = 'comuniq_v3';
+let selectedCat = '';
+let currentRatingId = null;
+let currentStar = 0;
+let pendingCatFilter = '';
+let pendingWppUrl = '';
+let pendingWppNome = '';
+
+function getP(){ try{ return JSON.parse(localStorage.getItem(KEY))||[]; }catch{ return []; } }
+function setP(l){ localStorage.setItem(KEY, JSON.stringify(l)); }
+function media(av){ if(!av||!av.length) return 0; return av.reduce((a,b)=>a+b,0)/av.length; }
+function stars(m){ if(!m) return '☆☆☆☆☆'; let s=''; for(let i=1;i<=5;i++) s+=i<=Math.round(m)?'★':'☆'; return s; }
+function genId(){ const l=getP(); return 'CQ-'+(l.length+1).toString().padStart(5,'0'); }
+
+function showPage(name){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById('page-'+name).classList.add('active');
+  document.querySelectorAll('.nav-btn').forEach((b,i)=>b.classList.toggle('active',['home','busca','cadastro'][i]===name));
+  document.querySelectorAll('.mobile-nav-btn').forEach(b=>b.classList.remove('active'));
+  const mb = document.getElementById('mnav-'+name);
+  if(mb) mb.classList.add('active');
+  window.scrollTo(0,0);
+  if(name==='home') renderHome();
+  if(name==='busca') initBusca();
+  if(name==='cadastro') resetForm();
+}
+
+function cardHtml(p, rec=false){
+  const m = media(p.avaliacoes);
+  const cat = CATS.find(c=>c.id===p.categoria)||{nome:p.categoria,icon:'🛠️'};
+  const wpp = (p.whatsapp||'').replace(/\D/g,'');
+  const nomeEsc = (p.nome||'').replace(/'/g,"\\'").replace(/"/g,'&quot;');
+  const badges = gerarBadges(p);
+  const isNovo = isNovoProf(p);
+  const trend = gerarTrend(p.avaliacoes||[]);
+  return `<div class="card">
+    ${rec && isNovo ? '<div class="recommended-tag">🏅 Recomendado · ✨ Novo</div>' : rec ? '<div class="recommended-tag">🏅 Mais Recomendado</div>' : isNovo ? '<div class="recommended-tag" style="background:var(--verde-claro);color:#fff">✨ NOVO</div>' : ''}
+    <div class="card-top">
+      <div class="card-avatar">${cat.icon}</div>
+      <div class="card-info">
+        <div class="card-name">${p.nome}</div>
+        <div class="card-service">${cat.nome}</div>
+        <div class="card-bairro">📍 ${p.bairro}</div>
+        <div class="verified-badge ${p.verificado?'verified-yes':'verified-no'}">${p.verificado?'✅ Verificado':'❓ Não verificado'}</div>
+      </div>
+    </div>
+    <div class="card-id">ID: ${p.id}</div>
+    ${badges.length?`<div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:8px">${badges.map(b=>`<span style="background:${b.bg};color:${b.cor};font-size:0.69rem;font-weight:600;padding:2px 9px;border-radius:20px">${b.icon} ${b.label}</span>`).join('')}</div>`:''}
+    <div class="card-desc">${p.descricao}</div>
+    <div class="card-stars">
+      <span class="stars">${stars(m)}</span>
+      <span class="rating-num">${m>0?m.toFixed(1):'–'}</span>
+      <span class="rating-count">(${(p.avaliacoes||[]).length} avaliações)</span>
+      ${trend?`<span style="font-size:0.72rem;font-weight:600;margin-left:6px;${trend.cor}">${trend.label}</span>`:''}
+    </div>
+    ${renderSparkline(p.avaliacoes||[])}
+    <div class="card-actions">
+      <button class="btn-wpp" onclick="abrirWpp('${wpp}','${nomeEsc}')">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.122.555 4.113 1.524 5.84L0 24l6.335-1.483A11.95 11.95 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-1.933 0-3.742-.516-5.295-1.415l-.38-.225-3.76.88.92-3.658-.247-.396A9.932 9.932 0 012 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z"/></svg>
+        WhatsApp
+      </button>
+      ${p.telefone?`<button class="btn-tel" onclick="toggleTel('tel-${p.id}')">📞 Tel.</button>`:''}
+      <button class="btn-rate" onclick="openRating('${p.id}','${nomeEsc}')">⭐ Avaliar</button>
+      <button class="btn-rate" style="background:var(--verde-menta);color:var(--verde)" onclick="verReviews('${p.id}','${nomeEsc}')">💬 Ver avaliações</button>
+      <button class="btn-rate" style="background:var(--laranja-claro);color:var(--laranja)" onclick="abrirRecomendacao('${p.categoria}','${cat.nome}')">🤖 Quem é melhor?</button>
+      <button class="btn-report" onclick="abrirDenuncia('${p.id}','${nomeEsc}')">🚩 Denunciar</button>
+    </div>
+    <div class="tel-reveal" id="tel-${p.id}">📞 ${p.telefone}</div>
+  </div>`;
+}
+
+function abrirWpp(num, nome){
+  pendingWppUrl = `https://wa.me/55${num}?text=Olá%20${encodeURIComponent(nome)},%20vi%20seu%20perfil%20no%20Comuniq%20e%20gostaria%20de%20mais%20informações%20sobre%20seus%20serviços!`;
+  pendingWppNome = nome;
+  document.getElementById('wpp-nome-modal').textContent = nome;
+  document.getElementById('modal-wpp').classList.add('open');
+}
+function confirmarWpp(){
+  document.getElementById('modal-wpp').classList.remove('open');
+  const w = window.open(pendingWppUrl, '_blank');
+  if(!w || w.closed || typeof w.closed === 'undefined') window.location.href = pendingWppUrl;
+}
+function fecharModalWpp(){ document.getElementById('modal-wpp').classList.remove('open'); }
+function toggleTel(id){ document.getElementById(id).classList.toggle('open'); }
+
+function fecharAviso(){
+  document.getElementById('aviso-golpe').style.display = 'none';
+  localStorage.setItem('aviso_fechado', '1');
+}
+if(localStorage.getItem('aviso_fechado')==='1') document.getElementById('aviso-golpe').style.display='none';
+
+function sortedList(list){
+  return [...list].sort((a,b)=>{
+    const ma=media(a.avaliacoes), mb2=media(b.avaliacoes);
+    if(mb2!==ma) return mb2-ma;
+    return new Date(a.dataHora)-new Date(b.dataHora);
+  });
+}
+
+function renderHome(){
+  const list = getP();
+  document.getElementById('stat-total').textContent = list.length;
+  document.getElementById('stat-verified').textContent = list.filter(p=>p.verificado).length;
+  const top = sortedList(list).slice(0,3);
+  const rc = document.getElementById('home-recommended');
+  rc.innerHTML = top.length ? top.map((p,i)=>cardHtml(p,i===0&&top.length>1)).join('') : '<div class="empty-state"><div class="empty-icon">👷</div><h3>Nenhum profissional ainda</h3><p>Seja o primeiro a se cadastrar!</p></div>';
+  document.getElementById('home-cats').innerHTML = CATS.map(c=>`<div class="cat-item" onclick="showPage('busca');pendingCatFilter='${c.id}';initBusca()" title="Ver profissionais de ${c.nome}"><div class="cat-icon">${c.icon}</div><div class="cat-name">${c.nome}</div></div>`).join('') + `<div class="cat-item" style="border:2px solid var(--laranja);background:var(--laranja-claro)" onclick="abrirRecomendacaoGeral()"><div class="cat-icon">🤖</div><div class="cat-name" style="color:var(--laranja);font-weight:700">Tobias recomendar</div></div>`;
+}
+
+function initBusca(){
+  const sel = document.getElementById('search-cat');
+  if(sel.options.length<=1){ CATS.forEach(c=>{ const o=document.createElement('option'); o.value=c.id; o.textContent=c.icon+' '+c.nome; sel.appendChild(o); }); }
+  if(pendingCatFilter){ sel.value=pendingCatFilter; pendingCatFilter=''; }
+  buscar();
+}
+
+function buscar(){
+  const nome=(document.getElementById('search-nome').value||'').toLowerCase().trim();
+  const cat=document.getElementById('search-cat').value;
+  const bairro=document.getElementById('search-bairro').value;
+  let list=getP();
+  if(nome) list=list.filter(p=>(p.nome||'').toLowerCase().includes(nome)||(p.descricao||'').toLowerCase().includes(nome));
+  if(cat) list=list.filter(p=>p.categoria===cat);
+  if(bairro) list=list.filter(p=>p.bairro===bairro);
+  renderResultados(sortedList(list));
+}
+
+function buscarPorId(){
+  const id=(document.getElementById('search-id').value||'').trim().toUpperCase();
+  if(!id) return showToast('⚠️ Digite um ID para buscar');
+  const found=getP().filter(p=>p.id===id);
+  renderResultados(found);
+  if(!found.length) showToast('❌ ID não encontrado: '+id);
+}
+
+function renderResultados(list){
+  const c=document.getElementById('busca-results');
+  const e=document.getElementById('busca-empty');
+  const i=document.getElementById('results-info');
+  if(!list.length){ c.innerHTML=''; e.style.display='block'; i.textContent=''; }
+  else { e.style.display='none'; i.textContent=list.length+' profissional'+(list.length>1?'is':'')+' encontrado'+(list.length>1?'s':''); c.innerHTML=list.map((p,idx)=>cardHtml(p,idx===0&&list.length>1)).join(''); }
+}
+
+function formatarCnpj(v){
+  v=v.replace(/\D/g,'').slice(0,14);
+  if(v.length>12) v=v.slice(0,2)+'.'+v.slice(2,5)+'.'+v.slice(5,8)+'/'+v.slice(8,12)+'-'+v.slice(12);
+  else if(v.length>8) v=v.slice(0,2)+'.'+v.slice(2,5)+'.'+v.slice(5,8)+'/'+v.slice(8);
+  else if(v.length>5) v=v.slice(0,2)+'.'+v.slice(2,5)+'.'+v.slice(5);
+  else if(v.length>2) v=v.slice(0,2)+'.'+v.slice(2);
+  return v;
+}
+function validarCnpj(cnpj){
+  cnpj=cnpj.replace(/\D/g,'');
+  if(cnpj.length!==14) return false;
+  if(/^(\d)\1+$/.test(cnpj)) return false;
+  let s=0,r; const c=cnpj;
+  for(let i=0;i<12;i++) s+=parseInt(c[i])*(i<4?5-i:13-i);
+  r=s%11<2?0:11-s%11;
+  if(parseInt(c[12])!==r) return false;
+  s=0;
+  for(let i=0;i<13;i++) s+=parseInt(c[i])*(i<5?6-i:14-i);
+  r=s%11<2?0:11-s%11;
+  return parseInt(c[13])===r;
+}
+function onCnpjInput(el){
+  const formatted = formatarCnpj(el.value);
+  el.value = formatted;
+  const wrap = document.getElementById('cnpj-wrap');
+  const strip = document.getElementById('cnpj-strip');
+  const digits = formatted.replace(/\D/g,'');
+  if(digits.length===14 && validarCnpj(digits)){ wrap.classList.add('valid'); strip.classList.add('show'); }
+  else { wrap.classList.remove('valid'); strip.classList.remove('show'); }
+}
+
+function resetForm(){
+  selectedCat='';
+  ['f-nome','f-nascimento','f-desc','f-wpp','f-tel','f-cnpj'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  const b=document.getElementById('f-bairro'); if(b) b.value='';
+  const maxDate = new Date(); maxDate.setFullYear(maxDate.getFullYear()-18);
+  const el = document.getElementById('f-nascimento');
+  if(el) el.max = maxDate.toISOString().split('T')[0];
+  document.getElementById('cadastro-success').classList.remove('show');
+  document.getElementById('cnpj-wrap').classList.remove('valid');
+  document.getElementById('cnpj-strip').classList.remove('show');
+  renderFormCats();
+}
+function renderFormCats(){
+  document.getElementById('form-cats').innerHTML=CATS.map(c=>`<div class="cat-select-item ${selectedCat===c.id?'selected':''}" onclick="selectCatForm('${c.id}')"><span class="cat-select-icon">${c.icon}</span>${c.nome}</div>`).join('');
+}
+function selectCatForm(id){ selectedCat=id; renderFormCats(); }
+
+function cadastrar(){
+  const nome=document.getElementById('f-nome').value.trim();
+  const desc=document.getElementById('f-desc').value.trim();
+  const bairro=document.getElementById('f-bairro').value;
+  const wpp=document.getElementById('f-wpp').value.trim();
+  const tel=document.getElementById('f-tel').value.trim();
+  const cnpjRaw=(document.getElementById('f-cnpj').value||'').replace(/\D/g,'');
+  const verificado = cnpjRaw.length===14 && validarCnpj(cnpjRaw);
+  if(!nome) return showToast('⚠️ Informe seu nome!');
+  const nascStr = (document.getElementById('f-nascimento').value||'').trim();
+  if(!nascStr) return showToast('⚠️ Informe sua data de nascimento!');
+  const nasc = new Date(nascStr + 'T00:00:00');
+  const hoje = new Date(); hoje.setHours(0,0,0,0);
+  const limite = new Date(hoje); limite.setFullYear(hoje.getFullYear()-18);
+  if(nasc > limite) return showToast('⚠️ Somente maiores de 18 anos podem se cadastrar.');
+  if(!selectedCat) return showToast('⚠️ Selecione um tipo de serviço!');
+  if(!desc) return showToast('⚠️ Escreva uma descrição!');
+  if(!bairro) return showToast('⚠️ Selecione o bairro!');
+  if(!wpp) return showToast('⚠️ Informe o WhatsApp!');
+  const list=getP();
+  const id=genId();
+  list.push({id,nome,nascimento:nascStr,categoria:selectedCat,descricao:desc,bairro,whatsapp:wpp,telefone:tel,verificado,avaliacoes:[],dataHora:new Date().toISOString()});
+  setP(list);
+  document.getElementById('success-id').textContent=id;
+  document.getElementById('cadastro-success').classList.add('show');
+  showToast(verificado ? '✅ Cadastrado com selo Verificado! Seu ID: '+id : '✅ Cadastrado! Seu ID: '+id);
+  selectedCat='';
+  ['f-nome','f-desc','f-wpp','f-tel','f-cnpj'].forEach(i=>{const e=document.getElementById(i);if(e)e.value='';});
+  document.getElementById('f-bairro').value='';
+  document.getElementById('cnpj-wrap').classList.remove('valid');
+  document.getElementById('cnpj-strip').classList.remove('show');
+  renderFormCats();
+  window.scrollTo(0,0);
+}
+
+function openRating(id,nome){
+  currentRatingId=id; currentStar=0;
+  document.getElementById('modal-rating-name').textContent='Avalie o serviço de '+nome;
+  document.getElementById('star-label').textContent='Toque em uma estrela para avaliar';
+  document.querySelectorAll('.star-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('modal-rating').classList.add('open');
+}
+function closeModal(){
+  document.getElementById('modal-rating').classList.remove('open');
+  currentRatingId=null; currentStar=0;
+  const ta=document.getElementById('rating-texto'); if(ta) ta.value='';
+  const au=document.getElementById('rating-autor'); if(au) au.value='';
+}
+function fecharReviews(){ document.getElementById('modal-reviews').classList.remove('open'); }
+
+function verReviews(id, nome){
+  const list=getP();
+  const p=list.find(x=>x.id===id);
+  if(!p) return;
+  const reviews=p.reviews||[];
+  const m=media(p.avaliacoes);
+  document.getElementById('reviews-title').textContent='Avaliações de '+nome;
+  const totalAv=(p.avaliacoes||[]).length;
+  document.getElementById('reviews-stars-summary').innerHTML=`<div style="display:flex;align-items:center;gap:10px;background:var(--verde-menta);border-radius:10px;padding:10px 14px"><div style="font-size:1.8rem;font-weight:800;color:var(--verde)">${m>0?m.toFixed(1):'–'}</div><div><div style="color:#F4A261;font-size:1rem;letter-spacing:2px">${stars(m)}</div><div style="font-size:0.75rem;color:var(--texto-suave)">${totalAv} avaliação${totalAv!==1?'ões':''} no total</div></div></div>`;
+  const listEl=document.getElementById('reviews-list');
+  const emptyEl=document.getElementById('reviews-empty');
+  if(!reviews.length){ listEl.innerHTML=''; emptyEl.style.display='block'; }
+  else {
+    emptyEl.style.display='none';
+    listEl.innerHTML=reviews.slice().reverse().map(r=>{
+      const ini=(r.autor||'A')[0].toUpperCase();
+      const starsHtml='★'.repeat(r.estrelas)+'☆'.repeat(5-r.estrelas);
+      return `<div class="review-card"><div class="rc-top"><div class="rc-avatar">${ini}</div><div class="rc-nome">${r.autor||'Anônimo'}</div><div class="rc-data">${r.data||''}</div></div><div class="rc-stars">${starsHtml}</div><div class="rc-texto">${r.texto}</div></div>`;
+    }).join('');
+  }
+  const tobBox=document.getElementById('tobias-box');
+  const tobLoad=document.getElementById('tobias-loading');
+  const tobText=document.getElementById('tobias-text');
+  tobBox.style.display='none'; tobLoad.style.display='none';
+  if(reviews.length>=1){
+    tobLoad.style.display='block';
+    setTimeout(()=>{
+      tobLoad.style.display='none';
+      const resumo = tobResumirAvaliacoes(nome, reviews, m);
+      if(resumo){ tobText.textContent = resumo; tobBox.style.display='block'; }
+    }, 700);
+  }
+  document.getElementById('modal-reviews').classList.add('open');
+}
+function selectStar(n){
+  currentStar=n;
+  const labels=['','Ruim 😞','Regular 😐','Bom 👍','Muito bom 😊','Excelente! 🌟'];
+  document.getElementById('star-label').textContent=labels[n];
+  document.querySelectorAll('.star-btn').forEach((b,i)=>b.classList.toggle('active',i<n));
+}
+// ── DETECTOR DE AVALIAÇÃO SUSPEITA — fallback local + Gemini ─────────────
+const PALAVROES_FALLBACK = ['merda','porra','idiota','imbecil','burro','lixo','vagabund','prostitut','viado','fdp','filha da puta','arrombad','canalha','desgraç','maldito'];
+
+// Guarda a versão "limpa" da função para ser chamada após aprovação
+function _enviarAvaliacaoAprovada(){
+  const list=getP();
+  const idx=list.findIndex(p=>p.id===currentRatingId);
+  if(idx===-1) return;
+  if(!list[idx].avaliacoes) list[idx].avaliacoes=[];
+  list[idx].avaliacoes.push(currentStar);
+  if(!list[idx].reviews) list[idx].reviews=[];
+  const texto=(document.getElementById('rating-texto')||{}).value||'';
+  const autor=(document.getElementById('rating-autor')||{}).value||'';
+  if(texto.trim()) list[idx].reviews.push({estrelas:currentStar,texto:texto.trim(),autor:autor.trim()||'Anônimo',data:new Date().toLocaleDateString('pt-BR')});
+  setP(list);
+  closeModal();
+  showToast('⭐ Avaliação enviada! Obrigado.');
+  const ap=document.querySelector('.page.active').id;
+  if(ap==='page-home') renderHome();
+  if(ap==='page-busca') buscar();
+}
+
+function mostrarBloqueioAvaliacao(msg){
+  const btnEnviar=document.querySelector('#modal-rating .btn-confirm');
+  if(btnEnviar){btnEnviar.disabled=false;btnEnviar.textContent='Enviar ⭐';}
+  let banner=document.getElementById('avalia-bloqueio-banner');
+  if(!banner){
+    banner=document.createElement('div');
+    banner.id='avalia-bloqueio-banner';
+    banner.style.cssText='background:#FEF3C7;border:1.5px solid #F59E0B;border-radius:10px;padding:12px 14px;font-size:0.85rem;line-height:1.5;color:#92400E;margin:10px 0;display:none';
+    const textarea=document.getElementById('rating-texto');
+    if(textarea&&textarea.parentNode) textarea.parentNode.insertBefore(banner,textarea.nextSibling);
+  }
+  banner.textContent=msg;
+  banner.style.display='block';
+  setTimeout(()=>{banner.style.display='none';},8000);
+}
+
+async function confirmarAvaliacao(){
+  if(!currentStar) return showToast('⚠️ Escolha quantas estrelas!');
+  const texto=(document.getElementById('rating-texto')||{}).value||'';
+
+  // Se não tem texto, envia direto sem moderação
+  if(!texto.trim()){_enviarAvaliacaoAprovada();return;}
+
+  // Fallback local rápido — bloqueia palavrões óbvios instantaneamente
+  const t=texto.toLowerCase();
+  if(PALAVROES_FALLBACK.some(p=>t.includes(p))){
+    mostrarBloqueioAvaliacao('🚫 Ei! O Tobias detectou linguagem ofensiva na sua avaliação. Por favor, reescreva sem palavrões ou xingamentos para manter o Comuniq um espaço respeitoso. 😊');
+    return;
+  }
+
+  // Análise profunda com Gemini
+  const btnEnviar=document.querySelector('#modal-rating .btn-confirm');
+  if(btnEnviar){btnEnviar.disabled=true;btnEnviar.textContent='🔍 Tobias analisando...';}
+
+  try{
+    const GKEY='AIzaSyCippQMnA6TPSgcRs3yWcZFoo1b9YiAPb4';
+    const GURL=`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GKEY}`;
+
+    const prompt=`Você é o Tobias, moderador do Comuniq — plataforma comunitária de serviços de São Paulo.
+
+Analise a avaliação abaixo e responda APENAS com um JSON válido, sem markdown, sem explicação extra:
+
+Avaliação: "${texto}"
+Nota dada: ${currentStar} estrelas
+
+Responda exatamente neste formato JSON:
+{
+  "aprovado": true ou false,
+  "motivo": "explicação curta em português informal se reprovado, ou string vazia se aprovado"
+}
+
+Reprove (aprovado: false) SOMENTE se a avaliação contiver:
+- Palavrões, xingamentos ou ofensas diretas
+- Linguagem agressiva, ameaças ou humilhações
+- Conteúdo discriminatório (racismo, homofobia, machismo etc.)
+
+APROVE (aprovado: true) mesmo que:
+- A avaliação seja negativa mas educada
+- O texto seja curto
+- O usuário reclame do serviço com respeito`;
+
+    const res=await fetch(GURL,{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({contents:[{role:'user',parts:[{text:prompt}]}],generationConfig:{maxOutputTokens:100,temperature:0.1}})
+    });
+    const data=await res.json();
+    if(!res.ok) throw new Error('API error');
+
+    const raw=(data.candidates?.[0]?.content?.parts?.[0]?.text||'{}').replace(/```json|```/g,'').trim();
+    const resultado=JSON.parse(raw);
+
+    if(btnEnviar){btnEnviar.disabled=false;btnEnviar.textContent='Enviar ⭐';}
+
+    if(!resultado.aprovado){
+      mostrarBloqueioAvaliacao(`🚫 Ei! O Tobias não aprovou essa avaliação. ${resultado.motivo||'Por favor, reescreva de forma respeitosa.'} O Comuniq é um espaço de respeito! 😊`);
+      return;
+    }
+
+    // Aprovado — envia
+    _enviarAvaliacaoAprovada();
+
+  }catch(err){
+    console.error('Detector Gemini erro:',err);
+    if(btnEnviar){btnEnviar.disabled=false;btnEnviar.textContent='Enviar ⭐';}
+    // Se Gemini falhar, usa apenas o fallback local e aprova
+    _enviarAvaliacaoAprovada();
+  }
+}
+
+function showToast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg;
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),3200);
+}
+
+function seed(){
+  if(getP().length>0) return;
+  setP([
+    {id:'CQ-00001',nome:'João Pereira',categoria:'pedreiro',descricao:'10 anos de experiência em reformas, construções e reparos. Trabalho com qualidade e prazo garantido.',bairro:'Heliópolis',whatsapp:'11991110001',telefone:'1133330001',verificado:true,avaliacoes:[5,5,4,5,5],reviews:[{estrelas:5,texto:'João fez uma reforma no meu banheiro e ficou impecável! Super caprichoso e entregou no prazo combinado.',autor:'Claudinha M.',data:'10/01/2024'},{estrelas:5,texto:'Profissional de confiança, trabalho muito limpo e bem acabado. Recomendo demais!',autor:'Roberto S.',data:'22/01/2024'},{estrelas:4,texto:'Bom trabalho, apenas demorou um pouco mais que o previsto, mas o resultado compensou.',autor:'Anônimo',data:'05/02/2024'}],dataHora:'2024-01-10T08:00:00Z'},
+    {id:'CQ-00002',nome:'Maria Souza',categoria:'diarista',descricao:'Faxina completa e organização da sua casa. Pontual e dedicada há mais de 8 anos. Referência no bairro!',bairro:'Heliópolis',whatsapp:'11992220002',telefone:'',verificado:true,avaliacoes:[5,4,5,5,5],reviews:[{estrelas:5,texto:'Maria é incrível! Deixou minha casa brilhando e ainda organizou os armários sem eu pedir. Super pontual!',autor:'Fernanda L.',data:'15/01/2024'},{estrelas:5,texto:'Muito cuidadosa com os objetos da casa, pode confiar com tudo. Trabalho de primeira!',autor:'Toninho A.',data:'28/01/2024'}],dataHora:'2024-01-12T09:00:00Z'},
+    {id:'CQ-00003',nome:'Carlos Eletro',categoria:'eletricista',descricao:'Instalações elétricas residenciais, troca de fiação, tomadas e quadros. Rápido e seguro.',bairro:'Brasilândia',whatsapp:'11993330003',telefone:'1133330003',verificado:false,avaliacoes:[4,4,3,4],reviews:[{estrelas:4,texto:'Resolveu o problema da minha fiação rápido. Cobrou justo, mas poderia ter explicado melhor o que fez.',autor:'Priscila R.',data:'10/03/2024'},{estrelas:3,texto:'Serviço ok, mas precisou voltar uma segunda vez para terminar o que prometeu.',autor:'Anônimo',data:'18/03/2024'}],dataHora:'2024-02-01T10:00:00Z'},
+    {id:'CQ-00004',nome:'Ana Paula Cabelos',categoria:'cabeleireiro',descricao:'Cortes, coloração, hidratação e tranças. Atendo em domicílio também! 5 anos de experiência.',bairro:'Capão Redondo',whatsapp:'11994440004',telefone:'',verificado:true,avaliacoes:[5,5,5,4,5],reviews:[{estrelas:5,texto:'Ana é uma artista! Fez minha coloração perfeita, igualzinho à foto que mostrei. E ainda fez hidratação incrível!',autor:'Bianca T.',data:'08/03/2024'},{estrelas:5,texto:'Fui pela primeira vez e já virei cliente fiel. Melhor cabeleireira do bairro, sem dúvida!',autor:'Jéssica N.',data:'20/03/2024'}],dataHora:'2024-03-05T11:00:00Z'},
+  ]);
+}
+
+// ── TOBIAS LOCAL ──
+function tobResumirAvaliacoes(nome, reviews, mediaGeral){
+  if(!reviews || reviews.length === 0) return null;
+  const total = reviews.length;
+  const positivas = reviews.filter(r => r.estrelas >= 4);
+  const negativas  = reviews.filter(r => r.estrelas <= 2);
+  const medianas   = reviews.filter(r => r.estrelas === 3);
+  const PALAVRAS = {
+    pontualidade: ['pontual','prazo','horário','hora','tempo','rápido','rapido','veloz'],
+    qualidade:    ['qualidade','capricho','cuidado','bem feito','perfeito','impecável','excelente','ótimo','otimo'],
+    atendimento:  ['atencioso','educado','simpático','simpatico','atendimento','cordial','comunicativo'],
+    custo:        ['preço','preco','justo','barato','cobrou','valor','caro'],
+    confiança:    ['confiança','confiavel','honesto','seguro','indicar','recomendar'],
+    limpeza:      ['limpo','organizado','organização','arrumado','cuidadoso'],
+  };
+  const todosTextos = reviews.map(r=>(r.texto||'').toLowerCase()).join(' ');
+  const destaques = Object.entries(PALAVRAS).filter(([,palavras]) => palavras.some(p => todosTextos.includes(p))).map(([chave]) => ({pontualidade:'pontualidade ⏰',qualidade:'qualidade do serviço ✨',atendimento:'bom atendimento 😊',custo:'preço justo 💰',confiança:'confiança 🤝',limpeza:'organização e limpeza 🧹'}[chave])).filter(Boolean).slice(0,3);
+  let resumo = '';
+  if(mediaGeral >= 4.5) resumo += `${nome} é um dos profissionais mais bem avaliados da plataforma`;
+  else if(mediaGeral >= 3.5) resumo += `${nome} tem avaliações geralmente positivas`;
+  else if(mediaGeral >= 2.5) resumo += `${nome} tem avaliações mistas`;
+  else resumo += `${nome} recebeu avaliações abaixo da média`;
+  if(destaques.length > 0) resumo += `, com clientes elogiando especialmente ${destaques.join(', ')}.`;
+  else resumo += `.`;
+  if(positivas.length > 0 && negativas.length === 0) resumo += ` Todas as ${total} avaliações são positivas — um ótimo sinal! 🌟`;
+  else if(negativas.length > 0) { resumo += ` De ${total} avaliações, ${positivas.length} foram positivas e ${negativas.length} tiveram críticas`; if(medianas.length) resumo += ` (${medianas.length} regular)`; resumo += `. Vale conversar com o profissional antes de contratar.`; }
+  if(mediaGeral >= 4 && positivas.length >= 2) resumo += ` Com base nos comentários, é uma escolha segura! 👍`;
+  return resumo;
+}
+
+// ── MOTOR LOCAL (fallback) ──
+function tobBuscaLocal(query){
+  const q = query.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+  const list = getP();
+  const INTENCOES = [
+    { termos:['pedreiro','alvenaria','reforma','construção','construcao','reboco','massa','tijolo','obra','banheiro','quarto','parede','azulejo'], cat:'pedreiro' },
+    { termos:['eletricista','elétrico','eletrico','fiação','fiacao','tomada','disjuntor','chuveiro','curto','luz','instalação elétrica'], cat:'eletricista' },
+    { termos:['encanador','cano','vazamento','torneira','pia','vaso','hidráulico','hidraulico','entupimento','cozinha','banheiro hidráulico'], cat:'encanador' },
+    { termos:['pintor','pintura','tinta','parede','verniz','lixa'], cat:'pintor' },
+    { termos:['marceneiro','marcenaria','móvel','movel','madeira','armário','armario','carpinteiro'], cat:'marceneiro' },
+    { termos:['diarista','faxina','faxineira','limpeza','limpar','casa limpa','doméstico','domestico'], cat:'diarista' },
+    { termos:['cabelereiro','cabeleireira','cabelo','corte','coloração','coloracao','tintura','escova','tranças','trancas'], cat:'cabeleireiro' },
+    { termos:['manicure','unha','unhas','pedicure','gel'], cat:'manicure' },
+    { termos:['costureira','costura','roupa','ajuste','bainha','costureiro'], cat:'costureira' },
+    { termos:['doceiro','bolo','doce','confeitaria','confeiteiro','brigadeiro','salgado'], cat:'doceiro' },
+    { termos:['mecânico','mecanico','carro','auto','veículo','veiculo','oficina','motor'], cat:'mecanico' },
+    { termos:['informatica','computador','notebook','pc','vírus','virus','formatação','formatacao','impressora'], cat:'informatica' },
+    { termos:['jardineiro','jardim','grama','planta','poda','horta'], cat:'jardineiro' },
+    { termos:['cuidador','cuidadora','idoso','criança','crianca','babá','baba','acompanhante'], cat:'cuidador' },
+    { termos:['fotógrafo','fotografo','foto','fotografia','aniversario','casamento','evento'], cat:'fotografo' },
+  ];
+  const BAIRROS = ['heliopolis','paraisopolis','cidade tiradentes','capao redondo','jardim angela','brasilandia','grajau','guaianases','sao mateus','itaim paulista','sapopemba','cidade ademar','jardim sao luis','campo limpo','itaquera','sao miguel paulista','perus','pedreira','cursino','vila prudente'];
+  const bairroOriginal = ['Heliópolis','Paraisópolis','Cidade Tiradentes','Capão Redondo','Jardim Ângela','Brasilândia','Grajaú','Guaianases','São Mateus','Itaim Paulista','Sapopemba','Cidade Ademar','Jardim São Luís','Campo Limpo','Itaquera','São Miguel Paulista','Perus','Pedreira','Cursino','Vila Prudente'];
+  const catEncontrada = INTENCOES.find(i => i.termos.some(t => q.includes(t)));
+  const bairroIdx = BAIRROS.findIndex(b => q.includes(b));
+  const querVerificado = /verific|cnpj|confi[aá]vel|seguro/.test(q);
+  const querMelhorAvaliado = /melhor|top|mais avali|mais recomend|nota alta|5 estrela/.test(q);
+  let resultado = [...list];
+  if(catEncontrada) resultado = resultado.filter(p => p.categoria === catEncontrada.cat);
+  if(bairroIdx >= 0) resultado = resultado.filter(p => p.bairro === bairroOriginal[bairroIdx]);
+  if(querVerificado) resultado = resultado.filter(p => p.verificado);
+  resultado = sortedList(resultado);
+  if(querMelhorAvaliado) resultado = resultado.slice(0, 3);
+  let explicacao = '';
+  if(resultado.length === 0){ explicacao = catEncontrada ? `Não encontrei nenhum ${catEncontrada.cat}${bairroIdx>=0?' em '+bairroOriginal[bairroIdx]:''}. Tente remover algum filtro!` : `Não entendi bem. Tente: "eletricista em Heliópolis" ou "diarista verificada".`; }
+  else { explicacao = `Encontrei ${resultado.length} profissional${resultado.length>1?'is':''}${catEncontrada?' de '+catEncontrada.cat:''}${bairroIdx>=0?' em '+bairroOriginal[bairroIdx]:''}${querVerificado?', todos verificados':''}.`; if(resultado[0] && media(resultado[0].avaliacoes)>=4) explicacao += ` Destaque: ${resultado[0].nome} (${media(resultado[0].avaliacoes).toFixed(1)}⭐).`; }
+  return { profissionais: resultado, explicacao };
+}
+
+// ── BUSCA INTELIGENTE COM GEMINI (SEMÂNTICA REAL) ──
+window.buscaIaChip = function(txt){
+  document.getElementById('busca-ia-input').value = txt;
+  buscaIa();
+};
+
+window.buscaIa = async function(){
+  const query = (document.getElementById('busca-ia-input').value || '').trim();
+  if(!query) return showToast('⚠️ Digite o que você precisa!');
+
+  const loading  = document.getElementById('busca-ia-loading');
+  const resultadoEl = document.getElementById('busca-ia-resultado');
+  loading.style.display = 'block';
+  resultadoEl.style.display = 'none';
+
+  const profissionais = getP();
+
+  if(profissionais.length === 0){
+    loading.style.display = 'none';
+    resultadoEl.innerHTML = '🤖 Tobias: Ainda não há profissionais cadastrados. Seja o primeiro!';
+    resultadoEl.style.display = 'block';
+    renderResultados([]);
+    return;
+  }
+
+  const lista = profissionais.map(p => {
+    const cat = CATS.find(c => c.id === p.categoria) || { nome: p.categoria };
+    const media_av = p.avaliacoes && p.avaliacoes.length
+      ? (p.avaliacoes.reduce((a,b)=>a+b,0)/p.avaliacoes.length).toFixed(1)
+      : null;
+    return [
+      `ID:${p.id}`,
+      `Nome:${p.nome}`,
+      `Categoria:${cat.nome}(${p.categoria})`,
+      `Bairro:${p.bairro}`,
+      `Verificado:${p.verificado?'sim':'nao'}`,
+      `Nota:${media_av || 'sem nota'}`,
+      `Desc:${(p.descricao||'').slice(0,120)}`
+    ].join(' | ');
+  }).join('\n');
+
+  const prompt = `Você é o Tobias, assistente de busca do Comuniq. Analise a busca e retorne APENAS os IDs dos profissionais relevantes.
+
+BUSCA: "${query}"
+
+PROFISSIONAIS DISPONÍVEIS:
+${lista}
+
+REGRAS OBRIGATÓRIAS:
+1. Retorne SOMENTE profissionais cuja CATEGORIA bate com o que o usuário precisa
+2. NÃO retorne profissionais de categorias diferentes do pedido
+3. Interprete a intenção:
+   - "banheiro", "azulejo", "reboco", "obra", "reforma" → APENAS categoria pedreiro
+   - "vazamento", "torneira", "cano", "encanamento", "vaso entupido" → APENAS categoria encanador
+   - "fiação", "tomada", "disjuntor", "instalação elétrica", "curto" → APENAS categoria eletricista
+   - "cabelo", "corte", "coloração", "escova", "tintura" → APENAS categoria cabeleireiro
+   - "faxina", "limpeza", "limpar casa", "organizar" → APENAS categoria diarista
+   - "computador", "vírus", "formatar", "notebook lento" → APENAS categoria informatica
+   - "pintar", "tinta", "pintura parede" → APENAS categoria pintor
+   - "bolo", "doce", "salgado", "festa" → APENAS categoria doceiro
+   - "jardim", "grama", "poda", "planta" → APENAS categoria jardineiro
+   - "unha", "manicure", "pedicure", "gel" → APENAS categoria manicure
+   - "roupa", "bainha", "ajuste", "costura" → APENAS categoria costureira
+   - "carro", "mecânico", "motor", "oficina" → APENAS categoria mecanico
+   - "idoso", "criança", "cuidar", "babá" → APENAS categoria cuidador
+   - "foto", "fotógrafo", "evento", "casamento" → APENAS categoria fotografo
+   - "móvel", "armário", "madeira", "marceneiro" → APENAS categoria marceneiro
+4. Se mencionar bairro, filtre por bairro também
+5. Ordene por: verificado primeiro, depois pela nota (maior primeiro)
+6. Máximo 5 IDs
+7. Se NENHUM profissional da categoria correta existir, retorne ids vazio
+
+Responda SOMENTE com este JSON (sem markdown, sem explicação extra):
+{"ids":["CQ-00001"],"explicacao":"frase curta do Tobias explicando o que encontrou, máximo 80 caracteres"}
+
+Se não encontrou ninguém da categoria certa: {"ids":[],"explicacao":"Não encontrei profissionais para este serviço ainda."}`;
+
+  try {
+    // Chama Anthropic API (sem CORS, funciona direto no browser)
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-haiku-4-5-20251001',
+        max_tokens: 300,
+        messages: [{ role: 'user', content: prompt }]
+      })
+    });
+
+    const data = await res.json();
+    if(!res.ok) throw new Error(data?.error?.message || 'Erro API');
+
+    const raw = (data.content?.[0]?.text || '{}')
+      .replace(/```json|```/g, '').trim();
+
+    const resultado_json = JSON.parse(raw);
+    const ids = resultado_json.ids || [];
+    const explicacao = resultado_json.explicacao || '';
+
+    const encontrados = ids.map(id => profissionais.find(p => p.id === id)).filter(Boolean);
+
+    loading.style.display = 'none';
+    renderResultados(encontrados);
+
+    if(encontrados.length > 0){
+      document.getElementById('results-info').textContent =
+        `✨ Tobias encontrou ${encontrados.length} profissional${encontrados.length>1?'is':''} para você`;
+    }
+
+    resultadoEl.innerHTML = `🤖 <strong>Tobias:</strong> ${explicacao}`;
+    resultadoEl.style.display = 'block';
+
+  } catch(err) {
+    console.error('Tobias busca IA erro:', err);
+    loading.style.display = 'none';
+    // Fallback local offline
+    const { profissionais: found, explicacao } = tobBuscaLocal(query);
+    renderResultados(found);
+    resultadoEl.innerHTML = explicacao;
+    resultadoEl.style.display = 'block';
+  }
+};
+
+// ── GERADOR DE DESCRIÇÃO ──
+const DESC_TEMPLATES = {
+  pedreiro:(n,a,d,b)=>`${n} é pedreiro${a?` com ${a} de experiência`:''}${b?` em ${b}`:''}. Realiza reformas, construções, rebocos e reparos com qualidade e capricho. ${d?d+'.':''} Orçamento sem compromisso!`,
+  eletricista:(n,a,d,b)=>`${n} atua como eletricista${a?` há ${a}`:''}${b?` em ${b}`:''}. Instalações residenciais, troca de fiação, tomadas e quadros. ${d?d+'.':''} Serviço rápido e seguro!`,
+  encanador:(n,a,d,b)=>`${n} é encanador${a?` com ${a} de experiência`:''}${b?` atendendo ${b}`:''}. Conserto de vazamentos, torneiras, pias e entupimentos. ${d?d+'.':''} Atendimento ágil!`,
+  pintor:(n,a,d,b)=>`${n} realiza pinturas residenciais${a?` há ${a}`:''}${b?` em ${b}`:''}. Paredes, tetos, fachadas e vernizes com acabamento impecável. ${d?d+'.':''} Solicite seu orçamento!`,
+  marceneiro:(n,a,d,b)=>`${n} é marceneiro${a?` com ${a} de experiência`:''}${b?` em ${b}`:''}. Fabricação e reparo de móveis, armários e trabalhos em madeira sob medida. ${d?d+'.':`Qualidade garantida!`}`,
+  diarista:(n,a,d,b)=>`${n} oferece serviços de faxina e limpeza${a?` há ${a}`:''}${b?` em ${b}`:''}. Pontual, organizada e cuidadosa com cada detalhe da sua casa. ${d?d+'.':''} Referência no bairro!`,
+  cabeleireiro:(n,a,d,b)=>`${n} é cabeleireiro(a)${a?` com ${a} de experiência`:''}${b?` em ${b}`:''}. Cortes, colorações, hidratações e tranças. ${d?d+'.':''} Agende seu horário!`,
+  manicure:(n,a,d,b)=>`${n} é manicure e pedicure${a?` há ${a}`:''}${b?` em ${b}`:''}. Esmaltação, gel, fibra e nail art com materiais esterilizados. ${d?d+'.':''} Marque seu horário!`,
+  costureira:(n,a,d,b)=>`${n} é costureira${a?` com ${a} de experiência`:''}${b?` em ${b}`:''}. Ajustes, bainhas, reformas de roupas e peças sob medida. ${d?d+'.':''} Leve sua peça!`,
+  doceiro:(n,a,d,b)=>`${n} produz doces e bolos artesanais${a?` há ${a}`:''}${b?` em ${b}`:''}. Brigadeiros, bolos decorados e salgados para festas e eventos. ${d?d+'.':''} Faça seu pedido!`,
+  mecanico:(n,a,d,b)=>`${n} é mecânico${a?` com ${a} de experiência`:''}${b?` em ${b}`:''}. Manutenção, revisão e reparos automotivos com diagnóstico honesto. ${d?d+'.':''} Solicite avaliação!`,
+  informatica:(n,a,d,b)=>`${n} oferece suporte em informática${a?` há ${a}`:''}${b?` em ${b}`:''}. Formatação, remoção de vírus, redes e manutenção de computadores. ${d?d+'.':''} Atendimento rápido!`,
+  jardineiro:(n,a,d,b)=>`${n} é jardineiro${a?` com ${a} de experiência`:''}${b?` em ${b}`:''}. Poda, jardinagem, hortas e manutenção de jardins. ${d?d+'.':''} Deixe seu espaço bonito!`,
+  cuidador:(n,a,d,b)=>`${n} é cuidador(a)${a?` com ${a} de experiência`:''}${b?` em ${b}`:''}. Cuidados com idosos e crianças, com dedicação, carinho e responsabilidade. ${d?d+'.':''} Contato com referências!`,
+  fotografo:(n,a,d,b)=>`${n} é fotógrafo(a)${a?` com ${a} de experiência`:''}${b?` em ${b}`:''}. Fotos de eventos, aniversários, casamentos e retratos. ${d?d+'.':''} Veja o portfólio!`,
+};
+const ANOS_LABEL = {'1':'menos de 1 ano','2':'1 a 3 anos','5':'3 a 5 anos','8':'5 a 10 anos','15':'mais de 10 anos'};
+
+window.gerarDescricaoIA = async function(){
+  const nome = (document.getElementById('f-nome').value||'').trim()||'O profissional';
+  const cat = selectedCat;
+  const anos = document.getElementById('f-anos')?.value||'';
+  const dif = (document.getElementById('f-diferencial')?.value||'').trim();
+  const bairro = document.getElementById('f-bairro')?.value||'';
+  const descAtual = (document.getElementById('f-desc')?.value||'').trim();
+  if(!cat) return showToast('⚠️ Selecione o tipo de serviço primeiro!');
+  const catObj = CATS.find(c=>c.id===cat);
+  const catNome = catObj ? catObj.nome : cat;
+  const anosLabel = ANOS_LABEL[anos]||'';
+  const btn = document.getElementById('btn-gerar-desc');
+  const el = document.getElementById('f-desc');
+  btn.disabled = true; btn.innerHTML = '⏳ Gerando...';
+  el.value = ''; el.placeholder = 'O Tobias está escrevendo sua descrição...';
+  try {
+    const prompt = `Gere uma descrição profissional curta para um prestador do Comuniq (periferia de SP):
+- Nome: ${nome}
+- Categoria: ${catNome}
+- Experiência: ${anosLabel || 'não informada'}
+- Bairro: ${bairro || 'não informado'}
+- Diferencial: ${dif || 'não informado'}
+- Palavras-chave: ${descAtual || 'não informadas'}
+
+REGRAS: máximo 3 frases, tom próximo da comunidade, sem palavras difíceis, termine com chamada para ação. SEM aspas, SEM markdown. Máximo 120 palavras.`;
+    const res = await fetch(GURL, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({contents:[{role:'user',parts:[{text:prompt}]}],generationConfig:{maxOutputTokens:200,temperature:0.8}}) });
+    const data = await res.json();
+    if(!res.ok) throw new Error(data?.error?.message||'Erro API');
+    const desc = (data.candidates?.[0]?.content?.parts?.[0]?.text||'').trim();
+    if(!desc) throw new Error('Resposta vazia');
+    el.value = ''; let i = 0;
+    const speed = Math.max(10, Math.floor(1800/desc.length));
+    const ticker = setInterval(()=>{ el.value+=desc[i]; i++; if(i>=desc.length){ clearInterval(ticker); btn.disabled=false; btn.innerHTML='🤖 Tobias gerar'; el.placeholder='Fale sobre você, sua experiência e o que faz de melhor...'; showToast('✅ Descrição gerada com IA real!'); } }, speed);
+  } catch(err) {
+    const fn = DESC_TEMPLATES[cat];
+    if(fn){ const desc=fn(nome,anosLabel,dif,bairro); el.value=''; let i=0; const t=setInterval(()=>{ el.value+=desc[i]; i++; if(i>=desc.length) clearInterval(t); },14); showToast('⚠️ Tobias usou template local.'); }
+    else showToast('❌ Erro ao gerar descrição.');
+    btn.disabled=false; btn.innerHTML='🤖 Tobias gerar'; el.placeholder='Fale sobre você, sua experiência e o que faz de melhor...';
+  }
+};
+
+// ── SUGESTÃO AUTOMÁTICA DE CATEGORIA ──
+const CAT_PALAVRAS_CHAVE = {
+  pedreiro:['pedrei','reboc','construc','reform','alvenar','cimento','tijolo','mass'],
+  eletricista:['eletric','fiac','tomad','disjunt','chuveiro','curto','quadro elétric'],
+  encanador:['encanad','cano','vazo','vazan','tornei','pia','hidraul','entup'],
+  pintor:['pint','tinta','parede','verniz','lixa','fachad'],
+  marceneiro:['marcen','movel','móvel','madeira','armari','carpint'],
+  diarista:['diaris','faxin','limpe','limpez','domést','organiz','casa limp'],
+  cabeleireiro:['cabele','corte','colorac','tintur','escova','tranc','penteado'],
+  manicure:['manic','unh','pedicur','gel','fibra','esmalte'],
+  costureira:['costur','bainha','ajuste','roup','medida','modist'],
+  doceiro:['doce','bolo','confeit','brigadei','salgad','festa'],
+  mecanico:['mecân','carro','auto','motor','veícul','oficin','pneu'],
+  informatica:['comput','notebook','format','vírus','rede','impressora','pc','tech'],
+  jardineiro:['jardin','grama','plant','poda','hort','paisag'],
+  cuidador:['cuidado','idoso','criança','babá','acompan','lar'],
+  fotografo:['fotog','foto','evento','casament','aniversár','retrato'],
+};
+let sugestaoAtual = null;
+window.sugerirCategoria = function(texto){
+  const t = texto.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+  let melhor=null, melhorPts=0;
+  for(const [cat,kws] of Object.entries(CAT_PALAVRAS_CHAVE)){
+    const pts = kws.filter(k=>t.includes(k)).length;
+    if(pts>melhorPts){ melhorPts=pts; melhor=cat; }
+  }
+  const box = document.getElementById('sugestao-cat');
+  const nm = document.getElementById('sugestao-cat-nome');
+  if(melhor && melhorPts>=1 && melhor!==selectedCat){
+    const cat = CATS.find(c=>c.id===melhor);
+    sugestaoAtual = melhor;
+    nm.textContent = cat?`${cat.icon} ${cat.nome}`:'';
+    box.style.display='block';
+  } else { box.style.display='none'; sugestaoAtual=null; }
+};
+window.aplicarSugestaoCat = function(){
+  if(!sugestaoAtual) return;
+  selectCatForm(sugestaoAtual);
+  document.getElementById('sugestao-cat').style.display='none';
+  showToast('✅ Categoria aplicada!');
+};
+
+// ── SPARKLINE E TREND ──
+function renderSparkline(avaliacoes){
+  if(avaliacoes.length < 2) return '';
+  const last = avaliacoes.slice(-6);
+  const w=60, h=20, pad=2;
+  const min=1, max=5;
+  const pts = last.map((v,i)=>{ const x=pad+(i/(last.length-1))*(w-2*pad); const y=pad+(1-(v-min)/(max-min))*(h-2*pad); return `${x.toFixed(1)},${y.toFixed(1)}`; }).join(' ');
+  const color = media(last)>=4?'#52B788':media(last)>=3?'#F4A261':'#E76F51';
+  return `<div style="margin-bottom:8px;display:flex;align-items:center;gap:6px"><svg width="${w}" height="${h}" style="overflow:visible"><polyline points="${pts}" fill="none" stroke="${color}" stroke-width="1.8" stroke-linejoin="round"/></svg><span style="font-size:0.69rem;color:var(--texto-suave)">últimas ${last.length} av.</span></div>`;
+}
+function gerarTrend(avaliacoes){
+  if(avaliacoes.length < 3) return null;
+  const meio = Math.floor(avaliacoes.length/2);
+  const antiga = media(avaliacoes.slice(0,meio));
+  const nova = media(avaliacoes.slice(meio));
+  const diff = nova - antiga;
+  if(diff >= 0.4) return {label:'↑ Em alta', cor:'color:var(--verde-claro);'};
+  if(diff <= -0.4) return {label:'↓ Caindo', cor:'color:var(--laranja);'};
+  return {label:'→ Estável', cor:'color:var(--texto-suave);'};
+}
+
+// ── BADGES ──
+function gerarBadges(p){
+  const badges = [];
+  const avs = p.avaliacoes||[];
+  const revs = p.reviews||[];
+  const m = media(avs);
+  if(avs.filter(a=>a===5).length >= 5) badges.push({icon:'🌟',label:'Top 5 estrelas',bg:'#FEF9E7',cor:'#7a5c00'});
+  if(avs.length >= 10) badges.push({icon:'🏅',label:'10+ avaliações',bg:'#D8F3DC',cor:'#1B4332'});
+  if(p.verificado && m>=4.5) badges.push({icon:'🛡️',label:'Confiança máxima',bg:'#EEF4FF',cor:'#1e3a8a'});
+  const semNeg = avs.length>=3 && avs.every(a=>a>=3);
+  if(semNeg) badges.push({icon:'✅',label:'Sem reclamações',bg:'#D8F3DC',cor:'#1B4332'});
+  const comTexto = revs.filter(r=>r.texto&&r.texto.length>30).length;
+  if(comTexto>=3) badges.push({icon:'💬',label:'Muito comentado',bg:'#F0EAFF',cor:'#5b21b6'});
+  return badges.slice(0,3);
+}
+function isNovoProf(p){
+  if(!p.dataHora) return false;
+  const dias = (Date.now()-new Date(p.dataHora).getTime())/(1000*60*60*24);
+  return dias <= 14;
+}
+
+// ── RECOMENDAÇÕES ──
+function tobRecomendarCategoria(categoriaId, nomeCategoria, list){
+  if(list.length === 0) return `Ainda não há profissionais de ${nomeCategoria} cadastrados. Que tal indicar alguém da sua comunidade? 😊`;
+  const sorted = sortedList(list);
+  const top = sorted[0];
+  const mTop = media(top.avaliacoes);
+  const verificados = list.filter(p => p.verificado);
+  const DICAS = {
+    pedreiro:'Sempre peça um orçamento por escrito e veja fotos de obras anteriores antes de fechar.',
+    eletricista:'Prefira eletricistas com ART e verifique se usam materiais de qualidade.',
+    encanador:'Peça para ver o problema antes de aceitar qualquer orçamento.',
+    pintor:'Combine o tipo de tinta, número de demãos e preparação da superfície antes de começar.',
+    marceneiro:'Veja o portfólio e confirme o prazo de entrega por escrito.',
+    diarista:'Defina com antecedência o que será limpo e os produtos que serão usados.',
+    cabeleireiro:'Mostre fotos do resultado desejado e confirme os produtos usados.',
+    manicure:'Verifique a esterilização dos materiais — é essencial para sua saúde.',
+    costureira:'Leve a peça e tire as medidas com a profissional para garantir o ajuste perfeito.',
+    doceiro:'Confirme os ingredientes caso haja alergias e peça um agendamento com antecedência.',
+    mecanico:'Sempre peça uma lista das peças e serviços antes de aprovar o conserto.',
+    informatica:'Faça backup dos seus dados antes de entregar o equipamento.',
+    jardineiro:'Combine a frequência das visitas e quais ferramentas e insumos serão usados.',
+    cuidador:'Faça uma entrevista pessoal antes de contratar e verifique referências.',
+    fotografo:'Veja o portfólio completo e combine a entrega das fotos por contrato.',
+    outros:'Peça referências de outros clientes e combine tudo por escrito antes de começar.',
+  };
+  const dica = DICAS[categoriaId] || DICAS.outros;
+  let texto = '';
+  if(mTop >= 4.5 && top.verificado) texto += `⭐ Minha principal indicação é <strong>${top.nome}</strong> — nota ${mTop.toFixed(1)}, verificado e muito bem avaliado. `;
+  else if(mTop >= 4) texto += `⭐ Destaco <strong>${top.nome}</strong> com ${mTop.toFixed(1)} estrelas. `;
+  else if(sorted.length > 0) texto += `Temos ${list.length} profissional${list.length>1?'is':''} de ${nomeCategoria} cadastrado${list.length>1?'s':''}. `;
+  if(verificados.length > 0 && verificados[0].id !== top.id) texto += `${verificados[0].nome} também é uma boa opção — tem o ✅ Selo Verificado. `;
+  texto += `💡 Dica: ${dica}`;
+  return texto;
+}
+
+function renderCardsEspecialista(profissionais, borderColor='var(--verde-claro)'){
+  return profissionais.map(p => {
+    const m = media(p.avaliacoes);
+    const cat = CATS.find(c=>c.id===p.categoria)||{nome:p.categoria,icon:'🛠️'};
+    return `<div style="background:var(--areia);padding:12px 14px;border-left:3px solid ${borderColor};border-radius:12px;margin-bottom:8px"><div style="display:flex;align-items:center;gap:8px;margin-bottom:5px"><div style="width:32px;height:32px;background:var(--verde-menta);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:700;color:var(--verde)">${cat.icon}</div><div style="flex:1"><div style="font-weight:700;font-size:0.86rem">${p.nome}</div><div style="font-size:0.73rem;color:var(--texto-suave)">📍 ${p.bairro} ${p.verificado?'· ✅ Verificado':''}</div></div><div style="text-align:right"><div style="color:#F4A261;font-size:0.82rem">${stars(m)}</div><div style="font-size:0.72rem;color:var(--texto-suave)">${m>0?m.toFixed(1)+' / 5':'sem nota'} · ${(p.avaliacoes||[]).length} av.</div></div></div><div style="font-size:0.79rem;color:var(--texto-suave);line-height:1.4">${(p.descricao||'').slice(0,100)}${(p.descricao||'').length>100?'...':''}</div></div>`;
+  }).join('');
+}
+
+window.abrirRecomendacao = function(categoriaId, nomeCategoria){
+  document.getElementById('especialista-title').textContent = `💡 Melhores em ${nomeCategoria}`;
+  document.getElementById('especialista-sub').textContent = `Tobias analisou os profissionais de ${nomeCategoria} e preparou uma recomendação.`;
+  document.getElementById('especialista-loading').style.display = 'block';
+  document.getElementById('especialista-text').style.display = 'none';
+  document.getElementById('especialista-cards').innerHTML = '';
+  document.getElementById('modal-especialista').classList.add('open');
+  setTimeout(()=>{
+    const list = getP().filter(p => p.categoria === categoriaId);
+    const top3 = sortedList(list).slice(0,3);
+    document.getElementById('especialista-cards').innerHTML = top3.length ? renderCardsEspecialista(top3, 'var(--verde-claro)') : '<div style="text-align:center;padding:20px;color:var(--texto-suave);font-size:0.88rem">Nenhum profissional nesta categoria ainda.</div>';
+    document.getElementById('especialista-loading').style.display = 'none';
+    const textoRec = tobRecomendarCategoria(categoriaId, nomeCategoria, list);
+    document.getElementById('especialista-text').innerHTML = textoRec;
+    document.getElementById('especialista-text').style.display = 'block';
+  }, 600);
+};
+window.abrirRecomendacaoGeral = function(){
+  document.getElementById('especialista-title').textContent = '🤖 Tobias Recomenda';
+  document.getElementById('especialista-sub').textContent = 'Tobias analisou todos os profissionais e selecionou os destaques da comunidade.';
+  document.getElementById('especialista-loading').style.display = 'block';
+  document.getElementById('especialista-text').style.display = 'none';
+  document.getElementById('especialista-cards').innerHTML = '';
+  document.getElementById('modal-especialista').classList.add('open');
+  setTimeout(()=>{
+    const list = getP();
+    const top4 = sortedList(list).slice(0,4);
+    document.getElementById('especialista-cards').innerHTML = top4.length ? renderCardsEspecialista(top4, 'var(--laranja)') : '<div style="text-align:center;padding:20px;color:var(--texto-suave)">Nenhum profissional cadastrado ainda.</div>';
+    document.getElementById('especialista-loading').style.display = 'none';
+    let texto = '';
+    if(list.length === 0){ texto = 'Ainda não há profissionais cadastrados. Seja o primeiro a se cadastrar! 🚀'; }
+    else {
+      const top = top4[0];
+      const mTop = media(top.avaliacoes);
+      const catTop = CATS.find(c=>c.id===top.categoria)||{nome:top.categoria};
+      const verificados = list.filter(p=>p.verificado).length;
+      const categorias = [...new Set(list.map(p=>p.categoria))].length;
+      texto += `🏅 O destaque da comunidade é <strong>${top.nome}</strong> (${catTop.nome}`;
+      if(mTop > 0) texto += `, ${mTop.toFixed(1)}⭐`;
+      texto += `). Temos ${list.length} profissional${list.length>1?'is':''} em ${categorias} área${categorias>1?'s':''}`;
+      if(verificados > 0) texto += `, sendo ${verificados} com o ✅ Selo Verificado`;
+      texto += `. Prefira sempre profissionais verificados e com boas avaliações! 🤝`;
+    }
+    document.getElementById('especialista-text').innerHTML = texto;
+    document.getElementById('especialista-text').style.display = 'block';
+  }, 600);
+};
+window.fecharEspecialista = function(){ document.getElementById('modal-especialista').classList.remove('open'); };
+
+// ── ALERTAS ──
+const BAIRROS_DESTAQUE = ['Heliópolis','Paraisópolis','Cidade Tiradentes','Capão Redondo','Jardim Ângela','Brasilândia','Grajaú','Guaianases','São Mateus','Itaim Paulista','Sapopemba','Cidade Ademar','Jardim São Luís','Campo Limpo','Itaquera','São Miguel Paulista','Perus','Pedreira','Cursino','Vila Prudente'];
+const BAIRROS_TODOS = [...BAIRROS_DESTAQUE];
+const ALERTAS_KEY = 'cq_alertas';
+const VISTO_KEY = 'cq_visto';
+const SUPORTE_WPP = '5511922253499';
+
+function getAlertas(){ try{ return JSON.parse(localStorage.getItem(ALERTAS_KEY))||{cats:[],bairros:[]}; }catch{ return {cats:[],bairros:[]}; } }
+function setAlertas(a){ localStorage.setItem(ALERTAS_KEY,JSON.stringify(a)); }
+function getVisto(){ try{ return JSON.parse(localStorage.getItem(VISTO_KEY))||[]; }catch{ return []; } }
+function setVisto(v){ localStorage.setItem(VISTO_KEY,JSON.stringify(v)); }
+
+let _mostrandoTodosBairros = false;
+function _renderBairros(lista){
+  const al = getAlertas();
+  return lista.map(b=>{ const on = al.bairros.includes(b); return `<button onclick="toggleAlertaChip(this,'bairro','${b}')" style="border:1.5px solid ${on?'var(--verde)':'var(--areia-escuro)'};background:${on?'var(--verde-menta)':'var(--branco)'};color:${on?'var(--verde)':'var(--texto-suave)'};border-radius:20px;padding:4px 12px;font-size:0.78rem;cursor:pointer;font-family:'DM Sans',sans-serif">📍 ${b}</button>`; }).join('');
+}
+
+window.toggleMaisBairros = function(){
+  _mostrandoTodosBairros = !_mostrandoTodosBairros;
+  const lista = _mostrandoTodosBairros ? BAIRROS_TODOS : BAIRROS_DESTAQUE;
+  document.getElementById('alertas-bairros-chips').innerHTML = _renderBairros(lista);
+  document.getElementById('btn-mais-bairros').textContent = _mostrandoTodosBairros ? '▲ Ver menos' : '＋ Ver mais bairros';
+};
+
+window.adicionarBairroCustom = function(){
+  const input = document.getElementById('alertas-bairro-custom');
+  const val = (input.value||'').trim();
+  if(!val){ input.focus(); return; }
+  const nome = val.replace(/\b\w/g, c=>c.toUpperCase());
+  const al = getAlertas();
+  if(!al.bairros.includes(nome)){ al.bairros.push(nome); setAlertas(al); atualizarBadgeAlertas(); _verificarMostrarCardWpp(); }
+  const custom = document.getElementById('alertas-bairros-custom-chips');
+  const jaExiste = [...custom.querySelectorAll('button')].some(b=>b.dataset.val===nome);
+  if(!jaExiste){
+    const btn = document.createElement('button');
+    btn.dataset.val = nome;
+    btn.style.cssText = 'border:1.5px solid var(--verde);background:var(--verde-menta);color:var(--verde);border-radius:20px;padding:4px 12px;font-size:0.78rem;cursor:pointer;font-family:\'DM Sans\',sans-serif;display:flex;align-items:center;gap:5px';
+    btn.innerHTML = `📍 ${nome} <span onclick="removerBairroCustom(this,'${nome}')" style="font-size:0.9rem;line-height:1;color:var(--verde);font-weight:700">✕</span>`;
+    custom.appendChild(btn);
+  }
+  input.value = '';
+  showToast(`📍 "${nome}" adicionado aos alertas!`);
+};
+
+window.removerBairroCustom = function(el, nome){
+  const al = getAlertas();
+  al.bairros = al.bairros.filter(b=>b!==nome);
+  setAlertas(al);
+  atualizarBadgeAlertas();
+  _verificarMostrarCardWpp();
+  el.closest('button').remove();
+};
+
+window.abrirAlertas = function(){
+  _mostrandoTodosBairros = false;
+  const al = getAlertas();
+  const visto = getVisto();
+  document.getElementById('alertas-cats').innerHTML = CATS.map(c=>{ const on = al.cats.includes(c.id); return `<button onclick="toggleAlertaChip(this,'cat','${c.id}')" style="border:1.5px solid ${on?'var(--verde)':'var(--areia-escuro)'};background:${on?'var(--verde-menta)':'var(--branco)'};color:${on?'var(--verde)':'var(--texto-suave)'};border-radius:20px;padding:4px 12px;font-size:0.78rem;cursor:pointer;font-family:'DM Sans',sans-serif">${c.icon} ${c.nome}</button>`; }).join('');
+  document.getElementById('alertas-bairros-chips').innerHTML = _renderBairros(BAIRROS_DESTAQUE);
+  const customContainer = document.getElementById('alertas-bairros-custom-chips');
+  customContainer.innerHTML = '';
+  al.bairros.filter(b=>!BAIRROS_TODOS.includes(b)).forEach(nome=>{
+    const btn = document.createElement('button');
+    btn.dataset.val = nome;
+    btn.style.cssText = 'border:1.5px solid var(--verde);background:var(--verde-menta);color:var(--verde);border-radius:20px;padding:4px 12px;font-size:0.78rem;cursor:pointer;font-family:\'DM Sans\',sans-serif;display:flex;align-items:center;gap:5px';
+    btn.innerHTML = `📍 ${nome} <span onclick="removerBairroCustom(this,'${nome}')" style="font-size:0.9rem;line-height:1;color:var(--verde);font-weight:700">✕</span>`;
+    customContainer.appendChild(btn);
+  });
+  const novos = getP().filter(p=>p.dataHora && !visto.includes(p.id) && (al.cats.includes(p.categoria)||al.bairros.includes(p.bairro)));
+  const nd = document.getElementById('alertas-novidades');
+  if(novos.length>0){ nd.style.display='block'; nd.innerHTML=`<div style="background:var(--verde-menta);border-radius:10px;padding:10px 14px"><div style="font-size:0.82rem;font-weight:700;color:var(--verde);margin-bottom:6px">🔔 ${novos.length} novo${novos.length>1?'s profissionais':' profissional'} nos seus alertas!</div>${novos.map(p=>{const cat=CATS.find(c=>c.id===p.categoria)||{};return `<div style="font-size:0.8rem;color:var(--verde);margin:2px 0">${cat.icon||'🛠️'} <strong>${p.nome}</strong> · ${p.bairro}</div>`;}).join('')}</div>`; }
+  else { nd.style.display='none'; }
+  const card = document.getElementById('alertas-wpp-card');
+  if(card){ const al2 = getAlertas(); card.style.display = (al2.cats.length > 0 || al2.bairros.length > 0) ? 'block' : 'none'; }
+  document.getElementById('modal-alertas').classList.add('open');
+};
+
+window.toggleAlertaChip = function(btn, tipo, val){
+  const al = getAlertas();
+  const arr = tipo==='cat'?al.cats:al.bairros;
+  const idx = arr.indexOf(val);
+  if(idx>=0){ arr.splice(idx,1); btn.style.borderColor='var(--areia-escuro)'; btn.style.background='var(--branco)'; btn.style.color='var(--texto-suave)'; }
+  else { arr.push(val); btn.style.borderColor='var(--verde)'; btn.style.background='var(--verde-menta)'; btn.style.color='var(--verde)'; }
+  if(tipo==='cat') al.cats=arr; else al.bairros=arr;
+  setAlertas(al);
+  atualizarBadgeAlertas();
+  _verificarMostrarCardWpp();
+};
+
+function _verificarMostrarCardWpp(){
+  const al = getAlertas();
+  const card = document.getElementById('alertas-wpp-card');
+  if(!card) return;
+  if(al.cats.length > 0 || al.bairros.length > 0){ card.style.display = 'block'; setTimeout(()=>{ card.scrollIntoView({behavior:'smooth',block:'nearest'}); }, 80); }
+  else { card.style.display = 'none'; }
+}
+
+window.irParaTobiasAlertas = function(){
+  const al = getAlertas();
+  const catsNomes = al.cats.map(id=>{ const c=CATS.find(x=>x.id===id); return c ? c.icon+' '+c.nome : id; });
+  const bairrosNomes = al.bairros.length>0 ? al.bairros : ['todos os bairros'];
+  const catsStr = catsNomes.length>0 ? catsNomes.join(', ') : 'todas as categorias';
+  const bairStr = bairrosNomes.join(', ');
+  const msg = encodeURIComponent('🔔 Olá Tobias! Quero receber avisos quando novos prestadores aparecerem no Comuniq.\n\n🛠️ Categorias de interesse: '+catsStr+'\n📍 Bairros de interesse: '+bairStr+'\n\nPor favor, me avise quando houver novidades! 😊');
+  fecharAlertas();
+  const url = 'https://wa.me/'+SUPORTE_WPP+'?text='+msg;
+  const w = window.open(url, '_blank');
+  if(!w || w.closed || typeof w.closed === 'undefined') window.location.href = url;
+};
+
+window.salvarAlertas = function(){
+  const al = getAlertas();
+  if(al.cats.length > 0 || al.bairros.length > 0){ irParaTobiasAlertas(); return; }
+  fecharAlertas();
+  showToast('🔔 Alertas salvos!');
+};
+
+window.fecharAlertas = function(){
+  document.getElementById('modal-alertas').classList.remove('open');
+  const card = document.getElementById('alertas-wpp-card');
+  if(card) card.style.display = 'none';
+};
+
+function atualizarBadgeAlertas(){
+  const al = getAlertas(); const visto = getVisto();
+  const novos = getP().filter(p=>p.dataHora && !visto.includes(p.id) && (al.cats.includes(p.categoria)||al.bairros.includes(p.bairro)));
+  const badge = document.getElementById('badge-alertas');
+  const badgeMob = document.getElementById('badge-alertas-mob');
+  if(badge) badge.style.display = novos.length>0?'block':'none';
+  if(badgeMob) badgeMob.style.display = novos.length>0?'block':'none';
+}
+setTimeout(atualizarBadgeAlertas, 500);
+
+// ── QUIZ ──
+const QUIZ_KEY = 'cq_quiz_ok';
+const PERGUNTAS = [
+  { p:'Você recebeu um pedido para pagar 100% do valor do serviço antes de começar. O que fazer?', opts:['Pagar tudo adiantado','Combinar pagamento ao final ou parcialmente','Desistir do serviço'], certa:1, ok:'✅ Correto! Profissionais confiáveis aceitam pagar ao final ou em parcelas.', err:'❌ Cuidado! Golpistas pedem pagamento total adiantado e somem.' },
+  { p:'O prestador pediu que você envie Pix para uma chave aleatória no WhatsApp. O que fazer?', opts:['Enviar normalmente','Confirmar o nome do beneficiário antes de enviar','Enviar para agilizar'], certa:1, ok:'✅ Certo! Sempre confira o nome completo do beneficiário no Pix antes de transferir.', err:'❌ Atenção! Confirme sempre o nome antes de enviar.' },
+  { p:'Como você pode confirmar que o prestador é confiável no Comuniq?', opts:['Pela foto de perfil','Pelo ✅ Selo Verificado e pelas avaliações','Pelo número de telefone'], certa:1, ok:'✅ Exatamente! O Selo Verificado e as avaliações são os melhores indicadores.', err:'❌ Fotos e telefones podem ser falsos. Confie no Selo Verificado e nas avaliações!' },
+];
+let quizStep=0, quizSelecionado=null, pendingWppCallback=null;
+
+window.iniciarQuizWpp = function(callback){
+  if(localStorage.getItem(QUIZ_KEY)==='done'){ callback(); return; }
+  pendingWppCallback=callback; quizStep=0; quizSelecionado=null;
+  renderQuizStep();
+  document.getElementById('modal-quiz').classList.add('open');
+};
+function renderQuizStep(){
+  const q=PERGUNTAS[quizStep];
+  document.getElementById('quiz-feedback').style.display='none';
+  document.getElementById('quiz-ok').style.display='none';
+  document.getElementById('quiz-proximo').style.display='none';
+  document.getElementById('quiz-ir').style.display='none';
+  document.getElementById('quiz-pular').style.display='inline-flex';
+  document.getElementById('quiz-body').innerHTML=`<div style="background:var(--verde-menta);border-radius:10px;padding:10px 14px;margin-bottom:12px;font-size:0.78rem;color:var(--verde);font-weight:600">Pergunta ${quizStep+1} de ${PERGUNTAS.length}</div><p style="font-size:0.88rem;font-weight:600;color:var(--texto);line-height:1.5;margin-bottom:12px">${q.p}</p><div style="display:flex;flex-direction:column;gap:8px">${q.opts.map((o,i)=>`<button onclick="quizSelecionar(${i})" id="qopt-${i}" style="text-align:left;background:var(--areia);border:1.5px solid var(--areia-escuro);border-radius:10px;padding:10px 14px;font-size:0.85rem;cursor:pointer;font-family:'DM Sans',sans-serif;color:var(--texto);transition:all 0.15s">${o}</button>`).join('')}</div>`;
+}
+window.quizSelecionar=function(i){ quizSelecionado=i; document.querySelectorAll('[id^=qopt-]').forEach((b,idx)=>{ b.style.borderColor=idx===i?'var(--verde)':'var(--areia-escuro)'; b.style.background=idx===i?'var(--verde-menta)':'var(--areia)'; }); document.getElementById('quiz-ok').style.display='inline-flex'; };
+window.quizResponder=function(){ if(quizSelecionado===null) return; const q=PERGUNTAS[quizStep]; const fb=document.getElementById('quiz-feedback'); const certa=quizSelecionado===q.certa; fb.style.display='block'; fb.style.background=certa?'var(--verde-menta)':'var(--vermelho-claro)'; fb.style.color=certa?'var(--verde)':'var(--vermelho)'; fb.textContent=certa?q.ok:q.err; document.getElementById('quiz-ok').style.display='none'; if(quizStep<PERGUNTAS.length-1) document.getElementById('quiz-proximo').style.display='inline-flex'; else document.getElementById('quiz-ir').style.display='inline-flex'; document.getElementById('quiz-pular').style.display='none'; };
+window.quizProximo=function(){ quizStep++; quizSelecionado=null; renderQuizStep(); };
+window.quizPular=function(){ document.getElementById('modal-quiz').classList.remove('open'); if(pendingWppCallback) pendingWppCallback(); };
+window.quizIr=function(){ localStorage.setItem(QUIZ_KEY,'done'); document.getElementById('modal-quiz').classList.remove('open'); if(pendingWppCallback) pendingWppCallback(); };
+
+const _abrirWppOriginal = abrirWpp;
+window.abrirWpp = function(num,nome){ iniciarQuizWpp(()=>_abrirWppOriginal(num,nome)); };
+
+// ── TRADUTOR PT/ES ──
+const DICT_ES = { 'eletricista':'electricista','encanador':'plomero','pedreiro':'albañil','pintor':'pintor','cabeleireiro':'peluquero/a','diarista':'empleada doméstica','manicure':'manicurista','costureira':'costurera','marceneiro':'carpintero','doceiro':'pastelero/a','mecânico':'mecánico','informática':'informática','jardineiro':'jardinero','cuidador':'cuidador/a','fotógrafo':'fotógrafo/a','reformas':'reformas','instalações':'instalaciones','experiência':'experiencia','anos':'años','residencial':'residencial','rápido':'rápido','atendo':'atiendo','bairro':'barrio','qualidade':'calidad','preço':'precio','garantido':'garantizado','pontual':'puntual','seguro':'seguro','orçamento':'presupuesto','domicílio':'domicilio','capricho':'esmero','serviço':'servicio' };
+window.traduzirPerfil = function(id){ const btn=document.getElementById(`btn-trad-${id}`); const desc=document.getElementById(`desc-${id}`); if(!btn||!desc) return; if(btn.dataset.trad==='es'){ desc.textContent=btn.dataset.original; btn.textContent='🌐 ES'; btn.dataset.trad='pt'; return; } let txt=desc.textContent; btn.dataset.original=txt; for(const [pt,es] of Object.entries(DICT_ES)) txt=txt.replace(new RegExp(pt,'gi'),es); desc.textContent=txt; btn.textContent='🇧🇷 PT'; btn.dataset.trad='es'; };
+
+const _renderResultadosOriginal = renderResultados;
+window.renderResultados = function(list){
+  _renderResultadosOriginal(list);
+  setTimeout(()=>{
+    document.querySelectorAll('.card-desc').forEach(el=>{
+      const card=el.closest('.card'); if(!card) return;
+      const idEl=card.querySelector('.card-id'); if(!idEl) return;
+      const id=idEl.textContent.replace('ID:','').trim();
+      if(!id||document.getElementById(`btn-trad-${id}`)) return;
+      el.id=`desc-${id}`;
+      const btn=document.createElement('button');
+      btn.id=`btn-trad-${id}`; btn.textContent='🌐 ES'; btn.dataset.trad='pt';
+      btn.style.cssText='font-size:0.68rem;padding:1px 7px;border-radius:12px;border:1px solid var(--areia-escuro);background:var(--areia);cursor:pointer;margin-bottom:4px;font-family:"DM Sans",sans-serif;color:var(--texto-suave)';
+      btn.onclick=()=>traduzirPerfil(id);
+      el.parentNode.insertBefore(btn,el);
+    });
+  },50);
+};
+
+// ── CARROSSEL DE BAIRROS ──
+(function(){
+  const BAIRROS_CARROSSEL = [
+    {emoji:'🏘️',nome:'Heliópolis'},{emoji:'🏘️',nome:'Paraisópolis'},{emoji:'🏙️',nome:'Cidade Tiradentes'},
+    {emoji:'🛖',nome:'Capão Redondo'},{emoji:'🌿',nome:'Jardim Ângela'},{emoji:'🏗️',nome:'Brasilândia'},
+    {emoji:'🌊',nome:'Grajaú'},{emoji:'🏡',nome:'Guaianases'},{emoji:'🏢',nome:'São Mateus'},
+    {emoji:'🌇',nome:'Itaim Paulista'},{emoji:'🏘️',nome:'Sapopemba'},{emoji:'🏚️',nome:'Cidade Ademar'},
+    {emoji:'🌳',nome:'Jardim São Luís'},{emoji:'🌾',nome:'Campo Limpo'},{emoji:'🏙️',nome:'Itaquera'},
+    {emoji:'🌆',nome:'São Miguel Paulista'},{emoji:'🌲',nome:'Perus'},{emoji:'🏠',nome:'Pedreira'},
+    {emoji:'🌺',nome:'Cursino'},{emoji:'🏗️',nome:'Vila Prudente'},
+  ];
+  const carrossel = document.getElementById('bairros-carrossel');
+  const dotsWrap = document.getElementById('carrossel-dots');
+  if(!carrossel || !dotsWrap) return;
+  carrossel.innerHTML = BAIRROS_CARROSSEL.map((b,i)=>`<div class="bairro-card" data-idx="${i}" onclick="carrosselClick(${i})"><div class="bc-emoji">${b.emoji}</div><div class="bc-name">${b.nome}</div></div>`).join('');
+  dotsWrap.innerHTML = BAIRROS_CARROSSEL.map((_,i)=>`<button class="carrossel-dot${i===0?' active':''}" onclick="carrosselGoTo(${i})" aria-label="Bairro ${i+1}"></button>`).join('');
+  let activeIdx = 0;
+  window.carrosselGoTo = function(idx){ activeIdx=idx; document.querySelectorAll('.carrossel-dot').forEach((d,i)=>d.classList.toggle('active',i===idx)); document.querySelectorAll('.bairro-card').forEach((c,i)=>c.classList.toggle('active-card',i===idx)); const card=carrossel.children[idx]; if(card) carrossel.scrollTo({left:card.offsetLeft-20,behavior:'smooth'}); };
+  window.carrosselClick = function(idx){ carrosselGoTo(idx); const bairro=BAIRROS_CARROSSEL[idx].nome; document.getElementById('search-bairro')&&(document.getElementById('search-bairro').value=bairro); showPage('busca'); buscar(); };
+  carrossel.addEventListener('scroll', ()=>{ const cards=[...carrossel.querySelectorAll('.bairro-card')]; let closest=0,minDist=Infinity; cards.forEach((card,i)=>{ const dist=Math.abs(card.getBoundingClientRect().left-carrossel.getBoundingClientRect().left); if(dist<minDist){minDist=dist;closest=i;} }); if(closest!==activeIdx){ activeIdx=closest; document.querySelectorAll('.carrossel-dot').forEach((d,i)=>d.classList.toggle('active',i===closest)); document.querySelectorAll('.bairro-card').forEach((c,i)=>c.classList.toggle('active-card',i===closest)); } });
+  let isDragging=false,startX=0,scrollLeft=0;
+  carrossel.addEventListener('mousedown',e=>{isDragging=true;startX=e.pageX-carrossel.offsetLeft;scrollLeft=carrossel.scrollLeft;carrossel.classList.add('dragging');});
+  carrossel.addEventListener('mouseleave',()=>{isDragging=false;carrossel.classList.remove('dragging');});
+  carrossel.addEventListener('mouseup',()=>{isDragging=false;carrossel.classList.remove('dragging');});
+  carrossel.addEventListener('mousemove',e=>{if(!isDragging)return;e.preventDefault();const x=e.pageX-carrossel.offsetLeft;carrossel.scrollLeft=scrollLeft-(x-startX);});
+})();
+
+seed();
+renderHome();
+(function(){ const el=document.getElementById('f-nascimento'); if(el){ const d=new Date(); d.setFullYear(d.getFullYear()-18); el.max=d.toISOString().split('T')[0]; } })();
+</script>
+
+<!-- CHATBOT FLUTUANTE -->
+<style>
+#cq-fab { position:fixed; bottom:24px; right:20px; z-index:9999; display:flex; flex-direction:column; align-items:flex-end; gap:10px; font-family:'DM Sans',sans-serif; }
+@media(max-width:540px){ #cq-fab { bottom:84px; right:14px; } }
+#cq-toggle { width:56px; height:56px; background:var(--verde); border:none; border-radius:50%; cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:1.5rem; box-shadow:0 4px 20px rgba(45,106,79,0.45); transition:transform 0.2s,background 0.2s; position:relative; flex-shrink:0; }
+#cq-toggle:hover { background:#1B4332; transform:scale(1.08); }
+#cq-badge { position:absolute; top:-3px; right:-3px; width:16px; height:16px; background:var(--laranja); border-radius:50%; border:2px solid #fff; display:flex; align-items:center; justify-content:center; font-size:9px; font-weight:700; color:#fff; }
+#cq-tooltip { background:var(--verde); color:#fff; padding:8px 14px; border-radius:50px; font-size:0.82rem; font-weight:600; white-space:nowrap; box-shadow:0 4px 16px rgba(45,106,79,0.3); opacity:1; transition:opacity 0.3s; }
+#cq-tooltip.hide { opacity:0; pointer-events:none; }
+#cq-window { position:fixed; bottom:94px; right:20px; width:360px; height:520px; background:var(--branco); border-radius:18px; box-shadow:0 12px 48px rgba(0,0,0,0.22); display:flex; flex-direction:column; overflow:hidden; z-index:9998; transform:scale(0.85) translateY(20px); opacity:0; pointer-events:none; transform-origin:bottom right; transition:transform 0.25s cubic-bezier(.34,1.56,.64,1),opacity 0.2s; }
+#cq-window.open { transform:scale(1) translateY(0); opacity:1; pointer-events:all; }
+@media(max-width:540px){ #cq-window { bottom:154px; right:6px; left:6px; width:auto; height:460px; } }
+#cq-header { background:var(--verde); padding:13px 16px; display:flex; align-items:center; gap:10px; flex-shrink:0; }
+#cq-header .cq-av { width:36px; height:36px; background:var(--verde-menta); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:17px; flex-shrink:0; }
+#cq-header .cq-info h4 { color:#fff; font-size:0.88rem; font-weight:700; margin:0; }
+#cq-header .cq-info p { color:rgba(255,255,255,0.65); font-size:0.72rem; margin:0; }
+#cq-header .cq-dot { width:8px; height:8px; background:var(--verde-claro); border-radius:50%; border:1.5px solid #fff; margin-left:auto; }
+#cq-close { background:rgba(255,255,255,0.15); border:none; color:#fff; width:26px; height:26px; border-radius:50%; cursor:pointer; font-size:0.9rem; display:flex; align-items:center; justify-content:center; transition:background 0.15s; margin-left:8px; }
+#cq-close:hover { background:rgba(255,255,255,0.3); }
+#cq-msgs { flex:1; overflow-y:auto; padding:14px; display:flex; flex-direction:column; gap:8px; background:var(--areia); }
+.cq-msg { display:flex; gap:7px; max-width:88%; }
+.cq-msg.user { align-self:flex-end; flex-direction:row-reverse; }
+.cq-msg .cq-bbl { padding:8px 12px; border-radius:14px; font-size:0.82rem; line-height:1.55; color:var(--texto); }
+.cq-msg.bot .cq-bbl { background:var(--branco); border-radius:4px 14px 14px 14px; box-shadow:0 1px 4px rgba(0,0,0,0.06); }
+.cq-msg.user .cq-bbl { background:var(--verde); color:#fff; border-radius:14px 4px 14px 14px; }
+.cq-msg .cq-ico { width:26px; height:26px; min-width:26px; background:var(--verde-menta); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:13px; align-self:flex-end; }
+.cq-chips { display:flex; flex-wrap:wrap; gap:5px; margin-top:7px; }
+.cq-chip { border:1.5px solid var(--verde-claro); color:var(--verde); background:transparent; padding:4px 10px; border-radius:50px; font-size:0.74rem; cursor:pointer; font-family:inherit; transition:all 0.15s; }
+.cq-chip:hover { background:var(--verde); color:#fff; border-color:var(--verde); }
+.cq-typing { display:flex; gap:4px; align-items:center; padding:8px 12px; }
+.cq-typing span { width:6px; height:6px; background:#bbb; border-radius:50%; animation:cqblink 1.2s infinite; }
+.cq-typing span:nth-child(2) { animation-delay:0.2s; }
+.cq-typing span:nth-child(3) { animation-delay:0.4s; }
+@keyframes cqblink { 0%,80%,100%{transform:scale(1);opacity:.5} 40%{transform:scale(1.3);opacity:1} }
+#cq-input-area { border-top:1px solid var(--areia-escuro); padding:9px 10px; display:flex; gap:7px; background:var(--branco); flex-shrink:0; }
+#cq-input { flex:1; border:1.5px solid var(--areia-escuro); border-radius:50px; padding:7px 13px; font-size:0.82rem; background:var(--areia); color:var(--texto); outline:none; font-family:inherit; transition:border-color 0.15s; }
+#cq-input:focus { border-color:var(--verde-claro); background:#fff; }
+#cq-send { width:34px; height:34px; background:var(--verde); border:none; border-radius:50%; cursor:pointer; display:flex; align-items:center; justify-content:center; flex-shrink:0; transition:background 0.15s; }
+#cq-send:hover { background:#1B4332; }
+#cq-send svg { fill:#fff; width:14px; height:14px; }
+</style>
+
+<div id="cq-fab">
+  <div id="cq-tooltip">Precisa de ajuda? 💬</div>
+  <button id="cq-toggle" onclick="cqToggle()" title="Abrir chat de suporte">🤝<div id="cq-badge">1</div></button>
+</div>
+
+<div id="cq-window">
+  <div id="cq-header">
+    <div class="cq-av">🤝</div>
+    <div class="cq-info"><h4>Tobias · IA Comuniq</h4><p>Responde em segundos</p></div>
+    <div class="cq-dot"></div>
+    <button id="cq-close" onclick="cqToggle()">✕</button>
+  </div>
+  <div id="cq-msgs"></div>
+  <div id="cq-input-area">
+    <input id="cq-input" type="text" placeholder="Digite sua dúvida..." autocomplete="off">
+    <button id="cq-send"><svg viewBox="0 0 24 24"><path d="M2 21l21-9L2 3v7l15 2-15 2z"/></svg></button>
+  </div>
+</div>
+
+<script>
+// TERMOS
+function verificarTermos(){ const ok1=document.getElementById('check-termos').checked; const ok2=document.getElementById('check-golpe').checked; const btn=document.getElementById('btn-aceitar-termos'); if(ok1&&ok2) btn.classList.add('ready'); else btn.classList.remove('ready'); }
+function aceitarTermos(){ localStorage.setItem('comuniq_termos_v1','aceito'); document.getElementById('termos-overlay').classList.add('hide'); }
+if(localStorage.getItem('comuniq_termos_v1')==='aceito') document.getElementById('termos-overlay').classList.add('hide');
+
+// DENÚNCIA
+let denunciaId='', denunciaNome='', denunciaMotivo='';
+function _resetDenunciaModal(){ denunciaMotivo=''; document.querySelectorAll('.denuncia-motivo').forEach(el=>el.classList.remove('sel')); document.getElementById('btn-enviar-denuncia').style.opacity='0.4'; document.getElementById('btn-enviar-denuncia').style.pointerEvents='none'; document.getElementById('denuncia-campos').style.display='none'; document.getElementById('denuncia-field-motivo').value=''; document.getElementById('denuncia-field-descricao').value=''; }
+function abrirDenuncia(id,nome){ denunciaId=id; denunciaNome=nome; _resetDenunciaModal(); document.getElementById('denuncia-field-id').value=id||''; document.getElementById('denuncia-field-nome').value=nome||''; document.getElementById('denuncia-sub').textContent='Selecione o motivo da denúncia:'; document.getElementById('modal-denuncia').classList.add('open'); }
+function fecharDenuncia(){ document.getElementById('modal-denuncia').classList.remove('open'); }
+function selecionarMotivo(el,motivo){ document.querySelectorAll('.denuncia-motivo').forEach(d=>d.classList.remove('sel')); el.classList.add('sel'); denunciaMotivo=motivo; const campos=document.getElementById('denuncia-campos'); campos.style.display='flex'; document.getElementById('denuncia-field-motivo').value=motivo; if(denunciaId&&denunciaId!=='Não especificado') document.getElementById('denuncia-field-id').value=denunciaId; if(denunciaNome&&denunciaNome!=='Perfil não especificado') document.getElementById('denuncia-field-nome').value=denunciaNome; document.getElementById('btn-enviar-denuncia').style.opacity='1'; document.getElementById('btn-enviar-denuncia').style.pointerEvents='all'; }
+function enviarDenuncia(){ if(!denunciaMotivo) return; const fieldId=(document.getElementById('denuncia-field-id').value||'').trim()||denunciaId||'Não informado'; const fieldNome=(document.getElementById('denuncia-field-nome').value||'').trim()||denunciaNome||'Não informado'; const fieldMotivo=(document.getElementById('denuncia-field-motivo').value||'').trim()||denunciaMotivo; const fieldDesc=(document.getElementById('denuncia-field-descricao').value||'').trim(); if(!fieldDesc){ showToast('⚠️ Descreva o que aconteceu antes de enviar!'); return; } const msg=encodeURIComponent('🚩 *DENÚNCIA - Comuniq*\n\n• Prestador ID: '+fieldId+'\n• Nome: '+fieldNome+'\n• Motivo: '+fieldMotivo+'\n\n📝 *O que aconteceu:*\n'+fieldDesc+'\n\nPor favor, oriente-me sobre como seguir com esta denúncia.'); fecharDenuncia(); window.open('https://wa.me/'+SUPORTE_WPP+'?text='+msg,'_blank'); showToast('✅ Denúncia enviada! Obrigado por ajudar a comunidade.'); }
+window.abrirDenunciaGeral=function(){ denunciaId='Não especificado'; denunciaNome='Perfil não especificado'; _resetDenunciaModal(); document.getElementById('denuncia-field-id').value=''; document.getElementById('denuncia-field-nome').value=''; document.getElementById('denuncia-sub').textContent='Selecione o motivo da denúncia:'; document.getElementById('modal-denuncia').classList.add('open'); };
+
+// CHATBOT TOBIAS com Gemini
+(function(){
+  const TOBIAS_BOAS_VINDAS = 'Olá! 👋 Sou o <strong>Tobias</strong>, assistente IA do Comuniq! Pode me perguntar qualquer coisa sobre a plataforma. 😊';
+  const TOBIAS_CHIPS_INICIAIS = ['Como me cadastrar?','Como buscar profissional?','Quero denunciar um perfil','O que é o selo Verificado?'];
+  const TOBIAS_GEM_LINK = 'https://gemini.google.com/gem/1iHdoRQWfaDVAUKB3YMZXwFQRH_m5akCG?usp=sharing';
+  const TOBIAS_FALLBACK = { resposta:'Hmm, essa eu não soube responder aqui. 🤔<br><br>Mas você pode perguntar pro <strong>Tobias no Gemini</strong>!<br><br><a href="'+TOBIAS_GEM_LINK+'" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:7px;background:linear-gradient(135deg,#1B4332,#2D6A4F);color:#fff;padding:9px 16px;border-radius:20px;text-decoration:none;font-weight:700;font-size:0.82rem;margin-top:6px">🤖 Falar com Tobias no Gemini →</a>', chips:['Como buscar profissional?','Como me cadastrar?','Quero denunciar um perfil','Como evitar golpes?'] };
+
+  const TOBIAS_RESPOSTAS = [
+    { gatilhos:['cadastr','registr','anunci','me cadastr','quero cadastr','como entro'], resposta:'📝 <strong>Cadastrar é simples e gratuito!</strong><br><br>1. Clique em <strong>"Me Cadastrar"</strong> no menu<br>2. Preencha: nome, tipo de serviço, bairro e WhatsApp<br>3. CNPJ é opcional — mas garante o <strong>selo ✅ Verificado</strong><br>4. Guarde seu ID único!<br><br>Não precisa criar conta ou senha! 🎉', chips:['O que é o ID único?','O que é o selo Verificado?','O cadastro é gratuito?'] },
+    { gatilhos:['buscar','busca','encontrar','procurar','achar','como encontro','como acho'], resposta:'🔍 <strong>Para encontrar um profissional:</strong><br><br>• Vá na aba <strong>Buscar</strong><br>• Filtre por <strong>nome</strong>, <strong>categoria</strong> ou <strong>bairro</strong><br>• Ou use a <strong>Busca com IA</strong> — descreva em linguagem natural!<br>• Ou busque por <strong>ID</strong> direto<br><br>Clique em <strong>WhatsApp</strong> no card para negociar! 📲', chips:['O que é o selo Verificado?','Como avaliar um profissional?'] },
+    { gatilhos:['gratu','pago','gratuito','preço','custo','cobr','taxa','quanto custa'], resposta:'✅ <strong>O Comuniq é 100% gratuito!</strong><br><br>Sem mensalidade, sem taxa por contato e sem comissão. 🎉', chips:['Como me cadastrar?','O que é o Comuniq?'] },
+    { gatilhos:['verific','cnpj','selo','confiável','confiança','seguro de contratar'], resposta:'✅ <strong>O Selo Verificado</strong> indica que o prestador enviou um CNPJ válido.<br><br>⚠️ Mesmo assim, nunca pague adiantado!', chips:['Como evitar golpes?'] },
+    { gatilhos:['golpe','fraude','segurança','seguro','scam','roub','cuidado','perigo','desconfio'], resposta:'🚨 <strong>Dicas de segurança:</strong><br><br>• Prefira <strong>✅ Verificados</strong><br>• <strong>NUNCA pague adiantado</strong><br>• Desconfie de preços muito baixos<br>• Em caso de golpe: registre BO online', chips:['O que é o selo Verificado?','Como denunciar um prestador?'] },
+    { gatilhos:['whatsapp','wpp','zap','contato','ligar','falar com','número','telefone'], resposta:'📲 O contato é feito direto pelo WhatsApp! Clique no botão verde no card.<br><br>⚠️ O Comuniq não participa da negociação.', chips:['Como negociar com segurança?'] },
+    { gatilhos:['avali','nota','estrela','comentário','review','opinião'], resposta:'⭐ Clique em <strong>"⭐ Avaliar"</strong> no card do profissional, escolha as estrelas e escreva um comentário!', chips:['Como buscar profissional?'] },
+    { gatilhos:['tobias','inteligência artificial','robô','bot','ia ','i.a','quem é você','você é humano','é robô'], resposta:'🤖 Oi! Sou o <strong>Tobias</strong>, assistente IA do Comuniq! Fui criado pra ajudar com dúvidas sobre a plataforma. 😊', chips:['Como me cadastrar?','O site é gratuito?'] },
+    { gatilhos:['denunci','reportar','reclamar','problema com prestador','fui enganado'], resposta:'🚩 <strong>Como denunciar:</strong><br><br>Use o botão <strong>🚩 Denunciar</strong> no card do prestador, ou entre em contato com nosso suporte pelo WhatsApp!', chips:['Como evitar golpes?'] },
+    { gatilhos:['suporte','falar com humano','contato do site','equipe comuniq','numero tobias','tobias whatsapp'], resposta:'🤖 Fale com o Tobias diretamente pelo WhatsApp:<br><br>📱 <strong>(11) 92225-3499</strong><br><br><a href="https://wa.me/5511922253499?text=Olá%20Tobias!" target="_blank" style="background:#25D366;color:#fff;padding:10px 18px;border-radius:20px;text-decoration:none;font-weight:700;font-size:0.88rem;display:inline-flex;align-items:center;gap:8px">📲 Abrir WhatsApp do Tobias</a>', chips:['Como evitar golpes?'] },
+    { gatilhos:['o que é','comuniq','como funciona','para que serve','plataforma'], resposta:'🤝 <strong>O Comuniq</strong> conecta moradores de periferias de SP a prestadores de serviços locais verificados.<br><br>100% gratuito, negociações pelo WhatsApp! 🏘️', chips:['Como me cadastrar?','Como buscar profissional?'] },
+  ];
+
+  const JAILBREAK_PATTERNS = [/ignore\s*(suas?\s*)?(instru|prompt|regra|sistema)/i,/esquece?\s*(tudo|suas?\s*instru)/i,/novo\s*(prompt|modo|instrucao|papel)/i,/modo\s*(desenvolvedor|dev|sem\s*filtro|irrestrito|livre|dan)/i,/finja\s*(que\s*)?(voc[eê]\s*)?(é|ser)/i,/voc[eê]\s*(é|e)\s*(o\s*)?(chatgpt|gpt|gemini|claude|llm)/i,/act\s*as|pretend|jailbreak|dan|do\s*anything\s*now/i,/ignore\s*(all\s*)?(previous\s*)?(instructions?|rules?|prompt)/i];
+  const JAILBREAK_RESPOSTAS = ['Opa, isso não cola comigo não! 😄 Sou o Tobias e minha missão é o Comuniq!','Sou o Tobias, nem mais nem menos! Posso te ajudar a achar um profissional? 😄','Fingir não é comigo! Sou o Tobias, 100% focado no Comuniq. 💪'];
+  let _jailbreakCount = 0;
+
+  function tobiasBlindar(texto){ const t=texto.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,''); for(const p of JAILBREAK_PATTERNS){ if(p.test(t)){ _jailbreakCount++; const idx=Math.min(_jailbreakCount-1,JAILBREAK_RESPOSTAS.length-1); return {resposta:JAILBREAK_RESPOSTAS[idx],chips:['Como buscar profissional?','Como me cadastrar?']}; } } return null; }
+  function tobiasBuscarResposta(texto){ const blindagem=tobiasBlindar(texto); if(blindagem) return blindagem; _jailbreakCount=0; const t=texto.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,''); for(const item of TOBIAS_RESPOSTAS){ for(const gatilho of item.gatilhos){ const g=gatilho.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,''); if(t.includes(g)) return item; } } return TOBIAS_FALLBACK; }
+
+  let loading=false, opened=false;
+  setTimeout(()=>{ const tt=document.getElementById('cq-tooltip'); if(tt) tt.classList.add('hide'); },5000);
+
+  window.cqToggle=function(){ opened=!opened; document.getElementById('cq-window').classList.toggle('open',opened); document.getElementById('cq-badge').style.display='none'; if(opened&&!document.querySelector('.cq-msg')) cqAddMsg('bot',TOBIAS_BOAS_VINDAS,TOBIAS_CHIPS_INICIAIS); };
+
+  function cqAddMsg(role,html,chips){ const wrap=document.getElementById('cq-msgs'); const div=document.createElement('div'); div.className='cq-msg '+role; const chipsHtml=chips&&chips.length?`<div class="cq-chips">${chips.map(c=>`<button class="cq-chip" onclick="cqChip('${c.replace(/'/g,"\'")}')">${c}</button>`).join('')}</div>`:''; div.innerHTML=role==='bot'?`<div class="cq-ico">🤖</div><div class="cq-bbl">${html}${chipsHtml}</div>`:`<div class="cq-bbl">${html}</div>`; wrap.appendChild(div); wrap.scrollTop=wrap.scrollHeight; }
+  function cqShowTyping(){ const wrap=document.getElementById('cq-msgs'); const div=document.createElement('div'); div.className='cq-msg bot'; div.id='cq-typing'; div.innerHTML=`<div class="cq-ico">🤖</div><div class="cq-bbl"><div class="cq-typing"><span></span><span></span><span></span></div></div>`; wrap.appendChild(div); wrap.scrollTop=wrap.scrollHeight; }
+  function cqRemoveTyping(){ const t=document.getElementById('cq-typing'); if(t) t.remove(); }
+  function cqEsc(s){ return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+  const TOBIAS_SYSTEM = `Você é o Tobias, assistente IA do Comuniq — plataforma que conecta moradores de periferias de SP a prestadores de serviços locais. Fale de forma simples, acolhedora e próxima. Tom informal, emojis com moderação. Máximo 120 palavras. Responda APENAS sobre o Comuniq. Se perguntarem qual IA é: "Sou o Tobias, assistente do Comuniq!". Categorias: Pedreiro, Eletricista, Encanador, Pintor, Marceneiro, Diarista, Cabeleireiro, Manicure, Costureira, Doceiro, Mecânico, Informática, Jardineiro, Cuidador, Fotógrafo. Plataforma gratuita. Negociações pelo WhatsApp. Nunca pague 100% adiantado.`;
+  let geminiHistory = [];
+
+  async function cqSend(text){
+    if(!text.trim()||loading) return;
+    loading=true;
+    cqAddMsg('user',cqEsc(text));
+    document.getElementById('cq-input').value='';
+    // Verifica resposta local primeiro
+    const local = tobiasBuscarResposta(text);
+    if(local !== TOBIAS_FALLBACK){
+      cqShowTyping();
+      setTimeout(()=>{ cqRemoveTyping(); cqAddMsg('bot',local.resposta,local.chips||[]); loading=false; },600);
+      return;
+    }
+    cqShowTyping();
+    try {
+      geminiHistory.push({role:'user',parts:[{text}]});
+      const res=await fetch(GURL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({system_instruction:{parts:[{text:TOBIAS_SYSTEM}]},contents:geminiHistory,generationConfig:{maxOutputTokens:300,temperature:0.7}})});
+      const data=await res.json();
+      if(!res.ok) throw new Error(data?.error?.message||'Erro API');
+      const reply=data.candidates?.[0]?.content?.parts?.[0]?.text||'Não entendi bem. Pode repetir? 😊';
+      geminiHistory.push({role:'model',parts:[{text:reply}]});
+      cqRemoveTyping();
+      cqAddMsg('bot',cqEsc(reply).replace(/\n/g,'<br>'),[]);
+    } catch(err){
+      cqRemoveTyping();
+      cqAddMsg('bot','⚠️ Tive um probleminha técnico. Tenta de novo! 😊',[]);
+    }
+    loading=false;
+  }
+
+  window.cqChip=function(t){ cqSend(t); };
+  document.getElementById('cq-send').addEventListener('click',()=>cqSend(document.getElementById('cq-input').value));
+  document.getElementById('cq-input').addEventListener('keydown',e=>{if(e.key==='Enter')cqSend(document.getElementById('cq-input').value);});
+})();
+</script>
+
+<!-- MODAL QUIZ SEGURANÇA -->
+<div class="modal-overlay" id="modal-quiz">
+  <div class="modal" style="max-width:440px;width:100%">
+    <div class="modal-title">🧠 Dica de Segurança</div>
+    <div class="modal-sub">Antes de continuar, o Tobias tem uma pergunta rápida pra você!</div>
+    <div id="quiz-body"></div>
+    <div id="quiz-feedback" style="display:none;margin-top:12px;border-radius:10px;padding:10px 14px;font-size:0.85rem;line-height:1.5"></div>
+    <div class="modal-actions" style="margin-top:14px">
+      <button class="btn-cancel" id="quiz-pular" onclick="quizPular()">Pular</button>
+      <button class="btn-confirm" id="quiz-ok" onclick="quizResponder()" style="display:none">Confirmar ✓</button>
+      <button class="btn-confirm" id="quiz-proximo" onclick="quizProximo()" style="display:none">Próxima →</button>
+      <button class="btn-confirm" id="quiz-ir" onclick="quizIr()" style="display:none">Ir ao WhatsApp ✓</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL ALERTAS -->
+<div class="modal-overlay" id="modal-alertas">
+  <div class="modal" style="max-width:440px;width:100%;max-height:80vh;overflow-y:auto">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px">
+      <div class="modal-title">🔔 Alertas de Novidades</div>
+      <button onclick="fecharAlertas()" style="background:var(--areia-escuro);border:none;border-radius:50%;width:28px;height:28px;cursor:pointer;font-size:1rem;display:flex;align-items:center;justify-content:center">✕</button>
+    </div>
+    <div class="modal-sub">Escolha categorias e bairros — Tobias avisa quando novos profissionais aparecerem!</div>
+    <div style="margin-bottom:14px"><div style="font-size:0.82rem;font-weight:700;margin-bottom:8px;color:var(--texto)">Categorias de interesse:</div><div id="alertas-cats" style="display:flex;flex-wrap:wrap;gap:6px"></div></div>
+    <div style="margin-bottom:16px">
+      <div style="font-size:0.82rem;font-weight:700;margin-bottom:8px;color:var(--texto)">Bairros de interesse:</div>
+      <div id="alertas-bairros-chips" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px"></div>
+      <div id="alertas-bairros-custom-chips" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px"></div>
+      <button id="btn-mais-bairros" onclick="toggleMaisBairros()" style="border:1.5px dashed var(--areia-escuro);background:transparent;color:var(--texto-suave);border-radius:20px;padding:4px 12px;font-size:0.78rem;cursor:pointer;font-family:'DM Sans',sans-serif;margin-bottom:10px">＋ Ver mais bairros</button>
+      <div style="display:flex;gap:6px;align-items:center"><input id="alertas-bairro-custom" type="text" placeholder="Ou digite seu bairro..." maxlength="50" style="flex:1;border:1.5px solid var(--areia-escuro);border-radius:20px;padding:5px 13px;font-size:0.78rem;font-family:'DM Sans',sans-serif;background:var(--areia);outline:none;color:var(--texto)" onkeydown="if(event.key==='Enter')adicionarBairroCustom()"><button onclick="adicionarBairroCustom()" style="background:var(--verde);color:#fff;border:none;border-radius:20px;padding:5px 13px;font-size:0.78rem;font-family:'DM Sans',sans-serif;cursor:pointer;white-space:nowrap">＋ Adicionar</button></div>
+    </div>
+    <div id="alertas-novidades" style="display:none;margin-bottom:14px"></div>
+    <div id="alertas-wpp-card" style="display:none;margin-bottom:14px;background:linear-gradient(135deg,#e8f8ee 0%,#d0f0dc 100%);border:1.5px solid var(--verde-claro);border-radius:14px;padding:16px 16px 14px">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px"><div style="width:38px;height:38px;background:var(--verde);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.3rem;flex-shrink:0">🤖</div><div><div style="font-family:'Syne',sans-serif;font-weight:700;font-size:0.9rem;color:var(--verde)">Converse com o Tobias!</div><div style="font-size:0.75rem;color:var(--texto-suave)">Clique abaixo para avisar o Tobias sobre seus alertas</div></div></div>
+      <button onclick="irParaTobiasAlertas()" style="width:100%;background:#25D366;color:#fff;border:none;border-radius:10px;padding:12px;font-family:'Syne',sans-serif;font-size:0.92rem;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:background 0.18s" onmouseover="this.style.background='#1DAA54'" onmouseout="this.style.background='#25D366'">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.122.555 4.113 1.524 5.84L0 24l6.335-1.483A11.95 11.95 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-1.933 0-3.742-.516-5.295-1.415l-.38-.225-3.76.88.92-3.658-.247-.396A9.932 9.932 0 012 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z"/></svg>
+        Falar com Tobias no WhatsApp
+      </button>
+    </div>
+    <div class="modal-actions"><button class="btn-cancel" onclick="fecharAlertas()">Fechar</button><button class="btn-confirm" onclick="salvarAlertas()">💾 Salvar alertas</button></div>
+  </div>
+</div>
+
+</body>
+</html>
