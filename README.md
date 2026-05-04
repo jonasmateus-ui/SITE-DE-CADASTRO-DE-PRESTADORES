@@ -1,75 +1,70 @@
-cat << 'EOF' > README.md
-# 🌐 Comuniq Hub | Plataforma Centralizada de Comunicação
 
-![Version](https://img.shields.io/badge/version-2.1.0-blue.svg)
-![Status](https://img.shields.io/badge/status-active-brightgreen.svg)
-![License](https://img.shields.io/badge/license-MIT-lightgrey.svg)
+# Comuniq 🚀 | Conectando a Comunidade
 
-O **Comuniq** é uma plataforma SaaS completa projetada para empresas que precisam gerenciar múltiplos canais de atendimento e notificações automáticas em um único lugar. Mais do que uma API, o Comuniq oferece uma interface web intuitiva para gestão de clientes, fluxos de conversa e análise de dados.
+![Status](https://img.shields.io/badge/status-Beta-yellow.svg)
+![Tecnologia](https://img.shields.io/badge/stack-Vanilla%20JS-orange.svg)
+![IA](https://img.shields.io/badge/IA-Gemini%20%26%20Claude-blue.svg)
 
----
-
-## 🖥️ A Experiência do Usuário (O Site/Painel)
-
-O painel administrativo do Comuniq foi construído com foco em **UX (User Experience)**, oferecendo:
-
-### 📊 Dashboard Analítico
-*   **Métricas em Tempo Real:** Visualize a taxa de entrega, abertura e resposta de todas as campanhas.
-*   **Heatmaps de Atendimento:** Identifique os horários de maior pico de mensagens.
-*   **Status dos Canais:** Monitoramento ao vivo da conexão com instâncias de WhatsApp, SMTP e gateways de SMS.
-
-### 👥 Gestão de Clientes (CRM Integrado)
-*   **Perfil Único:** Histórico unificado de conversas (se um cliente mandou e-mail e depois WhatsApp, tudo aparece em uma única linha do tempo).
-*   **Segmentação:** Criação de tags e grupos dinâmicos para disparos direcionados.
-*   **Campos Personalizados:** Armazene dados específicos como CPF, data de nascimento ou preferências de compra.
-
-### 🤖 Automação e Chatbuilder
-*   **Flow Designer:** Interface "Drag-and-Drop" para criar fluxos de chatbots sem programar uma linha de código.
-*   **Inteligência Artificial:** Integração nativa com ChatGPT para respostas inteligentes e análise de sentimento do cliente.
-*   **Agendamentos:** Programação de réguas de relacionamento (ex: mensagem de boas-vindas após 2h, cupom de desconto após 2 dias).
+O **Comuniq** é uma plataforma comunitária voltada para moradores de periferias de São Paulo. O projeto visa facilitar a conexão entre quem precisa de um serviço (pedreiros, eletricistas, cabeleireiros, etc.) e prestadores de serviços locais, eliminando a dependência exclusiva do "boca a boca" e democratizando a divulgação de autônomos.
 
 ---
 
-## 🏗️ Arquitetura do Sistema
+## 📋 Funcionalidades Principais
 
-O site utiliza uma arquitetura de microserviços para garantir que um pico de mensagens no WhatsApp não afete o envio de e-mails.
-
-*   **Frontend:** React.js 18 com Tailwind CSS (Interface ultra rápida e responsiva).
-*   **Backend:** Node.js (NestJS) com arquitetura hexagonal.
-*   **Cache & Mensageria:** Redis para filas de prioridade e controle de *rate limit*.
-*   **Segurança:** Criptografia ponta-a-ponta em conversas sensíveis e autenticação via 2FA.
-
----
-
-## 🚀 Recursos Avançados do Site
-
-### 1. Multi-atendimento (Kanban)
-Transforme suas conversas em cartões. Mova o cliente entre as colunas:
-`Novo Contato` ➡️ `Em Atendimento` ➡️ `Aguardando Pagamento` ➡️ `Finalizado`.
-
-### 2. Gestão de Equipe
-*   **Permissões Granulares:** Defina o que cada atendente pode ver ou editar.
-*   **Transferência de Chat:** Passe um atendimento de um setor para outro (ex: Suporte para Financeiro) com um clique.
-*   **Notas Internas:** Deixe comentários invisíveis para o cliente dentro do chat para orientar seus colegas.
-
-### 3. API & Webhooks para Desenvolvedores
-O site oferece uma área de "Developer Experience" onde você pode:
-*   Gerar tokens de acesso dinâmicos.
-*   Configurar URLs de Webhook para receber eventos (ex: `message.received`, `payment.confirmed`).
-*   Testar chamadas de API diretamente pelo console do navegador.
+* **Cadastro Simplificado:** Prestadores se cadastram sem necessidade de senhas, gerando um ID único (ex: CQ-00001).
+* **Busca Inteligente (Tobias IA):** Sistema que interpreta a necessidade do usuário (ex: "estou com vazamento") para sugerir profissionais compatíveis.
+* **Contato Direto:** Integração via API do WhatsApp, garantindo negociação direta entre cliente e prestador.
+* **Verificação:** Selo de "Verificado" para profissionais que fornecem CNPJ.
+* **Sistema de Alertas:** Notificações via WhatsApp baseadas em categorias e bairros de interesse.
+* **Avaliação Segura:** Sistema de estrelas com moderação automática de conteúdo via IA para evitar ofensas.
 
 ---
 
-## 🛠️ Instalação para Desenvolvedores
+## 🤖 Ecossistema de IA (Tobias)
 
-Se você for rodar a plataforma completa (Frontend + Backend):
-```bash
-# Instalação do Frontend
-cd apps/web
-npm install
-npm run start
+O Comuniq utiliza uma camada de inteligência artificial otimizada para diferentes tarefas:
 
-# Instalação do Worker de Mensagens
-cd apps/worker
-npm install
-npm run worker:dev
+| Funcionalidade | Modelo | Função |
+| :--- | :--- | :--- |
+| **Chat Tobias** | Gemini Flash | Atendimento geral, tom informal e acolhedor. |
+| **Busca IA** | Claude Haiku | Traduz linguagem natural para filtros de busca. |
+| **Moderação** | Gemini Flash | Filtra avaliações para evitar discursos de ódio. |
+| **Descrição** | Gemini Flash | Auxilia prestadores a escreverem seus perfis. |
+
+---
+
+## 🛠️ Tecnologias e Arquitetura
+
+O projeto foi construído com foco em acessibilidade e rapidez:
+
+* **Frontend:** HTML5, CSS3 (Mobile-first) e JavaScript Vanilla.
+* **Armazenamento:** `localStorage` (Persistência no navegador do usuário).
+* **Integrações:** API do WhatsApp, Anthropic API (Claude), Google Gemini API.
+
+> **Nota sobre Dados:** Por ser uma versão Beta, os dados são armazenados localmente no dispositivo (LocalStorage). Não há banco de dados centralizado nesta versão, portanto, a troca de aparelho resetará as configurações locais.
+
+---
+
+## 🚀 Como Rodar
+
+Este projeto é *client-side only*. Você não precisa de servidores complexos ou banco de dados para testar.
+
+1.  Clone o repositório ou baixe os arquivos.
+2.  Abra o arquivo `comuniq.html` em qualquer navegador moderno.
+3.  Utilize as ferramentas de busca ou cadastro diretamente na interface.
+
+---
+
+## 📝 Documentação Complementar
+Este projeto foi desenvolvido como entrega final para a disciplina de **Engenharia de Prompt e Aplicações em IA** da **UNICID (2026)**. 
+
+Mais detalhes podem ser consultados nos arquivos entregues:
+* `Memorial-de Construção.pdf` (Concepção e problemas resolvidos)
+* `Comuniq_Prompts.pdf` (Detalhamento técnico da engenharia de prompts)
+* `Comuniq_Documentacao_Completa.pdf` (Visão geral do projeto)
+
+---
+*Desenvolvido com carinho para a comunidade paulistana. 💙*
+EOF
+
+echo "✅ README.md gerado com sucesso!"
