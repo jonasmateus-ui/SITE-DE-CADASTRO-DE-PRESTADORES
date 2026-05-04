@@ -1,49 +1,60 @@
-
+cat << 'EOF' > README.md
 # Comuniq 🚀 | Conectando a Comunidade
 
 ![Status](https://img.shields.io/badge/status-Beta-yellow.svg)
 ![Tecnologia](https://img.shields.io/badge/stack-Vanilla%20JS-orange.svg)
 ![IA](https://img.shields.io/badge/IA-Gemini%20%26%20Claude-blue.svg)
 
-O **Comuniq** é uma plataforma comunitária desenhada para moradores de periferias de São Paulo. O projeto facilita a ligação entre quem precisa de um serviço e prestadores locais, democratizando a divulgação de profissionais autônomos através de tecnologia acessível e inteligência artificial.
+O **Comuniq** é uma plataforma comunitária projetada para conectar moradores de periferias de São Paulo a prestadores de serviços locais, reduzindo a dependência do "boca a boca" através de um catálogo digital acessível[cite: 1, 3].
 
 ---
 
-## 🔗 Acesso aos Ficheiros e Documentação
+## 🔗 Acesso aos Arquivos e Documentação
 
-Navega pelos documentos oficiais do projeto localizados na pasta `/documentacao`:
+Navegue pelos documentos do projeto na pasta `/documentacao`:
 
-* 🌐 **[Executar Plataforma (HTML)](./comuniq.html)** - Ficheiro principal da aplicação.
-* 📑 **[Memorial de Construção](./documentacao/Memorial-de%20Construção.pdf)** - Conceito, problema e visão do produto.
-* ⚙️ **[Engenharia de Prompts](./documentacao/Comuniq_Prompts.pdf)** - Detalhamento técnico das IAs (Tobias).
-* 📘 **[Documentação Completa](./documentacao/Comuniq_Documentacao_Completa.pdf)** - Guia técnico, funcional e evidências.
-* 🖼️ **[Diagrama do Ecossistema](./documentacao/diagrama-ecossistema.jpeg)** - Estrutura visual do sistema.
+* 🌐 **[Executar Plataforma (HTML)](./comuniq.html)** - Interface principal do sistema[cite: 3, 5].
+* 📑 **[Memorial de Construção](./documentacao/Memorial_de_Constru%20%7C%C2%BA%20%7C%C3%BAo.pdf)** - Conceito e visão do produto[cite: 1].
+* ⚙️ **[Engenharia de Prompts](./documentacao/Comuniq_Prompts.docx)** - Detalhamento técnico das IAs (Tobias)[cite: 2].
+* 📘 **[Documentação Completa](./documentacao/Comuniq_Documentacao_Completa.docx)** - Guia técnico e funcional[cite: 3].
+* 🖼️ **[Diagrama do Ecossistema](./documentacao/diagrama-ecossistema.jpeg)** - Estrutura visual das IAs[cite: 2].
 
 ---
 
 ## 📋 Funcionalidades Principais
 
-* **Busca Inteligente (Tobias IA):** Interpreta necessidades em linguagem natural (ex: "tenho um cano partido") e encontra o profissional certo.
-* **Contacto Direto:** Integração nativa com a API do WhatsApp para negociações sem intermediários.
-* **Selo Verificado:** Identificação visual para prestadores que inserem CNPJ, aumentando a confiança.
-* **Sistema de Alertas:** Notificações baseadas em categorias e bairros de interesse.
-* **Moderação por IA:** Avaliações filtradas automaticamente para manter o respeito na comunidade.
+* **Busca Inteligente (Tobias IA):** Sistema que interpreta linguagem natural para encontrar profissionais[cite: 3].
+* **Contato Direto:** Integração com WhatsApp para negociações diretas[cite: 3].
+* **Selo Verificado:** Identificação para prestadores que fornecem CNPJ[cite: 1, 3].
+* **Moderação por IA:** Filtro automático de ofensas em avaliações para manter o respeito na comunidade[cite: 2, 3].
 
 ---
 
 ## 🤖 Ecossistema de IA (Tobias)
 
-O sistema utiliza múltiplos modelos para garantir eficiência e baixo custo:
-
 | Funcionalidade | Modelo | Papel no Sistema |
 | :--- | :--- | :--- |
-| **Chat Tobias** | Gemini Flash | Atendimento geral, dúvidas e suporte. |
-| **Busca IA** | Claude Haiku | Classificação de categorias e mapeamento de intenção. |
-| **Moderação** | Gemini Flash | Filtro de linguagem ofensiva em feedbacks. |
-| **Gerador de Perfil** | Gemini Flash | Escrita automática de descrições profissionais. |
+| **Chat Tobias** | Gemini Flash | Atendimento geral e acolhedor[cite: 2]. |
+| **Busca IA** | Claude Haiku | Mapeamento de intenção e categorias[cite: 2]. |
+| **Moderação** | Gemini Flash | Bloqueio de conteúdo ofensivo[cite: 2]. |
+| **Gerador de Perfil** | Gemini Flash | Escrita de descrições profissionais[cite: 2]. |
 
 ---
 
 ## 🛠️ Detalhes Técnicos
 
-* **Arquitetura:**
+* **Stack:** HTML5, CSS3 (Mobile-first) e JavaScript Vanilla[cite: 3, 5].
+* **Persistência:** Uso de `localStorage` para salvar dados no navegador[cite: 3].
+* **Modelos:** Integração via API com Google Gemini e Anthropic Claude[cite: 2].
+
+---
+
+## 🎓 Contexto Acadêmico
+
+Entrega final para a disciplina de **Engenharia de Prompt e Aplicações em IA** da **UNICID** (2026)[cite: 1, 2, 3].
+
+---
+*Comuniq: Fortalecendo a economia local. 💙*
+EOF
+
+echo "✅ README.md atualizado com os nomes exatos dos seus arquivos!"
