@@ -1,4 +1,4 @@
-cat << 'EOF' > README.md
+
 # Comuniq 🚀 | Conectando a Comunidade
 
 ![Status](https://img.shields.io/badge/status-Beta-yellow.svg)
